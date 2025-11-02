@@ -1,0 +1,3396 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Student Registration - Kageyo TVET School</title>
+  <meta name="description" content="Student Registration System for Kageyo TVET School">
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <style>
+    /* All previous CSS styles remain the same */
+    :root {
+      --primary: #1D4ED8;
+      --secondary: #1e40af;
+      --success: #10b981;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+      --dark: #1f2937;
+      --light: #f9fafb;
+    }
+    
+    body {
+      font-family: 'Roboto', sans-serif;
+    }
+    
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    #mainApp {
+      display: none;
+    }
+    
+    #mainApp.active {
+      display: block;
+    }
+    
+    body.dark-mode {
+      background-color: #1a1a1a;
+      color: #e0e0e0;
+    }
+    
+    body.dark-mode .bg-white {
+      background-color: #2d2d2d !important;
+    }
+    
+    body.dark-mode .bg-gray-50 {
+      background-color: #2d2d2d !important;
+    }
+    
+    body.dark-mode .bg-gray-100 {
+      background-color: #1a1a1a !important;
+    }
+    
+    /* Login/Auth Styles */
+    #authSection {
+      min-height: 100vh;
+      background: linear-gradient(135deg, #1D4ED8 0%, #3B82F6 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    
+    .auth-card {
+      background: white;
+      border-radius: 16px;
+      padding: 40px;
+      max-width: 550px;
+      width: 100%;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      animation: slideUp 0.5s ease-out;
+    }
+    
+    @keyframes slideUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    
+    .auth-logo {
+      width: 100px;
+      height: 100px;
+      margin: 0 auto 20px;
+      display: block;
+      border-radius: 50%;
+      cursor: pointer;
+      transition: transform 0.3s ease;
+      border: 3px solid #1D4ED8;
+    }
+    
+    .auth-logo:hover {
+      transform: scale(1.05);
+    }
+    
+    .sidebar {
+      width: 260px;
+      height: 100vh;
+      position: fixed;
+      top: 0;
+      left: 0;
+      background: linear-gradient(180deg, #1D4ED8 0%, #3B82F6 100%);
+      color: white;
+      transition: all 0.3s ease;
+      z-index: 100;
+      box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+    }
+    
+    .main-content {
+      margin-left: 260px;
+      transition: all 0.3s ease;
+    }
+    
+    .sidebar.collapsed {
+      width: 70px;
+    }
+    
+    .sidebar.collapsed + .main-content {
+      margin-left: 70px;
+    }
+    
+    .sidebar-header {
+      padding: 20px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    .sidebar-menu {
+      padding: 15px 0;
+    }
+    
+    .menu-item {
+      padding: 12px 20px;
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      border-left: 3px solid transparent;
+    }
+    
+    .menu-item:hover {
+      background-color: rgba(255, 255, 255, 0.1);
+    }
+    
+    .menu-item.active {
+      background-color: rgba(255, 255, 255, 0.15);
+      border-left-color: white;
+    }
+    
+    .menu-item i {
+      margin-right: 12px;
+      width: 20px;
+      text-align: center;
+    }
+    
+    .sidebar.collapsed .menu-text {
+      display: none;
+    }
+    
+    .card {
+      border-radius: 12px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05), 0 1px 3px rgba(0, 0, 0, 0.1);
+      transition: all 0.3s ease;
+      background: white;
+    }
+    
+    .dark-mode .card {
+      background: #1f2937;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2), 0 1px 3px rgba(0, 0, 0, 0.3);
+    }
+    
+    .stat-card {
+      padding: 20px;
+      border-radius: 12px;
+      transition: all 0.3s ease;
+    }
+    
+    .stat-card:hover {
+      transform: translateY(-5px);
+    }
+    
+    .stat-card.blue {
+      background: linear-gradient(135deg, #3b82f6, #1e40af);
+      color: white;
+    }
+    
+    .stat-card.green {
+      background: linear-gradient(135deg, #10b981, #047857);
+      color: white;
+    }
+    
+    .stat-card.yellow {
+      background: linear-gradient(135deg, #f59e0b, #d97706);
+      color: white;
+    }
+    
+    .stat-card.purple {
+      background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+      color: white;
+    }
+    
+    .progress-bar {
+      height: 8px;
+      background-color: rgba(255, 255, 255, 0.3);
+      border-radius: 4px;
+      overflow: hidden;
+    }
+    
+    .progress-fill {
+      height: 100%;
+      border-radius: 4px;
+      transition: width 0.5s ease;
+      background-color: white;
+    }
+    
+    .btn {
+      padding: 10px 20px;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      border: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .btn-primary {
+      background-color: #1D4ED8;
+      color: white;
+    }
+    
+    .btn-primary:hover {
+      background-color: #1E40AF;
+    }
+    
+    .btn-success {
+      background-color: #10b981;
+      color: white;
+    }
+    
+    .btn-success:hover {
+      background-color: #059669;
+    }
+    
+    .btn-danger {
+      background-color: #ef4444;
+      color: white;
+    }
+    
+    .btn-danger:hover {
+      background-color: #dc2626;
+    }
+    
+    .btn-warning {
+      background-color: #f59e0b;
+      color: white;
+    }
+    
+    .btn-warning:hover {
+      background-color: #d97706;
+    }
+    
+    .badge {
+      display: inline-block;
+      padding: 4px 8px;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+    
+    .badge.success {
+      background-color: #d1fae5;
+      color: #065f46;
+    }
+    
+    .dark-mode .badge.success {
+      background-color: #065f46;
+      color: #d1fae5;
+    }
+    
+    .badge.warning {
+      background-color: #fef3c7;
+      color: #92400e;
+    }
+    
+    .dark-mode .badge.warning {
+      background-color: #92400e;
+      color: #fef3c7;
+    }
+    
+    .badge.danger {
+      background-color: #fee2e2;
+      color: #991b1b;
+    }
+    
+    .dark-mode .badge.danger {
+      background-color: #991b1b;
+      color: #fee2e2;
+    }
+    
+    .table-container {
+      overflow-x: auto;
+      border-radius: 8px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    }
+    
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    
+    th, td {
+      padding: 12px 15px;
+      text-align: left;
+      border-bottom: 1px solid #e5e7eb;
+    }
+    
+    .dark-mode th, .dark-mode td {
+      border-color: #4b5563;
+    }
+    
+    th {
+      background-color: #f9fafb;
+      font-weight: 600;
+    }
+    
+    .dark-mode th {
+      background-color: #374151;
+    }
+    
+    tr:hover {
+      background-color: #f9fafb;
+    }
+    
+    .dark-mode tr:hover {
+      background-color: #374151;
+    }
+    
+    .action-btn {
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-size: 0.875rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      border: none;
+      display: inline-flex;
+      align-items: center;
+      margin-right: 5px;
+    }
+    
+    .action-btn.edit {
+      background-color: #3b82f6;
+      color: white;
+    }
+    
+    .action-btn.edit:hover {
+      background-color: #2563eb;
+    }
+    
+    .action-btn.delete {
+      background-color: #ef4444;
+      color: white;
+    }
+    
+    .action-btn.delete:hover {
+      background-color: #dc2626;
+    }
+    
+    .action-btn.view {
+      background-color: #10b981;
+      color: white;
+    }
+    
+    .action-btn.view:hover {
+      background-color: #059669;
+    }
+    
+    .modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: rgba(0, 0, 0, 0.5);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.3s ease;
+    }
+    
+    .modal.open {
+      opacity: 1;
+      visibility: visible;
+    }
+    
+    .modal-content {
+      background: white;
+      border-radius: 12px;
+      width: 90%;
+      max-width: 800px;
+      max-height: 90vh;
+      overflow-y: auto;
+      transform: scale(0.9);
+      transition: transform 0.3s ease;
+      box-shadow: 0 20px 25px rgba(0, 0, 0, 0.1);
+    }
+    
+    .dark-mode .modal-content {
+      background: #1f2937;
+    }
+    
+    .modal.open .modal-content {
+      transform: scale(1);
+    }
+    
+    .toast {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      padding: 12px 20px;
+      border-radius: 8px;
+      color: white;
+      z-index: 1000;
+      opacity: 0;
+      transform: translateY(-20px);
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    
+    .toast.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    
+    .toast.success { background-color: #10b981; }
+    .toast.error { background-color: #ef4444; }
+    .toast.warning { background-color: #f59e0b; }
+    .toast.info { background-color: #3b82f6; }
+    
+    .tab-content {
+      display: none;
+    }
+    
+    .tab-content.active {
+      display: block;
+    }
+    
+    .nav-tabs {
+      display: flex;
+      border-bottom: 1px solid #e5e7eb;
+      margin-bottom: 1rem;
+    }
+    
+    .dark-mode .nav-tabs {
+      border-color: #4b5563;
+    }
+    
+    .nav-tab {
+      padding: 12px 24px;
+      cursor: pointer;
+      border-bottom: 3px solid transparent;
+      transition: all 0.2s ease;
+    }
+    
+    .nav-tab.active {
+      border-bottom-color: #1D4ED8;
+      color: #1D4ED8;
+      font-weight: 600;
+    }
+    
+    .dark-mode .nav-tab.active {
+      color: #60a5fa;
+      border-bottom-color: #60a5fa;
+    }
+    
+    .fade-in {
+      animation: fadeIn 0.5s ease;
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .form-group {
+      margin-bottom: 1rem;
+    }
+    
+    .form-label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: 500;
+    }
+    
+    .form-input {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid #d1d5db;
+      border-radius: 6px;
+      transition: all 0.2s ease;
+    }
+    
+    .dark-mode .form-input {
+      background-color: #374151;
+      border-color: #4b5563;
+      color: #f9fafb;
+    }
+    
+    .form-input:focus {
+      outline: none;
+      border-color: #1D4ED8;
+      box-shadow: 0 0 0 3px rgba(29, 78, 216, 0.2);
+    }
+    
+    .toggle-sidebar {
+      position: absolute;
+      top: 20px;
+      right: -15px;
+      width: 30px;
+      height: 30px;
+      background: white;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+      cursor: pointer;
+      color: #1D4ED8;
+    }
+    
+    .user-info {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 8px;
+      margin-bottom: 10px;
+    }
+    
+    .form-step {
+      display: none;
+    }
+    
+    .form-step.active {
+      display: block;
+      animation: fadeIn 0.3s ease;
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    
+    .step-indicator {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+    
+    .step {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: #d1d5db;
+      transition: all 0.3s ease;
+    }
+    
+    .step.active {
+      background: #1D4ED8;
+      transform: scale(1.2);
+    }
+    
+    .step.completed {
+      background: #10b981;
+    }
+    
+    .info-badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 8px 12px;
+      background: #EFF6FF;
+      border: 1px solid #BFDBFE;
+      border-radius: 8px;
+      font-size: 0.875rem;
+      color: #1E40AF;
+      margin-bottom: 15px;
+    }
+    
+    .btn-group {
+      display: flex;
+      gap: 10px;
+      margin-top: 20px;
+    }
+    
+    .btn-secondary {
+      background-color: #6B7280;
+      color: white;
+    }
+    
+    .btn-secondary:hover {
+      background-color: #4B5563;
+    }
+    
+    .field-valid {
+      border-color: #10b981 !important;
+      background-color: #f0fdf4 !important;
+    }
+    
+    .field-invalid {
+      border-color: #ef4444 !important;
+      background-color: #fef2f2 !important;
+    }
+    
+    .field-icon {
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      pointer-events: none;
+    }
+    
+    .password-toggle {
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      cursor: pointer;
+      color: #6B7280;
+      transition: color 0.2s;
+      z-index: 10;
+    }
+    
+    .password-toggle:hover {
+      color: #1D4ED8;
+    }
+    
+    .password-field-wrapper {
+      position: relative;
+    }
+    
+    .password-field-wrapper input {
+      padding-right: 45px;
+    }
+    
+    .field-wrapper {
+      position: relative;
+    }
+    
+    .strength-meter {
+      height: 4px;
+      background: #e5e7eb;
+      border-radius: 2px;
+      margin-top: 8px;
+      overflow: hidden;
+    }
+    
+    .strength-fill {
+      height: 100%;
+      transition: all 0.3s ease;
+      border-radius: 2px;
+    }
+    
+    .strength-weak { background: #ef4444; width: 33%; }
+    .strength-medium { background: #f59e0b; width: 66%; }
+    .strength-strong { background: #10b981; width: 100%; }
+    
+    .char-count {
+      font-size: 0.75rem;
+      color: #6b7280;
+      text-align: right;
+      margin-top: 4px;
+    }
+    
+    .sidebar.collapsed .toggle-sidebar i {
+      transform: rotate(180deg);
+    }
+    
+    @media (max-width: 768px) {
+      .sidebar {
+        width: 70px;
+      }
+      
+      .main-content {
+        margin-left: 70px;
+      }
+      
+      .sidebar .menu-text {
+        display: none;
+      }
+    }
+    
+    /* Required Items Styles */
+    .required-items-section {
+      border: 1px solid #e5e7eb;
+      border-radius: 8px;
+      padding: 16px;
+      margin-top: 16px;
+      background-color: #f9fafb;
+    }
+    
+    .dark-mode .required-items-section {
+      background-color: #374151;
+      border-color: #4b5563;
+    }
+    
+    .required-items-header {
+      font-weight: 600;
+      margin-bottom: 12px;
+      color: #1f2937;
+    }
+    
+    .dark-mode .required-items-header {
+      color: #f9fafb;
+    }
+    
+    .required-items-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 12px;
+    }
+    
+    .required-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px;
+      border-radius: 6px;
+      background-color: white;
+      border: 1px solid #e5e7eb;
+    }
+    
+    .dark-mode .required-item {
+      background-color: #1f2937;
+      border-color: #4b5563;
+    }
+    
+    .required-item-checkbox {
+      width: 18px;
+      height: 18px;
+    }
+    
+    .required-item-label {
+      font-size: 14px;
+      color: #374151;
+    }
+    
+    .dark-mode .required-item-label {
+      color: #f9fafb;
+    }
+    
+    .required-item-quantity {
+      font-size: 12px;
+      color: #6b7280;
+      margin-left: auto;
+    }
+    
+    .required-item-status {
+      font-size: 12px;
+      font-weight: 600;
+      padding: 2px 6px;
+      border-radius: 4px;
+    }
+    
+    .status-complete {
+      background-color: #d1fae5;
+      color: #065f46;
+    }
+    
+    .status-incomplete {
+      background-color: #fef3c7;
+      color: #92400e;
+    }
+    
+    .required-items-summary {
+      margin-top: 12px;
+      padding: 8px 12px;
+      border-radius: 6px;
+      background-color: #eff6ff;
+      font-size: 14px;
+    }
+    
+    .dark-mode .required-items-summary {
+      background-color: #1e3a8a;
+    }
+    
+    .required-items-warning {
+      margin-top: 12px;
+      padding: 8px 12px;
+      border-radius: 6px;
+      background-color: #fef3c7;
+      font-size: 14px;
+      color: #92400e;
+    }
+    
+    .dark-mode .required-items-warning {
+      background-color: #78350f;
+      color: #fef3c7;
+    }
+  </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Authentication Section -->
+    <div id="authSection">
+        <div class="auth-card">
+            <a href="index.html" title="Go to Home">
+                <img src="logo.jpg" alt="Kageyo TVET Logo" class="auth-logo" onerror="this.src='download.jpg'">
+            </a>
+            <h1 class="text-3xl font-bold text-center text-blue-600 mb-2">KAGEYO TVET SCHOOL</h1>
+            <p class="text-center text-gray-600 mb-6">Student Registration System</p>
+            
+            <!-- Login Form -->
+            <div id="loginForm">
+                <h2 class="text-2xl font-bold mb-6 text-gray-800">Login</h2>
+                <form id="loginFormElement">
+                    <div class="form-group mb-4">
+                        <label class="form-label text-gray-700">Username</label>
+                        <input type="text" id="loginUsername" class="form-input" placeholder="Enter username" required>
+                    </div>
+                    <div class="form-group mb-4">
+                        <label class="form-label text-gray-700">Password</label>
+                        <input type="password" id="loginPassword" class="form-input" placeholder="Enter password" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary w-full mb-4">
+                        <i class="fas fa-sign-in-alt mr-2"></i>Login
+                    </button>
+                </form>
+                <p class="text-center text-gray-600">
+                    Don't have an account? 
+                    <a href="#" id="showCreateAccount" class="text-blue-600 hover:underline font-semibold">Create Account</a>
+                </p>
+            </div>
+            
+            <!-- Create Account Form -->
+            <div id="createAccountForm" style="display: none;">
+                <h2 class="text-2xl font-bold mb-2 text-gray-800 text-center">Create Your Account</h2>
+                <p class="text-center text-gray-600 mb-6">Join the Kageyo TVET registration system</p>
+                
+                <!-- Step Indicator -->
+                <div class="step-indicator">
+                    <div class="step active" id="step1Indicator"></div>
+                    <div class="step" id="step2Indicator"></div>
+                    <div class="step" id="step3Indicator"></div>
+                </div>
+                
+                <form id="createAccountFormElement">
+                    <!-- Step 1: Personal Information -->
+                    <div class="form-step active" id="step1">
+                        <h3 class="text-lg font-semibold mb-4 text-gray-700">
+                            <i class="fas fa-user-circle mr-2 text-blue-600"></i>Step 1: Personal Information
+                        </h3>
+                        
+                        <div class="info-badge mb-4">
+                            <i class="fas fa-info-circle mr-2"></i>
+                            <span>⚠️ STAFF ONLY - Students cannot create accounts. Only authorized staff members can register.</span>
+                        </div>
+                        
+                        <div class="bg-red-50 border border-red-200 rounded-lg p-3 mb-4" style="border-left: 4px solid #ef4444;">
+                            <p class="text-sm text-red-800 font-semibold"><i class="fas fa-ban mr-2"></i>Students are NOT allowed to create accounts</p>
+                            <p class="text-xs text-red-600 mt-1">If you are a student, please contact the school administration for registration.</p>
+                        </div>
+                        
+                        <div class="form-group mb-4">
+                            <label class="form-label text-gray-700">
+                                <i class="fas fa-id-badge mr-2"></i>Select Your Name from Staff List
+                            </label>
+                            <select id="staffSelector" class="form-input" required>
+                                <option value="">-- Select Your Name --</option>
+                            </select>
+                            <small class="text-gray-500 text-xs mt-1 block">Choose your name from the authorized staff list</small>
+                        </div>
+                        
+                        <div class="form-group mb-4">
+                            <label class="form-label text-gray-700">
+                                <i class="fas fa-user mr-2"></i>Full Name
+                            </label>
+                            <input type="text" id="createFullName" class="form-input bg-gray-50" placeholder="Auto-filled from selection" readonly required>
+                        </div>
+                        
+                        <div class="form-group mb-4">
+                            <label class="form-label text-gray-700">
+                                <i class="fas fa-envelope mr-2"></i>Email Address
+                            </label>
+                            <input type="email" id="createEmail" class="form-input bg-gray-50" placeholder="Auto-filled from selection" readonly required>
+                        </div>
+                        
+                        <div class="form-group mb-4">
+                            <label class="form-label text-gray-700">
+                                <i class="fas fa-briefcase mr-2"></i>Position
+                            </label>
+                            <input type="text" id="createPosition" class="form-input bg-gray-50" placeholder="Auto-filled from selection" readonly required>
+                        </div>
+                        
+                        <div class="btn-group">
+                            <button type="button" class="btn btn-primary flex-1" id="nextStep1">
+                                Next <i class="fas fa-arrow-right ml-2"></i>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Step 2: Account Credentials -->
+                    <div class="form-step" id="step2">
+                        <h3 class="text-lg font-semibold mb-4 text-gray-700">
+                            <i class="fas fa-key mr-2 text-blue-600"></i>Step 2: Account Credentials
+                        </h3>
+                        
+                        <div class="form-group mb-4">
+                            <label class="form-label text-gray-700">
+                                <i class="fas fa-user-tag mr-2"></i>Username
+                            </label>
+                            <div class="field-wrapper">
+                                <input type="text" id="createUsername" class="form-input" placeholder="Choose a unique username" required>
+                                <span class="field-icon" id="usernameIcon"></span>
+                            </div>
+                            <small class="text-gray-500 text-xs mt-1 block">This will be used to login to the system</small>
+                            <div class="char-count" id="usernameCount">0/20 characters</div>
+                        </div>
+                        
+                        <div class="form-group mb-4">
+                            <label class="form-label text-gray-700">
+                                <i class="fas fa-lock mr-2"></i>Password
+                            </label>
+                            <div class="password-field-wrapper">
+                                <input type="password" id="createPassword" class="form-input" placeholder="Choose a strong password" required>
+                                <span class="password-toggle" id="togglePassword" title="Show password">
+                                    <i class="fas fa-eye"></i>
+                                </span>
+                            </div>
+                            <div class="strength-meter">
+                                <div class="strength-fill" id="strengthBar"></div>
+                            </div>
+                            <small class="text-gray-500 text-xs mt-1 block" id="passwordStrength">Minimum 6 characters</small>
+                        </div>
+                        
+                        <div class="form-group mb-4">
+                            <label class="form-label text-gray-700">
+                                <i class="fas fa-lock mr-2"></i>Confirm Password
+                            </label>
+                            <div class="password-field-wrapper">
+                                <input type="password" id="createConfirmPassword" class="form-input" placeholder="Re-enter your password" required>
+                                <span class="password-toggle" id="toggleConfirmPassword" title="Show password">
+                                    <i class="fas fa-eye"></i>
+                                </span>
+                            </div>
+                            <small class="text-gray-500 text-xs mt-1 block" id="passwordMatch"></small>
+                        </div>
+                        
+                        <div class="btn-group">
+                            <button type="button" class="btn btn-secondary flex-1" id="prevStep2">
+                                <i class="fas fa-arrow-left mr-2"></i> Back
+                            </button>
+                            <button type="button" class="btn btn-primary flex-1" id="nextStep2">
+                                Next <i class="fas fa-arrow-right ml-2"></i>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Step 3: Review & Confirm -->
+                    <div class="form-step" id="step3">
+                        <h3 class="text-lg font-semibold mb-4 text-gray-700">
+                            <i class="fas fa-check-circle mr-2 text-blue-600"></i>Step 3: Review & Confirm
+                        </h3>
+                        
+                        <div class="bg-gray-50 p-4 rounded-lg mb-4">
+                            <h4 class="font-semibold text-gray-700 mb-3">Account Summary</h4>
+                            <div class="space-y-2 text-sm">
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">Full Name:</span>
+                                    <span class="font-semibold" id="reviewFullName">-</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">Email:</span>
+                                    <span class="font-semibold" id="reviewEmail">-</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">Position:</span>
+                                    <span class="font-semibold" id="reviewPosition">-</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">Username:</span>
+                                    <span class="font-semibold" id="reviewUsername">-</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">Role:</span>
+                                    <span class="font-semibold" id="reviewRole">-</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group mb-4" style="display: none;">
+                            <input type="text" id="createRole" class="form-input" readonly required>
+                        </div>
+                        
+                        <div class="info-badge mb-4">
+                            <i class="fas fa-shield-alt mr-2"></i>
+                            <span>Your account will be created securely</span>
+                        </div>
+                        
+                        <div class="btn-group">
+                            <button type="button" class="btn btn-secondary flex-1" id="prevStep3">
+                                <i class="fas fa-arrow-left mr-2"></i> Back
+                            </button>
+                            <button type="submit" class="btn btn-success flex-1">
+                                <i class="fas fa-user-plus mr-2"></i>Create Account
+                            </button>
+                        </div>
+                    </div>
+                </form>
+                
+                <div class="mt-6 text-center">
+                    <p class="text-gray-600">
+                        Already have an account? 
+                        <a href="#" id="showLogin" class="text-blue-600 hover:underline font-semibold">Login here</a>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Application (Hidden until logged in) -->
+    <div id="mainApp">
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="toggle-sidebar" id="toggleSidebar">
+            <i class="fas fa-chevron-left"></i>
+        </div>
+        
+        <div class="sidebar-header">
+            <div class="flex items-center space-x-3 mb-4">
+                <div class="w-10 h-10 bg-white rounded-full flex items-center justify-center text-blue-600 font-bold">
+                    KT
+                </div>
+                <div>
+                    <h2 class="font-bold text-lg">KAGEYO TVET</h2>
+                    <p class="text-xs text-blue-100">Student Registration</p>
+                </div>
+            </div>
+            
+            <!-- User Info -->
+            <div class="user-info">
+                <div class="w-8 h-8 bg-white rounded-full flex items-center justify-center text-blue-600">
+                    <i class="fas fa-user"></i>
+                </div>
+                <div class="flex-1">
+                    <div class="text-sm font-semibold" id="sidebarUserName">User</div>
+                    <div class="text-xs text-blue-100" id="sidebarUserRole">Role</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="sidebar-menu">
+            <div class="menu-item" data-tab="dashboard">
+                <i class="fas fa-tachometer-alt"></i>
+                <span class="menu-text">Dashboard</span>
+            </div>
+            <div class="menu-item active" data-tab="student-registration">
+                <i class="fas fa-user-plus"></i>
+                <span class="menu-text">Student Registration</span>
+            </div>
+            <div class="menu-item" data-tab="student-management">
+                <i class="fas fa-users"></i>
+                <span class="menu-text">Student Management</span>
+            </div>
+            <div class="menu-item" data-tab="reports">
+                <i class="fas fa-chart-bar"></i>
+                <span class="menu-text">Reports & Analytics</span>
+            </div>
+            <div class="menu-item" data-tab="settings">
+                <i class="fas fa-cog"></i>
+                <span class="menu-text">Settings</span>
+            </div>
+        </div>
+        
+        <div class="absolute bottom-0 w-full p-4 border-t border-blue-400">
+            <button id="logoutBtn" class="w-full btn btn-danger flex items-center justify-center">
+                <i class="fas fa-sign-out-alt mr-2"></i>
+                <span class="menu-text">Logout</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Header -->
+        <header class="bg-white shadow-sm py-4 px-6">
+            <div class="flex justify-between items-center">
+                <div>
+                    <h1 class="text-xl font-bold text-gray-800" id="pageTitle">Student Registration</h1>
+                    <p class="text-sm text-gray-600">Manage new and returning student registrations</p>
+                </div>
+                
+                <div class="flex items-center space-x-4">
+                    <div class="relative">
+                        <input type="text" id="globalSearch" placeholder="Search students, classes..." class="form-input pl-10 w-64">
+                        <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
+                    </div>
+                    
+                    <button id="darkModeToggle" class="p-2 rounded-full bg-gray-100 text-gray-600 hover:bg-gray-200">
+                        <i class="fas fa-moon"></i>
+                    </button>
+                    
+                    <div class="text-sm text-gray-500" id="currentDateTime"></div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Content Area -->
+        <main class="p-6">
+            <!-- Student Registration Tab -->
+            <div id="student-registration" class="tab-content active fade-in">
+                <!-- Quick Stats -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                    <div class="stat-card blue">
+                        <div class="flex justify-between items-center">
+                            <div>
+                                <div class="text-2xl font-bold" id="newStudentCount">0</div>
+                                <div class="text-blue-100">New Students</div>
+                            </div>
+                            <i class="fas fa-user-plus text-3xl opacity-80"></i>
+                        </div>
+                        <div class="mt-4">
+                            <div class="flex justify-between text-sm mb-1">
+                                <span>This Term</span>
+                                <span id="newStudentPercent">0%</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" id="newStudentProgress" style="width: 0%"></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card green">
+                        <div class="flex justify-between items-center">
+                            <div>
+                                <div class="text-2xl font-bold" id="returningStudentCount">0</div>
+                                <div class="text-green-100">Returning Students</div>
+                            </div>
+                            <i class="fas fa-user-check text-3xl opacity-80"></i>
+                        </div>
+                        <div class="mt-4">
+                            <div class="flex justify-between text-sm mb-1">
+                                <span>This Term</span>
+                                <span id="returningStudentPercent">0%</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" id="returningStudentProgress" style="width: 0%"></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card yellow">
+                        <div class="flex justify-between items-center">
+                            <div>
+                                <div class="text-2xl font-bold" id="totalStudentCount">0</div>
+                                <div class="text-yellow-100">Total Students</div>
+                            </div>
+                            <i class="fas fa-users text-3xl opacity-80"></i>
+                        </div>
+                        <div class="mt-4">
+                            <div class="flex justify-between text-sm mb-1">
+                                <span>School Capacity</span>
+                                <span id="totalStudentPercent">0%</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" id="totalStudentProgress" style="width: 0%"></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card purple">
+                        <div class="flex justify-between items-center">
+                            <div>
+                                <div class="text-2xl font-bold" id="classesCount">0</div>
+                                <div class="text-purple-100">Active Classes</div>
+                            </div>
+                            <i class="fas fa-chalkboard-teacher text-3xl opacity-80"></i>
+                        </div>
+                        <div class="mt-4">
+                            <div class="flex justify-between text-sm mb-1">
+                                <span>Class Utilization</span>
+                                <span id="classesPercent">0%</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" id="classesProgress" style="width: 0%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <!-- Left Column -->
+                    <div class="lg:col-span-2 space-y-6">
+                        <!-- Registration Forms -->
+                        <div class="card p-6">
+                            <h2 class="text-lg font-semibold text-gray-800 dark:text-white mb-4">Student Registration</h2>
+                            
+                            <div class="nav-tabs mb-6">
+                                <div class="nav-tab active" data-form="new-student">New Student</div>
+                                <div class="nav-tab" data-form="returning-student">Returning Student</div>
+                            </div>
+                            
+                            <!-- New Student Form -->
+                            <form id="new-student-form" class="space-y-4">
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div class="form-group">
+                                        <label class="form-label" for="firstName">First Name</label>
+                                        <input type="text" id="firstName" class="form-input" placeholder="Enter first name" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label" for="lastName">Last Name</label>
+                                        <input type="text" id="lastName" class="form-input" placeholder="Enter last name" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label" for="gender">Gender</label>
+                                        <select id="gender" class="form-input" required>
+                                            <option value="">Select Gender</option>
+                                            <option value="Male">Male</option>
+                                            <option value="Female">Female</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label" for="dob">Date of Birth</label>
+                                        <input type="date" id="dob" class="form-input" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label" for="class">Class</label>
+                                        <select id="class" class="form-input" required>
+                                            <option value="">Select Class</option>
+                                            <option value="S1A">S1A</option>
+                                            <option value="S1B">S1B</option>
+                                            <option value="S2A">S2A</option>
+                                            <option value="S2B">S2B</option>
+                                            <option value="S3A">S3A</option>
+                                            <option value="S3B">S3B</option>
+                                            <option value="L3 SWD">L3 SWD</option>
+                                            <option value="S4A">S4A</option>
+                                            <option value="S4B">S4B</option>
+                                            <option value="L4 SWD">L4 SWD</option>
+                                            <option value="S5A">S5A</option>
+                                            <option value="S5B">S5B</option>
+                                            <option value="S6A">S6A</option>
+                                            <option value="S6B">S6B</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label" for="studentId">Student ID</label>
+                                        <input type="text" id="studentId" class="form-input" placeholder="Auto-generated" readonly>
+                                    </div>
+                                </div>
+                                
+                                <div class="border-t pt-4">
+                                    <h3 class="text-md font-semibold mb-3">Parent/Guardian Information</h3>
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <div class="form-group">
+                                            <label class="form-label" for="parentName">Parent Name</label>
+                                            <input type="text" id="parentName" class="form-input" placeholder="Enter parent name" required>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="form-label" for="parentContact">Parent Contact</label>
+                                            <input type="text" id="parentContact" class="form-input" placeholder="Enter contact number" required>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="form-label" for="relationship">Relationship</label>
+                                            <select id="relationship" class="form-input" required>
+                                                <option value="">Select Relationship</option>
+                                                <option value="Father">Father</option>
+                                                <option value="Mother">Mother</option>
+                                                <option value="Guardian">Guardian</option>
+                                                <option value="Other">Other</option>
+                                            </select>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="form-label" for="parentEmail">Email (Optional)</label>
+                                            <input type="email" id="parentEmail" class="form-input" placeholder="Enter email address">
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="border-t pt-4">
+                                    <h3 class="text-md font-semibold mb-3">Address Information</h3>
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <div class="form-group">
+                                            <label class="form-label" for="province">Province</label>
+                                            <select id="province" class="form-input" required>
+                                                <option value="">Select Province</option>
+                                                <option value="Kigali City">Kigali City</option>
+                                                <option value="Northern Province">Northern Province</option>
+                                                <option value="Southern Province">Southern Province</option>
+                                                <option value="Eastern Province">Eastern Province</option>
+                                                <option value="Western Province">Western Province</option>
+                                            </select>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="form-label" for="district">District</label>
+                                            <select id="district" class="form-input" required>
+                                                <option value="">Select District</option>
+                                                <option value="Gasabo">Gasabo</option>
+                                                <option value="Kicukiro">Kicukiro</option>
+                                                <option value="Nyarugenge">Nyarugenge</option>
+                                                <option value="Burera">Burera</option>
+                                                <option value="Gakenke">Gakenke</option>
+                                                <option value="Gicumbi">Gicumbi</option>
+                                                <option value="Musanze">Musanze</option>
+                                                <option value="Rulindo">Rulindo</option>
+                                                <option value="Gisagara">Gisagara</option>
+                                                <option value="Huye">Huye</option>
+                                                <option value="Kamonyi">Kamonyi</option>
+                                                <option value="Muhanga">Muhanga</option>
+                                                <option value="Nyamagabe">Nyamagabe</option>
+                                                <option value="Nyanza">Nyanza</option>
+                                                <option value="Nyaruguru">Nyaruguru</option>
+                                                <option value="Ruhango">Ruhango</option>
+                                                <option value="Bugesera">Bugesera</option>
+                                                <option value="Gatsibo">Gatsibo</option>
+                                                <option value="Kayonza">Kayonza</option>
+                                                <option value="Kirehe">Kirehe</option>
+                                                <option value="Ngoma">Ngoma</option>
+                                                <option value="Nyagatare">Nyagatare</option>
+                                                <option value="Rwamagana">Rwamagana</option>
+                                                <option value="Karongi">Karongi</option>
+                                                <option value="Ngororero">Ngororero</option>
+                                                <option value="Nyabihu">Nyabihu</option>
+                                                <option value="Nyamasheke">Nyamasheke</option>
+                                                <option value="Rubavu">Rubavu</option>
+                                                <option value="Rusizi">Rusizi</option>
+                                                <option value="Rutsiro">Rutsiro</option>
+                                            </select>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="form-label" for="sector">Sector</label>
+                                            <input type="text" id="sector" class="form-input" placeholder="Enter sector" required>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="form-label" for="cell">Cell</label>
+                                            <input type="text" id="cell" class="form-input" placeholder="Enter cell" required>
+                                        </div>
+                                        <div class="form-group md:col-span-2">
+                                            <label class="form-label" for="village">Village</label>
+                                            <input type="text" id="village" class="form-input" placeholder="Enter village" required>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Required Items Section for New Students -->
+                                <div class="border-t pt-4">
+                                    <h3 class="text-md font-semibold mb-3">Required Items</h3>
+                                    <div class="required-items-section">
+                                        <div class="required-items-header">Please confirm the following required items have been brought:</div>
+                                        <div class="required-items-grid">
+                                            <div class="required-item">
+                                                <input type="checkbox" id="newVest" class="required-item-checkbox" data-quantity="3">
+                                                <label for="newVest" class="required-item-label">Vest</label>
+                                                <span class="required-item-quantity">(3 required)</span>
+                                            </div>
+                                            <div class="required-item">
+                                                <input type="checkbox" id="newSocks" class="required-item-checkbox" data-quantity="5">
+                                                <label for="newSocks" class="required-item-label">Socks</label>
+                                                <span class="required-item-quantity">(5 required)</span>
+                                            </div>
+                                            <div class="required-item">
+                                                <input type="checkbox" id="newRim" class="required-item-checkbox" data-quantity="1">
+                                                <label for="newRim" class="required-item-label">Rim</label>
+                                                <span class="required-item-quantity">(1 required)</span>
+                                            </div>
+                                            <div class="required-item">
+                                                <input type="checkbox" id="newToiletPaper" class="required-item-checkbox" data-quantity="5">
+                                                <label for="newToiletPaper" class="required-item-label">Toilet Paper</label>
+                                                <span class="required-item-quantity">(5 required)</span>
+                                            </div>
+                                        </div>
+                                        <div class="required-items-summary" id="newItemsSummary">
+                                            Items Status: <span id="newItemsStatus">Incomplete</span>
+                                        </div>
+                                        <div class="required-items-warning" id="newItemsWarning">
+                                            All required items must be brought for registration to be complete.
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="flex justify-end mt-6">
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="fas fa-user-plus mr-2"></i>
+                                        Register New Student
+                                    </button>
+                                </div>
+                            </form>
+                            
+                            <!-- Returning Student Form -->
+                            <form id="returning-student-form" class="space-y-4 hidden">
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div class="form-group">
+                                        <label class="form-label" for="returningStudent">Select Student</label>
+                                        <select id="returningStudent" class="form-input" required>
+                                            <option value="">Select Student</option>
+                                            <!-- Student options will be populated by JavaScript -->
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label" for="returningGender">Gender</label>
+                                        <select id="returningGender" class="form-input" required>
+                                            <option value="">Select Gender</option>
+                                            <option value="Male">Male</option>
+                                            <option value="Female">Female</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label" for="returningClass">New Class</label>
+                                        <select id="returningClass" class="form-input" required>
+                                            <option value="">Select New Class</option>
+                                            <option value="S1A">S1A</option>
+                                            <option value="S1B">S1B</option>
+                                            <option value="S2A">S2A</option>
+                                            <option value="S2B">S2B</option>
+                                            <option value="S3A">S3A</option>
+                                            <option value="S3B">S3B</option>
+                                            <option value="L3 SWD">L3 SWD</option>
+                                            <option value="S4A">S4A</option>
+                                            <option value="S4B">S4B</option>
+                                            <option value="L4 SWD">L4 SWD</option>
+                                            <option value="S5A">S5A</option>
+                                            <option value="S5B">S5B</option>
+                                            <option value="S6A">S6A</option>
+                                            <option value="S6B">S6B</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label" for="returningTerm">Term</label>
+                                        <select id="returningTerm" class="form-input" required>
+                                            <option value="">Select Term</option>
+                                            <option value="Term 1">Term 1</option>
+                                            <option value="Term 2">Term 2</option>
+                                            <option value="Term 3">Term 3</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label" for="returningYear">Academic Year</label>
+                                        <input type="text" id="returningYear" class="form-input" readonly>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label" for="studentType">Student Type</label>
+                                        <input type="text" id="studentType" class="form-input" value="Returning" readonly>
+                                    </div>
+                                </div>
+                                
+                                <div class="border-t pt-4">
+                                    <h3 class="text-md font-semibold mb-3">Previous Academic Information</h3>
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <div class="form-group">
+                                            <label class="form-label" for="previousClass">Previous Class</label>
+                                            <input type="text" id="previousClass" class="form-input" placeholder="Enter previous class" required>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="form-label" for="previousPerformance">Previous Performance</label>
+                                            <select id="previousPerformance" class="form-input" required>
+                                                <option value="">Select Performance</option>
+                                                <option value="Excellent">Excellent</option>
+                                                <option value="Very Good">Very Good</option>
+                                                <option value="Good">Good</option>
+                                                <option value="Average">Average</option>
+                                                <option value="Below Average">Below Average</option>
+                                                <option value="Poor">Poor</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Required Items Section for Returning Students -->
+                                <div class="border-t pt-4">
+                                    <h3 class="text-md font-semibold mb-3">Required Items</h3>
+                                    <div class="required-items-section">
+                                        <div class="required-items-header">Please confirm the following required items have been brought:</div>
+                                        <div class="required-items-grid">
+                                            <div class="required-item">
+                                                <input type="checkbox" id="returningVest" class="required-item-checkbox" data-quantity="3">
+                                                <label for="returningVest" class="required-item-label">Vest</label>
+                                                <span class="required-item-quantity">(3 required)</span>
+                                            </div>
+                                            <div class="required-item">
+                                                <input type="checkbox" id="returningSocks" class="required-item-checkbox" data-quantity="5">
+                                                <label for="returningSocks" class="required-item-label">Socks</label>
+                                                <span class="required-item-quantity">(5 required)</span>
+                                            </div>
+                                            <div class="required-item">
+                                                <input type="checkbox" id="returningRim" class="required-item-checkbox" data-quantity="1">
+                                                <label for="returningRim" class="required-item-label">Rim</label>
+                                                <span class="required-item-quantity">(1 required)</span>
+                                            </div>
+                                            <div class="required-item">
+                                                <input type="checkbox" id="returningToiletPaper" class="required-item-checkbox" data-quantity="5">
+                                                <label for="returningToiletPaper" class="required-item-label">Toilet Paper</label>
+                                                <span class="required-item-quantity">(5 required)</span>
+                                            </div>
+                                        </div>
+                                        <div class="required-items-summary" id="returningItemsSummary">
+                                            Items Status: <span id="returningItemsStatus">Incomplete</span>
+                                        </div>
+                                        <div class="required-items-warning" id="returningItemsWarning">
+                                            All required items must be brought for registration to be complete.
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="flex justify-end mt-6">
+                                    <button type="submit" class="btn btn-success">
+                                        <i class="fas fa-user-check mr-2"></i>
+                                        Register Returning Student
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                        
+                        <!-- Recent Registrations -->
+                        <div class="card p-6">
+                            <h2 class="text-lg font-semibold text-gray-800 dark:text-white mb-4">Recent Registrations</h2>
+                            <div class="table-container">
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th>Student ID</th>
+                                            <th>Name</th>
+                                            <th>Class</th>
+                                            <th>Type</th>
+                                            <th>Date</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="recentRegistrations">
+                                        <!-- Recent registrations will be populated by JavaScript -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Right Column -->
+                    <div class="space-y-6">
+                        <!-- Quick Actions -->
+                        <div class="card p-6">
+                            <h2 class="text-lg font-semibold text-gray-800 dark:text-white mb-4">Quick Actions</h2>
+                            <div class="space-y-3">
+                                <button class="btn btn-primary w-full justify-start" id="exportAllStudentsBtn">
+                                    <i class="fas fa-file-excel mr-2"></i>
+                                    Export All Students (Excel)
+                                </button>
+                                <button class="btn btn-success w-full justify-start" id="exportByClassBtn">
+                                    <i class="fas fa-download mr-2"></i>
+                                    Export by Class (Excel)
+                                </button>
+                                <button class="btn btn-warning w-full justify-start" id="exportByTypeBtn">
+                                    <i class="fas fa-file-export mr-2"></i>
+                                    Export by Type (Excel)
+                                </button>
+                                <button class="btn btn-danger w-full justify-start" id="viewAllRegisteredBtn">
+                                    <i class="fas fa-list mr-2"></i>
+                                    View All Registered
+                                </button>
+                                <button class="btn btn-primary w-full justify-start" id="exportResultsBtn">
+                                    <i class="fas fa-chart-line mr-2"></i>
+                                    Export Results Report
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <!-- Class Distribution -->
+                        <div class="card p-6">
+                            <h2 class="text-lg font-semibold text-gray-800 dark:text-white mb-4">Class Distribution</h2>
+                            <div id="classDistributionChart" class="h-64">
+                                <!-- Chart will be rendered here -->
+                            </div>
+                        </div>
+                        
+                        <!-- Registration Trends -->
+                        <div class="card p-6">
+                            <h2 class="text-lg font-semibold text-gray-800 dark:text-white mb-4">Registration Trends</h2>
+                            <div id="registrationTrendsChart" class="h-64">
+                                <!-- Chart will be rendered here -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Reports Tab -->
+            <div id="reports" class="tab-content fade-in">
+                <div class="card p-6">
+                    <h2 class="text-xl font-bold text-gray-800 dark:text-white mb-6">Reports & Analytics</h2>
+                    
+                    <!-- Report Filters -->
+                    <div class="bg-gray-50 p-4 rounded-lg mb-6">
+                        <h3 class="text-lg font-semibold mb-4">Report Filters</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div class="form-group">
+                                <label class="form-label">Class</label>
+                                <select id="reportClass" class="form-input">
+                                    <option value="">All Classes</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Gender</label>
+                                <select id="reportGender" class="form-input">
+                                    <option value="">All Genders</option>
+                                    <option value="Male">Male Only</option>
+                                    <option value="Female">Female Only</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Student Type</label>
+                                <select id="reportType" class="form-input">
+                                    <option value="">All Types</option>
+                                    <option value="New">New Students</option>
+                                    <option value="Returning">Returning Students</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Report Actions -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+                        <button class="btn btn-primary" id="generateReportBtn">
+                            <i class="fas fa-chart-bar mr-2"></i>Generate Report
+                        </button>
+                        <button class="btn btn-success" id="exportExcelBtn">
+                            <i class="fas fa-file-excel mr-2"></i>Export Excel
+                        </button>
+                        <button class="btn btn-warning" id="exportPdfBtn">
+                            <i class="fas fa-file-pdf mr-2"></i>Export PDF
+                        </button>
+                        <button class="btn btn-info" id="attendanceReportBtn">
+                            <i class="fas fa-user-check mr-2"></i>Attendance Report
+                        </button>
+                    </div>
+                    
+                    <!-- Report Summary -->
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+                        <div class="bg-blue-50 p-4 rounded-lg">
+                            <h4 class="font-semibold text-blue-800">Total Students</h4>
+                            <div class="text-2xl font-bold text-blue-600" id="reportTotalStudents">0</div>
+                        </div>
+                        <div class="bg-green-50 p-4 rounded-lg">
+                            <h4 class="font-semibold text-green-800">Male Students</h4>
+                            <div class="text-2xl font-bold text-green-600" id="reportMaleStudents">0</div>
+                        </div>
+                        <div class="bg-pink-50 p-4 rounded-lg">
+                            <h4 class="font-semibold text-pink-800">Female Students</h4>
+                            <div class="text-2xl font-bold text-pink-600" id="reportFemaleStudents">0</div>
+                        </div>
+                    </div>
+                    
+                    <!-- Report Results -->
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Student ID</th>
+                                    <th>Name</th>
+                                    <th>Gender</th>
+                                    <th>Class</th>
+                                    <th>Type</th>
+                                    <th>Registration Date</th>
+                                </tr>
+                            </thead>
+                            <tbody id="reportResults">
+                                <!-- Report results will be populated here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+    </div>
+    <!-- End of Main App -->
+
+    <!-- Toast Notification -->
+    <div id="toast" class="toast"></div>
+
+    <!-- View All Students Modal -->
+    <div id="viewAllModal" class="modal">
+        <div class="modal-content">
+            <div class="p-6">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-xl font-bold">All Registered Students</h2>
+                    <button id="closeViewAllModal" class="text-gray-500 hover:text-gray-700">
+                        <i class="fas fa-times text-2xl"></i>
+                    </button>
+                </div>
+                
+                <div class="mb-4 flex gap-4">
+                    <select id="filterClass" class="form-input">
+                        <option value="">All Classes</option>
+                    </select>
+                    <select id="filterType" class="form-input">
+                        <option value="">All Types</option>
+                        <option value="New">New Students</option>
+                        <option value="Returning">Returning Students</option>
+                    </select>
+                    <button id="applyFilters" class="btn btn-primary">
+                        <i class="fas fa-filter mr-2"></i>Apply Filters
+                    </button>
+                </div>
+                
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Student ID</th>
+                                <th>Name</th>
+                                <th>Class</th>
+                                <th>Type</th>
+                                <th>Registration Date</th>
+                            </tr>
+                        </thead>
+                        <tbody id="allStudentsTable">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Staff members from staff.html
+        const authorizedStaff = [
+            { name: 'SCHOOL MANAGER', email: 'manager@kageyotvet.edu.rw', position: 'School Manager', role: 'admin' },
+            { name: 'SECRETARY', email: 'secretary@kageyotvet.edu.rw', position: 'Secretary', role: 'registrar' },
+            { name: ' YANKURIJE LEOINE', email: 'bursar@kageyotvet.edu.rw', position: 'Bursar', role: 'admin' },
+            { name: 'MFASHWANIMANA JMV', email: 'studies@kageyotvet.edu.rw', position: 'Deputy School Manager in charge of Study', role: 'admin' },
+            { name: 'BIZIMANA PASCAL', email: 'discipline@kageyotvet.edu.rw', position: 'Deputy School Manager in charge of Discipline', role: 'admin' },
+            { name: 'BYIRINGIRO AIMABLE', email: 'patron@kageyotvet.edu.rw', position: 'Patron', role: 'teacher' },
+            { name: 'ISHIMWE MARIE CHERELE', email: 'matron@kageyotvet.edu.rw', position: 'Matron', role: 'teacher' },
+            { name: 'PETRO SERGE', email: 'patron2@kageyotvet.edu.rw', position: 'Patron', role: 'teacher' },
+            { name: 'MUTONI JEANETTE', email: 'library@kageyotvet.edu.rw', position: 'Librarian', role: 'registrar' },
+            { name: 'KARANGWA VAINQUEUR ALAIN', email: 'it@kageyotvet.edu.rw', position: 'IT Technician', role: 'admin' }
+        ];
+        
+        // Authentication storage
+        let users = JSON.parse(localStorage.getItem('kageyoUsers') || '[]');
+        let currentUser = JSON.parse(localStorage.getItem('kageyoCurrentUser') || 'null');
+        
+        // Registered students storage
+        let registeredStudents = JSON.parse(localStorage.getItem('registeredStudents') || '[]');
+        
+        // Student data from the Excel file
+        const studentData = {
+            "S1A": ["ABEREYIMANA James","ABIMANA HIRWA Gany Blessing","AHISHAKIYE MANZI Aime Miguel","ASHIMWE Nate Brayan","Benedicto King Samuel","BUGINGO BEZA Keny","GASHUMBA NDAYISHIMIYE KIM Kenedy","IGENUKWISHATSE BYISHIMO Jean Maurice","IGIRANEZA CYUSA Milton","IHUMURE NSENGIYUMVA Heroine","INEZA Queen Deborah","IRABARUTA MUGISHA Credo","IRAKOZE Belle Amie","IRAKOZE Janviere","IRAKOZE Yanis","ISHIMWE UWASE Gabriella","ISIMBI UWASE Joyeuse","ITANGANEZA Parfait","KAMIKAZI Patience","MUNEZERO Enock","MUNEZERO Priscilla","MUTONIWASE Benitha","MUVUNYI UWIMPUHWE Benie Hortance","MWITENEZA Jean Pierre","NDARUHUTSE Danny","NGABONZIZA MUGISHA Boris","NGANZO Born Bercee","RORIRORA Gihozo Anella","UWANYAGASANI Cedrick","UWASE Benitha","UWIDUHAYE Pascaline","UWINEZA AKALIZA Martina","UWIZEYIMANA Valentine","YUBAHWE Anitha"],
+            "S1B": ["ABAYISENGA Emmu Shalom","AMANI NSHUTI Claver","ARERWENEZA Laetitia","BAGABE Dieudonne","CYOMORO Nicky Prince","GAGA Lioness","IGANZE Olla Mireille","IGIRIMBABAZI Pamella","INEZA Aure Alexandrine","INEZA Deborah","INEZA KAMIKAZI TETA Promesse","IRAGENA Gloria","IRAGENA Laetitia","IRAME MUCYO Angelo","ISHEMA Rayan","ISHIMWE NGABO Hertier","ISHIMWE Olga","ISINGIZWE Ange Afurika Maombe","KAYITARE Caleb","KEZA UMI Abdoulatomani","KUNDA Beny Bienaime","KWIZERA MUHOZA Prince","MANZI Boaz","MBABAZI Blessed","MUNEZERO Gentil Hertier","MUNEZERO Yvette","MUTONIWASE Esther","NDIKUMWENAYO Jeannette","NIRAGIRE Aline","NIYONZIMA Lucky","RUDASINGWA","SHAMI Ianis Vangelis","UWASE GASARO Kelia","UWASE Sendrine","UWIZEYIMANA Chakilla","UYIZERA Regis"],
+            "S2A": ["BYISHIMO Remy","BAHO AKARIZA Kevine","DUKUZUMUREMYI Janvier","GANZA AHADI TRESOR","IHIRWE Benitha","IKUNDABAYO Kevin","IMFURAYASE Aimee Ange","INEZA QUEEN LOVE","INEZA Ryan Merci","IRASUBIZA NANSI Nadia Lenatha","ISHIMWE Brianna","ISUMBINGABO HIRWA HERVE","KALIZA UNEJEJE Ella  Blassia","KAREKEZI SHIMWA SYLIVIE","KWIZE David","KWIZERA Richard","MANZI GANZA Fred","MBABAZI DORCAS","MUBIIRIGI Cyusa Prince","MUCYO MUGWANEZA Magnifique","MUSENGIMANA Marie Divine","NGABO Prince","NIYOMUKIZA STANISLAS","NIZEYIMANA Etienne","NYIRAHABAMUNGU Janviere","SHEMA NZAYITURIKI Benoit","TUYIZERE Solange","UFITEYEZU SERGE","UMUKUNDWA QUEEN VANESSA","UWAMASHIMWE JEANNETTE","UWASE Fabiola","UWIMANA Fideline","UWIMPUHWE JEROME","UWIZEYIMANA Patrick"],
+            "S2B": ["ABE MUGISHA Antoine","ABIJURU Gift Kelly Joel","AGASARO Liza Briante","CYOMORO NIYONZIMA Iba Bright","GIRUMUGISHA MASSIMO","HERO KARENGERA Keutch","HIRWA KAZE  Danyllo","IGIHOZO Kellia","IGIKUNDIRO Fiston","IRERA PROMISE","IRIZA GWIZA Clenie","ISHIMWE  YVETTE","ISHIMWE Belyse","ISHIMWE NGABO Victory","KABANDA RUTERANA He Calvin","KAMALI IGIHOZO IRANZI Marie Mercie","KEZA SANGWA DIVINE","KWIBUKA GIFT CARTINE Arnal","MARIYAMUNGU JUDITH","MUTAGANDA Micky","NDAMUKUNDA GISA CHANELLA","NEZA LIZA Kenia","NIKWIMANIGIZE Bonheur","NIWEKARABO KELIA WIVINE","RWEMA NTETE Arthur","SEBAHIRE MUHINEZA Emmaus","TURIKUMWE LOVE MORE","TUYIZERE Mudathiru","UMWARI GATETE Christa","UWASE GIHOZO Chanella","UWINSHUTI Evelyne"],
+            "S3A": ["ABAYO Samuella","BYIRINGIRO GWIZA SALOMON","IGIHOZO EVA ALLEN QUEEN","IGIZENEZA Benoit Gratus","IHIRWE FLORA","IHOZO Carine","IKUZWE TETA LEATITIA","INEZA Confiance Princesse","INEZA PIERRA","INEZA RUTAYISIRE Kellia","ISHIMWE KEVIN PRINCE","ISHIMWE NOELLA","KAYITARE Brave","MBIKESHIMANA SECONDINE","MUGANWA MAURICE","MUSHIME ISHEJA Natasha","MUYISENGE Gisele","NIWEMUGENI GENNIFER","NIYIBIZI ESPERANCE","NIYIGENA JEANNETTE","NIYO IGIRANEZA Emmanuel","NIYOGIKUNDIRO PASCALINE","NIYOMUKIZA ANYSIA","NIYO NGENZI DAVE FRIEND","NKURUNZIZA INEZA Messi","NSENGIMANA Benjamin","NTIVUGURUZWA Samuel","RUKUNDO Djabil","SHAMI IRAKOZE ALLIANCE","SHEMA HAGUMA Prince Gabin","TETA MARIE CLAIRE","TETERO Lucie","UMUGANWA Hidaya Aisha","UMUKUMBURWA MPETA FIDELINE","UWOYIREMEYE Faida"],
+            "S3B": ["AKIMANIZANYE AGNES","ASHIMWE Aime Gloria","DUSABIMANA NIYIGENA Aline","GIHOZO IRIZA ENOLLA","HAKIZUMWAMI Samuel","HIRWA MANZI HAPPINESS","IGIRANEZA ESTHER","IHIRWE NSHUTI Ian Jadyne","IKUZO ELLA","IKUZWE ADUHIRE Louange","INEMA SYLVIA HEAVEN","INEZA NSHUTI HERVE","INEZA Peace","INGABIRE Ines","IRAGENA CYIZA Belyse","KATUSIME Jeanne d'Arc","MIZERO Aliane","MUGABEKAZI Parfaite","MUHAWENIMANA Nadine","MUNEZERO  ROSINE","MUSENGIMANA Ella Joy","MUTESA NELICKY","NGANZO Nalada","NIRAGIRE MIGNONE","NIYIGENA MUCYO MERCI MAXIME","NIYONGIRA Rene","NIYUBAHWE BIRORI Gloria","NTWALI SHEMA Honore","PENDA Oceanne Pamella","TUYISHIMIRE KEVINE","UMUBYEYI SENGA Benigne","UMUHIRE  Keza Odreille","UMWARI FIONA","UMWARI Natasha","UWIZEYE IRASUBIZA ERNESTINE"],
+            "L3 SWD": ["ABIZERIMANA Benitha","AHISHAKIYE Janvier","BYIRINGIRO Eric","CYUBAHIRO Jackson","CYUZUZO Isaac","GIKUNDIRO Sandrine","HABIMANA Hamis","IBYIZA Speratha","IGIHOZO Frorence","INEZA MUGISHA Landry","INEZA TETA Gloria","IRABIZI Bowaze","IRAGENA Sendrine","IRASUBIZA Emille","IZABAYO Yves","KURUGISHURI Samson","KWIZERA Gad","MANISHIMWE Jean de Dieu","MUGISHA Brian","MUGISHA Isaac","MUNEZERO Danny","MUSHIMIYIMANA Marie Reine","MUSHIMIYIMANA Sumaya","MUSINGUZI Emmanuel","NDUWAYEZU Theophile","NIRAGIRE Daphine","NISHIMIRWE ISUBIRIZIGIHE Dani","NIWEMUGENI Liliane","NIYOGUSHIMWA Ange Christian","NIYONASENZE Beulla","NIYONKURU Vradimir","NYISHIMENTE Naome Nadine","TUGIRINSHUTI Evariste","TURINIMANA Augustin","TUYISHIMIRE Solange","UWUMUGISHA Pacifique","UMUTOZO Eduige","UMWARI Josiane","UWAMAHORO Ange UWASE","UWIDUHAYE Theodette","UWIMBABAZI Lydie","UWIMPUHWE Nadia","UWINGENEYE Claire"],
+            "S4A": ["ABERA Esther","ABIJURU Josiane","BYIRINGIRO Justine","IGIZENEZA Divine","INEZA Alliance Benie","INGABIRE KAYIBANDA Germaine","IRAGENA KAYIRANGWA Elysa","IRAGENA Solange","IRAKOZE Aime","IRAKOZE Pascaline","ISHIMWE Fabrice","ISHIMWE TUYISENGE Emma","ISHIMWE Velentine","ITUZE GWIZA Sabrine","KAMIKAZI Derlene","KEZA EPA","MASEZERANO Fabrice","MBARUTSO IKUNDWE Bertin","MINAKUZESA Amina","MUCYO Ignace Omega","MUGABE Robert","MUKAHIRWA Julienne","MUKIRE WINNY Nicole","MUKUNDWA Faith","MUNEZERO Clemence","MUSHIMIYIMANA Angelique","MUTAMBA Xenie","NAMAHIRWE Ebenizelle","NDAYIZEYE Angelique","NIYOBYOSE Revelien","NIYONAMBAZA Elina","NYIHANZAMASO Yvette","NYIRAMUGISHA Berthilde","NYIRANSENGIYUMVA Aliance","NZAYISENGA Vanessa","SHIMIRWA Caline","TUMUSHIME Vedaste","TUYISHIMIRE Divine","TWAGIRIMANA Riberee","UMUGWANEZA Pascaline","UWAMARIYA Enysia","UWASE KABUGO Aline","UWASE Nicole","UWIMANA Odila"],
+            "S4B": ["AKIMANA Cecile","AMIZERO Nadine","ASHIMIMANA Clementine","BAHATI Cleb","GAHONGAYIRE Pauline","GIKUNDIRO TUMUKUNDE Emelyne","HIRWA Bertin","HIRWA Fabrice","HUMURIZIBYOSE Ange","IGIRANEZA David","IGIRIMBABAZI Emelyne","INEZA Joy","INEZA Veronique","IRADUKUNDA Immaculee","IRADUKUNDA Rahab","IRAKOZE Marlene","IRANZI Aime","MUHAWENIMANA Noella","MUKESHIMANA Jeannette","MUNYANA Kellen","MUSHIMIYIMANA Henriette","MUTONI Queen","NIYONIZEYE Jean d'Amour","NIZIGIYIMANA Banjamin","NSHIMIYUMUKIZA Liliane","TUMUKUNDE Kevine","TURATSINZE Emmanuel","TUYAMBAZE Beatha","TUYISHIMIRE Marie Grace","UMUGWANEZA Beyonce","UMUGWANEZA Scovia","UMUKUNDWA Kelly","UMUTONI Pascaline","UMUTONIWASE Blandine","UWAMAHORO Zawadi","UWASE Jeannine","UWASE SANGWA Kevine","UWAYEZU Fiacrine","UWAYO Ester","UWIMANA Alice","UWITUZE Melisa","UWIZEYIMANA Odette","UWIZEYIMANA Sarah"],
+            "L4 SWD": ["BIRORI Honorine","CYUZUZO Emile","DUSABE Anne Peline","GIKUNDIRO Shalom","GISUBIZO HIRWA Bonheur","GISUBIZO Jean Claude","IBANENATWE Gisele","INEZA Alida","IRADUKUNDA Josiane","IRAKOZE Hyacinthe","IRANKUNDA Pacifique","IRANZI Naome","IRUMVA HIRWA Arsene","ISHEMA Christian","ISHIMWE Jeanne Gentille","ISIMBI Golden","IZABAYO Emeritha","KWIZERA Derick","MUGISHA Aime Kevin","MUGISHA Arnold","MUNEZA Hillo Blandeco","MUPENZI Cedrick","NDAHIDWA Arnould","NDATIMANA Dodoce","NDIZIHIWE Alain Delys","NIRERE Evangeline","NISHIMWE Olive","NIYO Esther Kevine","NSHIMIYIMANA  Dominique","NTAGARAMA Teta Cynthia","NYIRAGUHIRWA Kevine","NYIRAMANA Jeanne","SHYAKA Clever Prince","TONY RAY Hilde","TURINAYO AMANI Basil","UMWIZERWA Sandrine","USANASE Benitha","UWASE Belyse","UWASE Gloria","WIBABARA Janici"],
+            "S5A": ["AHISHAKIYE Annualithe","BYUKUSENGE Adeline","GIKUNDIRO Kessia","HAVUGIMANA Girbert","IGIRANEZA Dorcas","INGABIRE Sifa","IRADUKUNDA Confiance","IRAGANJE Thanks","IRAKOZE Dorcas","IYAMUMPAYE  Julienne","KANGUME Ines","MUGANWA Fulgence","MUKAHIRWA Benitha","MUKIZA  Leonce","MUSANGANYA Elyse","MUTONIWASE  Delphine","NDAYISHIMIYE Lambert","NIYIBIZI Samuel","NIYIDUHA  Carine","NIYINGABIRA Evelyne","TETA REPONSE  Meghan","UNEZEREWE  Ange Sharom","UWASE BWANAKWELI Scovia","UWASE Pauline","UWITUZE Sandrine","UWURUKUNDO Rosine","ZIGIRIMENA Darlene"],
+            "S5B": ["CYUZUZO  Angel","CYUZUZO Ange Benigne","DUSHIMIMANA Jehovajureh","DUSHIMIYIMANA  Rosine","DUSINGIZIMANA Queen","IRADUHAYE Bless","ISHIMO AKARIZA Ange Sabrine","ISHIMWE  Fabiola Aime","ISHIMWE  Cynthia","ISHIMWE Clarisse","ISHIMWE Frank","ISHIMWE MPANO Honoline","IYONASENZE Bonheur","MANIRATANGA Elie","MANIRIHO  Jean Paul","NAMUKUNDIYICYO Pascaline","NIYONSHUTI Bruno","NIYUBAHWE Giselle","NTWARI NZABARINDA Guillaume","NYIRABAGENI Leonille","TUYIKUNDE  Marie Ange","UMWARIWASE Stella Divine","UWAMAHORO HIRWA Berthe","UWAMURERA Anitha","UWIDUHAYE Belise","UWIHANGANYE  Ezechiel"],
+            "S6A": ["BENIHIRWE DATIVE","DUSABIRANE DORCAS","IFASHUWACU KEVINE","IMFURANASE AIME PATRICK","INGABIRE DIVINE","IRAKARAMA NATALIE","KABATESI PHIONAH","MUHONGERWA DIANE","MUKAMABANO Agnes","MUKAMUGABO LILIANE","MUKAMUGISHA DEVOTHE","MUKARUKUNDO CLARISSE","MUKESHIMANA MICHELINE","MUNEZERO DENYSE","MUREKAZE GAUDENCE","MUSHIMIYIMANA CLAUDINE","MUTEZIMANA ANGELINA","MUTUYIMANA ANITHA","NISHIMWE UWIJURU ESTHER","NIYIKORA DELIPHINE","NIYITANGINGABIRE LAURENCE","NIYOMUTABAZI ISMAEL","NIYONGIRA INNOCENT","NIYONSENGA CLARISSE","PRINCE Anathole Nobel","SANGWA EDEN SHALOM","TUMUSIFU EVANGELINE","TUYISHIME Eliane","TUYIZERE Marie Ange","UMUHUZA HELENE","UMURISA HOGOZA Benize","UMUTONI Alice","UMUTONIWASE STEPHANIE","UMUTONIWASE enatha","UWABEZA Charlotte","UWAMAHORO BEATHA","UWAMBAJIMANA DIANE","UWINEZA JOSIANE","UWINEZA Henriette","UWIRAGIYE Joselyne","UWUMUGISHA Consolee"],
+            "S6B": ["AHIMBAZWE CONSTANT","AKURUKUNDO Adeline","DUSHIMIMANA Albine","DUSINGIZIMANA Monica","DUSINGIZIMANA Faustine","GASARO Lucky","IRATUZI PRINCE","ISHIMWE Clementine","IYAMUDUHAYE FORTUNEE","KAYESU HOPE","KAYESU FLORENCE","KIREZI ANGEL","MUGANWA JOYCE","MUGENIWAYEZU HENRIETTE","MUHAWIMANA Aline","MUHORAKEYE ALLIANCE","MUKANDAYISHIMIYE Sylivie","MUTIMAWURUGO ESTHER","MUTONIWASE Bella","NDACYAYISENGA ANITHA","NDAYISHIMIYE SAMUEL","NIKUZE Jean Pierre","NIRERE LOUISE","NIYINDEMERA MUTABARUKA Eunice Helena","NIYINGENERA JOYEUSE","NIYOKWIZERWA LILIANE","NIYONAGIZE AZELE","NYAMPINGA PROVIDENCE","NYIRAKANYANA Sandrine","NYIRANIZEYIMANA Clesence","NYIRIMBABAZI Olive","TUYISENGE SANDRINE","UMURORA JOSIANE","UWAYISENGA ESPERANCE","UWERA Diane","UWIDUHAYE CHARITE","UWINEZA Jeanne d'Arc","UWINGABIRE Albertine","UWIZESERANO SANDRINE","UWONKUNDA Henriette","YEBARE PHIONAH"]
+        };
+
+        // Default login credentials
+        const defaultCredentials = {
+            username: "admin",
+            password: "admin123"
+        };
+
+        // Required items configuration
+        const requiredItems = [
+            { id: 'vest', name: 'Vest', quantity: 3 },
+            { id: 'socks', name: 'Socks', quantity: 5 },
+            { id: 'rim', name: 'Rim', quantity: 1 },
+            { id: 'toiletPaper', name: 'Toilet Paper', quantity: 5 }
+        ];
+
+        // DOM Elements
+        const toggleSidebar = document.getElementById('toggleSidebar');
+        const sidebar = document.querySelector('.sidebar');
+        const darkModeToggle = document.getElementById('darkModeToggle');
+        const currentDateTime = document.getElementById('currentDateTime');
+        const menuItems = document.querySelectorAll('.menu-item');
+        const tabContents = document.querySelectorAll('.tab-content');
+        const navTabs = document.querySelectorAll('.nav-tab');
+        const toast = document.getElementById('toast');
+        const newStudentForm = document.getElementById('new-student-form');
+        const returningStudentForm = document.getElementById('returning-student-form');
+        const returningStudentSelect = document.getElementById('returningStudent');
+        
+        // Stats elements
+        const newStudentCount = document.getElementById('newStudentCount');
+        const returningStudentCount = document.getElementById('returningStudentCount');
+        const totalStudentCount = document.getElementById('totalStudentCount');
+        const classesCount = document.getElementById('classesCount');
+        
+        // Check authentication on page load
+        function checkAuth() {
+            if (currentUser) {
+                showMainApp();
+            } else {
+                showAuthSection();
+            }
+        }
+        
+        // Show authentication section
+        function showAuthSection() {
+            document.getElementById('authSection').style.display = 'flex';
+            document.getElementById('mainApp').classList.remove('active');
+        }
+        
+        // Show main application
+        function showMainApp() {
+            document.getElementById('authSection').style.display = 'none';
+            document.getElementById('mainApp').classList.add('active');
+            
+            // Update user info in sidebar
+            document.getElementById('sidebarUserName').textContent = currentUser.fullName || currentUser.username;
+            document.getElementById('sidebarUserRole').textContent = currentUser.role.charAt(0).toUpperCase() + currentUser.role.slice(1);
+        }
+        
+        // Login function
+        function login(username, password) {
+            const user = users.find(u => u.username === username && u.password === password);
+            
+            // Check default credentials
+            if (username === defaultCredentials.username && password === defaultCredentials.password) {
+                currentUser = {
+                    username: defaultCredentials.username,
+                    fullName: "System Administrator",
+                    role: "admin"
+                };
+                localStorage.setItem('kageyoCurrentUser', JSON.stringify(currentUser));
+                showToast(`Welcome back, ${currentUser.fullName}!`, 'success');
+                showMainApp();
+                initApp();
+                return;
+            }
+            
+            if (user) {
+                currentUser = user;
+                localStorage.setItem('kageyoCurrentUser', JSON.stringify(currentUser));
+                showToast(`Welcome back, ${user.fullName}!`, 'success');
+                showMainApp();
+                initApp();
+            } else {
+                showToast('Invalid username or password', 'error');
+            }
+        }
+        
+        // Create account function
+        function createAccount(fullName, username, email, password, role, position) {
+            // CRITICAL: Verify this is a staff member from the authorized list
+            const isAuthorizedStaff = authorizedStaff.some(staff => 
+                staff.name === fullName && staff.email === email && staff.position === position
+            );
+            
+            if (!isAuthorizedStaff) {
+                showToast('⛔ Access Denied: Only authorized staff members can create accounts. Students cannot register here.', 'error');
+                return false;
+            }
+            
+            // Check if username already exists
+            if (users.find(u => u.username === username)) {
+                showToast('Username already exists', 'error');
+                return false;
+            }
+            
+            // Check if email already exists
+            if (users.find(u => u.email === email)) {
+                showToast('This staff member already has an account', 'error');
+                return false;
+            }
+            
+            // Create new user
+            const newUser = {
+                id: Date.now(),
+                fullName: fullName,
+                username: username,
+                email: email,
+                password: password,
+                role: role,
+                position: position,
+                createdAt: new Date().toISOString()
+            };
+            
+            users.push(newUser);
+            localStorage.setItem('kageyoUsers', JSON.stringify(users));
+            
+            showToast('Account created successfully! Please login.', 'success');
+            
+            // Switch to login form
+            document.getElementById('createAccountForm').style.display = 'none';
+            document.getElementById('loginForm').style.display = 'block';
+            
+            // Clear form
+            document.getElementById('createAccountFormElement').reset();
+            document.getElementById('staffSelector').value = '';
+            
+            return true;
+        }
+        
+        // Populate staff selector
+        function populateStaffSelector() {
+            const selector = document.getElementById('staffSelector');
+            if (!selector) {
+                console.error('Staff selector not found');
+                return;
+            }
+            
+            // Clear existing options except the first one
+            while (selector.options.length > 1) {
+                selector.remove(1);
+            }
+            
+            // Add staff options
+            authorizedStaff.forEach((staff, index) => {
+                const option = document.createElement('option');
+                option.value = index;
+                option.textContent = `${staff.name} - ${staff.position}`;
+                selector.appendChild(option);
+            });
+            
+            console.log(`Added ${authorizedStaff.length} staff members to selector`);
+            
+            // Remove existing event listener to prevent duplicates
+            selector.removeEventListener('change', handleStaffSelection);
+            
+            // Add change event listener with animation
+            selector.addEventListener('change', handleStaffSelection);
+        }
+        
+        // Handle staff selection
+        function handleStaffSelection() {
+            const selector = document.getElementById('staffSelector');
+            if (this.value !== '') {
+                const staff = authorizedStaff[this.value];
+                
+                // Animate field population
+                setTimeout(() => {
+                    const fullNameField = document.getElementById('createFullName');
+                    if (fullNameField) {
+                        fullNameField.value = staff.name;
+                        fullNameField.classList.add('field-valid');
+                    }
+                }, 100);
+                
+                setTimeout(() => {
+                    const emailField = document.getElementById('createEmail');
+                    if (emailField) {
+                        emailField.value = staff.email;
+                        emailField.classList.add('field-valid');
+                    }
+                }, 200);
+                
+                setTimeout(() => {
+                    const positionField = document.getElementById('createPosition');
+                    if (positionField) {
+                        positionField.value = staff.position;
+                        positionField.classList.add('field-valid');
+                    }
+                }, 300);
+                
+                setTimeout(() => {
+                    const roleField = document.getElementById('createRole');
+                    if (roleField) {
+                        roleField.value = staff.role.charAt(0).toUpperCase() + staff.role.slice(1);
+                    }
+                }, 400);
+                
+                // Suggest username with animation
+                setTimeout(() => {
+                    const usernameField = document.getElementById('createUsername');
+                    if (usernameField) {
+                        const suggestedUsername = staff.name.toLowerCase().replace(/\s+/g, '.');
+                        usernameField.value = suggestedUsername;
+                        validateUsername();
+                    }
+                }, 500);
+                
+                showToast(`Welcome, ${staff.name}!`, 'info');
+            } else {
+                // Clear all fields
+                const fields = ['createFullName', 'createEmail', 'createPosition', 'createRole', 'createUsername'];
+                fields.forEach(fieldId => {
+                    const field = document.getElementById(fieldId);
+                    if (field) {
+                        field.value = '';
+                        field.classList.remove('field-valid');
+                    }
+                });
+            }
+        }
+        
+        // Real-time username validation
+        function validateUsername() {
+            const username = document.getElementById('createUsername').value.trim();
+            const icon = document.getElementById('usernameIcon');
+            const input = document.getElementById('createUsername');
+            const count = document.getElementById('usernameCount');
+            
+            count.textContent = `${username.length}/20 characters`;
+            
+            if (username.length === 0) {
+                icon.innerHTML = '';
+                input.classList.remove('field-valid', 'field-invalid');
+                return;
+            }
+            
+            if (username.length < 3) {
+                icon.innerHTML = '<i class="fas fa-times text-red-500"></i>';
+                input.classList.add('field-invalid');
+                input.classList.remove('field-valid');
+                return;
+            }
+            
+            // Check if username exists
+            const exists = users.find(u => u.username === username);
+            if (exists) {
+                icon.innerHTML = '<i class="fas fa-times text-red-500"></i>';
+                input.classList.add('field-invalid');
+                input.classList.remove('field-valid');
+            } else {
+                icon.innerHTML = '<i class="fas fa-check text-green-500"></i>';
+                input.classList.add('field-valid');
+                input.classList.remove('field-invalid');
+            }
+        }
+        
+        // Password strength checker
+        function checkPasswordStrength() {
+            const password = document.getElementById('createPassword').value;
+            const strengthBar = document.getElementById('strengthBar');
+            const strengthText = document.getElementById('passwordStrength');
+            const icon = document.getElementById('passwordIcon');
+            const input = document.getElementById('createPassword');
+            
+            if (password.length === 0) {
+                strengthBar.className = 'strength-fill';
+                strengthText.textContent = 'Minimum 6 characters';
+                icon.innerHTML = '';
+                input.classList.remove('field-valid', 'field-invalid');
+                return;
+            }
+            
+            let strength = 0;
+            
+            // Length check
+            if (password.length >= 6) strength++;
+            if (password.length >= 10) strength++;
+            
+            // Character variety
+            if (/[a-z]/.test(password) && /[A-Z]/.test(password)) strength++;
+            if (/[0-9]/.test(password)) strength++;
+            if (/[^a-zA-Z0-9]/.test(password)) strength++;
+            
+            if (strength <= 2) {
+                strengthBar.className = 'strength-fill strength-weak';
+                strengthText.textContent = 'Weak password';
+                strengthText.style.color = '#ef4444';
+                icon.innerHTML = '<i class="fas fa-exclamation-triangle text-orange-500"></i>';
+                input.classList.remove('field-valid');
+            } else if (strength <= 3) {
+                strengthBar.className = 'strength-fill strength-medium';
+                strengthText.textContent = 'Medium strength';
+                strengthText.style.color = '#f59e0b';
+                icon.innerHTML = '<i class="fas fa-shield-alt text-orange-500"></i>';
+                input.classList.remove('field-valid', 'field-invalid');
+            } else {
+                strengthBar.className = 'strength-fill strength-strong';
+                strengthText.textContent = 'Strong password!';
+                strengthText.style.color = '#10b981';
+                icon.innerHTML = '<i class="fas fa-check-circle text-green-500"></i>';
+                input.classList.add('field-valid');
+                input.classList.remove('field-invalid');
+            }
+        }
+        
+        // Password match checker
+        function checkPasswordMatch() {
+            const password = document.getElementById('createPassword').value;
+            const confirmPassword = document.getElementById('createConfirmPassword').value;
+            const icon = document.getElementById('confirmPasswordIcon');
+            const input = document.getElementById('createConfirmPassword');
+            const matchText = document.getElementById('passwordMatch');
+            
+            if (confirmPassword.length === 0) {
+                icon.innerHTML = '';
+                input.classList.remove('field-valid', 'field-invalid');
+                matchText.textContent = '';
+                return;
+            }
+            
+            if (password === confirmPassword) {
+                icon.innerHTML = '<i class="fas fa-check text-green-500"></i>';
+                input.classList.add('field-valid');
+                input.classList.remove('field-invalid');
+                matchText.textContent = 'Passwords match!';
+                matchText.style.color = '#10b981';
+            } else {
+                icon.innerHTML = '<i class="fas fa-times text-red-500"></i>';
+                input.classList.add('field-invalid');
+                input.classList.remove('field-valid');
+                matchText.textContent = 'Passwords do not match';
+                matchText.style.color = '#ef4444';
+            }
+        }
+        
+        // Multi-step form navigation
+        let currentStep = 1;
+        
+        function showStep(step) {
+            // Hide all steps
+            document.querySelectorAll('.form-step').forEach(s => s.classList.remove('active'));
+            document.querySelectorAll('.step').forEach(s => {
+                s.classList.remove('active');
+                s.classList.remove('completed');
+            });
+            
+            // Show current step
+            document.getElementById(`step${step}`).classList.add('active');
+            document.getElementById(`step${step}Indicator`).classList.add('active');
+            
+            // Mark completed steps
+            for (let i = 1; i < step; i++) {
+                document.getElementById(`step${i}Indicator`).classList.add('completed');
+            }
+            
+            currentStep = step;
+        }
+        
+        function validateStep1() {
+            const staffIndex = document.getElementById('staffSelector').value;
+            if (staffIndex === '') {
+                showToast('Please select your name from the staff list', 'warning');
+                return false;
+            }
+            return true;
+        }
+        
+        function validateStep2() {
+            const username = document.getElementById('createUsername').value.trim();
+            const password = document.getElementById('createPassword').value;
+            const confirmPassword = document.getElementById('createConfirmPassword').value;
+            
+            if (!username) {
+                showToast('Please enter a username', 'warning');
+                return false;
+            }
+            
+            if (password.length < 6) {
+                showToast('Password must be at least 6 characters', 'warning');
+                return false;
+            }
+            
+            if (password !== confirmPassword) {
+                showToast('Passwords do not match', 'error');
+                return false;
+            }
+            
+            return true;
+        }
+        
+        function updateReviewStep() {
+            document.getElementById('reviewFullName').textContent = document.getElementById('createFullName').value;
+            document.getElementById('reviewEmail').textContent = document.getElementById('createEmail').value;
+            document.getElementById('reviewPosition').textContent = document.getElementById('createPosition').value;
+            document.getElementById('reviewUsername').textContent = document.getElementById('createUsername').value;
+            document.getElementById('reviewRole').textContent = document.getElementById('createRole').value;
+        }
+        
+        // Logout function
+        function logout() {
+            currentUser = null;
+            localStorage.removeItem('kageyoCurrentUser');
+            showToast('Logged out successfully', 'info');
+            showAuthSection();
+        }
+        
+        // Export results report
+        function exportResultsReport() {
+            if (registeredStudents.length === 0) {
+                showToast('No students registered yet', 'warning');
+                return;
+            }
+            
+            // Generate comprehensive results report
+            const report = {
+                summary: {
+                    'Total Registered Students': registeredStudents.length,
+                    'New Students': registeredStudents.filter(s => s.type === 'New').length,
+                    'Returning Students': registeredStudents.filter(s => s.type === 'Returning').length,
+                    'Report Generated By': currentUser.fullName,
+                    'Report Date': new Date().toLocaleString(),
+                    'Academic Year': document.getElementById('returningYear').value
+                }
+            };
+            
+            // Class distribution
+            const classCounts = {};
+            registeredStudents.forEach(student => {
+                classCounts[student.class] = (classCounts[student.class] || 0) + 1;
+            });
+            
+            // Create workbook
+            const wb = XLSX.utils.book_new();
+            
+            // Summary sheet
+            const summaryData = Object.entries(report.summary).map(([key, value]) => ({
+                'Metric': key,
+                'Value': value
+            }));
+            const wsSummary = XLSX.utils.json_to_sheet(summaryData);
+            XLSX.utils.book_append_sheet(wb, wsSummary, 'Summary');
+            
+            // Class distribution sheet
+            const classData = Object.entries(classCounts).map(([className, count]) => ({
+                'Class': className,
+                'Total Students': count,
+                'New Students': registeredStudents.filter(s => s.class === className && s.type === 'New').length,
+                'Returning Students': registeredStudents.filter(s => s.class === className && s.type === 'Returning').length
+            }));
+            const wsClass = XLSX.utils.json_to_sheet(classData);
+            XLSX.utils.book_append_sheet(wb, wsClass, 'Class Distribution');
+            
+            // All students sheet
+            const allStudentsData = registeredStudents.map(student => ({
+                'Student ID': student.id,
+                'Full Name': student.fullName,
+                'Class': student.class,
+                'Type': student.type,
+                'Gender': student.gender || 'N/A',
+                'Date of Birth': student.dob || 'N/A',
+                'Parent Name': student.parentName || 'N/A',
+                'Parent Contact': student.parentContact || 'N/A',
+                'Registration Date': new Date(student.registrationDate).toLocaleDateString(),
+                'Academic Year': student.academicYear,
+                'Vest Brought': student.requiredItems?.vest || 'No',
+                'Socks Brought': student.requiredItems?.socks || 'No',
+                'Rim Brought': student.requiredItems?.rim || 'No',
+                'Toilet Paper Brought': student.requiredItems?.toiletPaper || 'No'
+            }));
+            const wsStudents = XLSX.utils.json_to_sheet(allStudentsData);
+            XLSX.utils.book_append_sheet(wb, wsStudents, 'All Students');
+            
+            // Generate file
+            const fileName = `Registration_Results_Report_${new Date().toISOString().split('T')[0]}.xlsx`;
+            XLSX.writeFile(wb, fileName);
+            
+            showToast('Results report exported successfully!', 'success');
+        }
+        
+        // Initialize the application
+        function initApp() {
+            // Update date and time
+            updateDateTime();
+            setInterval(updateDateTime, 1000);
+            
+            // Set academic year automatically
+            setAcademicYear();
+            
+            // Set up event listeners
+            setupEventListeners();
+            
+            // Populate staff selector
+            populateStaffSelector();
+            
+            // Populate returning student dropdown
+            populateReturningStudents();
+            
+            // Populate filter dropdowns
+            populateFilterDropdowns();
+            
+            // Update stats
+            updateStats();
+            
+            // Generate student ID
+            generateStudentId();
+        }
+        
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            // Populate staff selector immediately when page loads
+            populateStaffSelector();
+        });
+        
+        // Set academic year automatically to next year
+        function setAcademicYear() {
+            const currentDate = new Date();
+            const currentYear = currentDate.getFullYear();
+            const currentMonth = currentDate.getMonth(); // 0-11
+            
+            // If we're past August (month 7), use next year
+            let academicYear;
+            if (currentMonth >= 7) {
+                academicYear = `${currentYear + 1}-${currentYear + 2}`;
+            } else {
+                academicYear = `${currentYear}-${currentYear + 1}`;
+            }
+            
+            document.getElementById('returningYear').value = academicYear;
+        }
+
+        // Set up event listeners
+        function setupEventListeners() {
+            // Authentication event listeners
+            document.getElementById('loginFormElement').addEventListener('submit', function(e) {
+                e.preventDefault();
+                const username = document.getElementById('loginUsername').value;
+                const password = document.getElementById('loginPassword').value;
+                login(username, password);
+            });
+            
+            document.getElementById('createAccountFormElement').addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const staffIndex = document.getElementById('staffSelector').value;
+                if (staffIndex === '') {
+                    showToast('⛔ You must select your name from the authorized staff list. Students cannot create accounts.', 'error');
+                    return;
+                }
+                
+                const fullName = document.getElementById('createFullName').value;
+                const username = document.getElementById('createUsername').value.trim();
+                const email = document.getElementById('createEmail').value;
+                const password = document.getElementById('createPassword').value;
+                const confirmPassword = document.getElementById('createConfirmPassword').value;
+                const role = authorizedStaff[staffIndex].role;
+                const position = document.getElementById('createPosition').value;
+                
+                // Double-check this is actually a staff member
+                if (!fullName || !email || !position) {
+                    showToast('⛔ Invalid staff information. Only authorized staff can create accounts.', 'error');
+                    return;
+                }
+                
+                if (password !== confirmPassword) {
+                    showToast('Passwords do not match', 'error');
+                    return;
+                }
+                
+                if (password.length < 6) {
+                    showToast('Password must be at least 6 characters', 'error');
+                    return;
+                }
+                
+                createAccount(fullName, username, email, password, role, position);
+            });
+            
+            document.getElementById('showCreateAccount').addEventListener('click', function(e) {
+                e.preventDefault();
+                document.getElementById('loginForm').style.display = 'none';
+                document.getElementById('createAccountForm').style.display = 'block';
+                showStep(1); // Start at step 1
+                
+                // Ensure staff selector is populated
+                const selector = document.getElementById('staffSelector');
+                if (selector && selector.options.length <= 1) {
+                    populateStaffSelector();
+                }
+            });
+            
+            document.getElementById('showLogin').addEventListener('click', function(e) {
+                e.preventDefault();
+                document.getElementById('createAccountForm').style.display = 'none';
+                document.getElementById('loginForm').style.display = 'block';
+                showStep(1); // Reset to step 1
+            });
+            
+            // Password visibility toggle with error handling
+            function setupPasswordToggle(toggleId, inputId) {
+                const toggleBtn = document.getElementById(toggleId);
+                const passwordInput = document.getElementById(inputId);
+                
+                if (!toggleBtn || !passwordInput) {
+                    console.error(`Password toggle elements not found: ${toggleId}, ${inputId}`);
+                    return;
+                }
+                
+                toggleBtn.addEventListener('click', function() {
+                    const icon = this.querySelector('i');
+                    if (!icon) {
+                        console.error('Icon not found in toggle button');
+                        return;
+                    }
+                    
+                    try {
+                        if (passwordInput.type === 'password') {
+                            passwordInput.type = 'text';
+                            icon.classList.remove('fa-eye');
+                            icon.classList.add('fa-eye-slash');
+                            this.title = 'Hide password';
+                            console.log('Password shown');
+                        } else {
+                            passwordInput.type = 'password';
+                            icon.classList.remove('fa-eye-slash');
+                            icon.classList.add('fa-eye');
+                            this.title = 'Show password';
+                            console.log('Password hidden');
+                        }
+                    } catch (error) {
+                        console.error('Error toggling password visibility:', error);
+                    }
+                });
+            }
+            
+            // Setup both password toggles
+            setupPasswordToggle('togglePassword', 'createPassword');
+            setupPasswordToggle('toggleConfirmPassword', 'createConfirmPassword');
+            
+            // Real-time validation listeners
+            document.getElementById('createUsername').addEventListener('input', validateUsername);
+            document.getElementById('createPassword').addEventListener('input', function() {
+                checkPasswordStrength();
+                if (document.getElementById('createConfirmPassword').value) {
+                    checkPasswordMatch();
+                }
+            });
+            document.getElementById('createConfirmPassword').addEventListener('input', checkPasswordMatch);
+            
+            // Multi-step form navigation
+            document.getElementById('nextStep1').addEventListener('click', function() {
+                if (validateStep1()) {
+                    showStep(2);
+                }
+            });
+            
+            document.getElementById('prevStep2').addEventListener('click', function() {
+                showStep(1);
+            });
+            
+            document.getElementById('nextStep2').addEventListener('click', function() {
+                if (validateStep2()) {
+                    updateReviewStep();
+                    showStep(3);
+                }
+            });
+            
+            document.getElementById('prevStep3').addEventListener('click', function() {
+                showStep(2);
+            });
+            
+            document.getElementById('logoutBtn').addEventListener('click', function() {
+                if (confirm('Are you sure you want to logout?')) {
+                    logout();
+                }
+            });
+            
+            // Toggle sidebar
+            toggleSidebar.addEventListener('click', function() {
+                sidebar.classList.toggle('collapsed');
+            });
+            
+            // Dark mode toggle
+            darkModeToggle.addEventListener('click', function() {
+                document.body.classList.toggle('dark-mode');
+                if (document.body.classList.contains('dark-mode')) {
+                    darkModeToggle.innerHTML = '<i class="fas fa-sun"></i>';
+                    localStorage.setItem('kageyoDarkMode', 'enabled');
+                } else {
+                    darkModeToggle.innerHTML = '<i class="fas fa-moon"></i>';
+                    localStorage.setItem('kageyoDarkMode', 'disabled');
+                }
+            });
+            
+            // Check for saved dark mode preference
+            const savedDarkMode = localStorage.getItem('kageyoDarkMode');
+            if (savedDarkMode === 'enabled') {
+                document.body.classList.add('dark-mode');
+                darkModeToggle.innerHTML = '<i class="fas fa-sun"></i>';
+            }
+            
+            // Menu navigation
+            menuItems.forEach(item => {
+                item.addEventListener('click', function() {
+                    const tabId = this.getAttribute('data-tab');
+                    
+                    // Update active menu item
+                    menuItems.forEach(i => i.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    // Update page title
+                    document.getElementById('pageTitle').textContent = this.querySelector('.menu-text').textContent;
+                    
+                    // Show corresponding content
+                    tabContents.forEach(content => {
+                        content.classList.remove('active');
+                    });
+                    document.getElementById(tabId).classList.add('active');
+                });
+            });
+            
+            // Form tabs
+            navTabs.forEach(tab => {
+                tab.addEventListener('click', function() {
+                    const formId = this.getAttribute('data-form');
+                    
+                    // Update active tab
+                    navTabs.forEach(t => t.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    // Show corresponding form
+                    if (formId === 'new-student') {
+                        newStudentForm.classList.remove('hidden');
+                        returningStudentForm.classList.add('hidden');
+                    } else {
+                        returningStudentForm.classList.remove('hidden');
+                        newStudentForm.classList.add('hidden');
+                    }
+                });
+            });
+            
+            // Required items checkboxes event listeners
+            setupRequiredItemsListeners();
+            
+            // New student form submission
+            newStudentForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                // Get form values
+                const firstName = document.getElementById('firstName').value.trim();
+                const lastName = document.getElementById('lastName').value.trim();
+                const gender = document.getElementById('gender').value;
+                const dob = document.getElementById('dob').value;
+                const studentClass = document.getElementById('class').value;
+                const studentId = document.getElementById('studentId').value;
+                const parentName = document.getElementById('parentName').value.trim();
+                const parentContact = document.getElementById('parentContact').value.trim();
+                const relationship = document.getElementById('relationship').value;
+                const parentEmail = document.getElementById('parentEmail').value.trim();
+                const province = document.getElementById('province').value;
+                const district = document.getElementById('district').value;
+                const sector = document.getElementById('sector').value.trim();
+                const cell = document.getElementById('cell').value.trim();
+                const village = document.getElementById('village').value.trim();
+                
+                // Get required items status
+                const requiredItemsStatus = getRequiredItemsStatus('new');
+                
+                // ===== VALIDATE ALL REQUIREMENTS =====
+                const missingFields = [];
+                
+                if (!firstName) missingFields.push('First Name');
+                if (!lastName) missingFields.push('Last Name');
+                if (!gender) missingFields.push('Gender');
+                if (!dob) missingFields.push('Date of Birth');
+                if (!studentClass) missingFields.push('Class');
+                if (!parentName) missingFields.push('Parent/Guardian Name');
+                if (!parentContact) missingFields.push('Parent Contact');
+                if (!relationship) missingFields.push('Relationship');
+                if (!province) missingFields.push('Province');
+                if (!district) missingFields.push('District');
+                if (!sector) missingFields.push('Sector');
+                if (!cell) missingFields.push('Cell');
+                if (!village) missingFields.push('Village');
+                
+                // Check if all requirements are met
+                if (missingFields.length > 0) {
+                    showToast(`❌ Missing Required Fields: ${missingFields.join(', ')}`, 'error');
+                    
+                    // Highlight missing fields
+                    const fieldIds = {
+                        'First Name': 'firstName',
+                        'Last Name': 'lastName',
+                        'Gender': 'gender',
+                        'Date of Birth': 'dob',
+                        'Class': 'class',
+                        'Parent/Guardian Name': 'parentName',
+                        'Parent Contact': 'parentContact',
+                        'Relationship': 'relationship',
+                        'Province': 'province',
+                        'District': 'district',
+                        'Sector': 'sector',
+                        'Cell': 'cell',
+                        'Village': 'village'
+                    };
+                    
+                    missingFields.forEach(field => {
+                        const element = document.getElementById(fieldIds[field]);
+                        if (element) {
+                            element.classList.add('field-invalid');
+                            element.style.borderColor = '#ef4444';
+                            setTimeout(() => {
+                                element.classList.remove('field-invalid');
+                                element.style.borderColor = '';
+                            }, 3000);
+                        }
+                    });
+                    
+                    return; // Stop form submission
+                }
+                
+                // Validate phone number format (basic check)
+                if (parentContact && !/^[0-9+\-\s()]+$/.test(parentContact)) {
+                    showToast('❌ Invalid parent contact number format', 'error');
+                    return;
+                }
+                
+                // Validate email format if provided
+                if (parentEmail && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(parentEmail)) {
+                    showToast('❌ Invalid email format', 'error');
+                    return;
+                }
+                
+                // Validate age (student should be at least 10 years old)
+                const birthDate = new Date(dob);
+                const today = new Date();
+                const age = today.getFullYear() - birthDate.getFullYear();
+                if (age < 10 || age > 25) {
+                    if (!confirm(`Student age is ${age} years. Continue with registration?`)) {
+                        return;
+                    }
+                }
+                
+                // Check for duplicate student
+                const duplicate = registeredStudents.find(s => 
+                    s.firstName === firstName && 
+                    s.lastName === lastName && 
+                    s.dob === dob
+                );
+                
+                if (duplicate) {
+                    showToast('⚠️ A student with the same name and date of birth is already registered', 'warning');
+                    if (!confirm('This student might already be registered. Continue anyway?')) {
+                        return;
+                    }
+                }
+                
+                // All requirements passed! ✅
+                
+                // Create student object
+                const student = {
+                    id: studentId,
+                    firstName: firstName,
+                    lastName: lastName,
+                    fullName: `${firstName} ${lastName}`,
+                    gender: gender,
+                    dob: dob,
+                    class: studentClass,
+                    type: 'New',
+                    parentName: parentName,
+                    parentContact: parentContact,
+                    relationship: relationship,
+                    parentEmail: parentEmail,
+                    province: province,
+                    district: district,
+                    sector: sector,
+                    cell: cell,
+                    village: village,
+                    registrationDate: new Date().toISOString(),
+                    academicYear: document.getElementById('returningYear').value,
+                    requiredItems: requiredItemsStatus
+                };
+                
+                // Save to registered students
+                registeredStudents.push(student);
+                localStorage.setItem('registeredStudents', JSON.stringify(registeredStudents));
+                
+                showToast(`✅ SUCCESS: ${firstName} ${lastName} registered with all requirements met! (ID: ${studentId})`, 'success');
+                
+                // Reset form
+                this.reset();
+                generateStudentId();
+                
+                // Update stats
+                updateStats();
+            });
+            
+            // Returning student form submission
+            returningStudentForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                // Get form values
+                const studentName = document.getElementById('returningStudent').value;
+                const studentGender = document.getElementById('returningGender').value;
+                const studentClass = document.getElementById('returningClass').value;
+                const term = document.getElementById('returningTerm').value;
+                const year = document.getElementById('returningYear').value;
+                const previousClass = document.getElementById('previousClass').value;
+                const previousPerformance = document.getElementById('previousPerformance').value;
+                
+                // Get required items status
+                const requiredItemsStatus = getRequiredItemsStatus('returning');
+                
+                // ===== VALIDATE ALL REQUIREMENTS FOR RETURNING STUDENT =====
+                const missingFields = [];
+                
+                if (!studentName) missingFields.push('Student Name');
+                if (!studentGender) missingFields.push('Gender');
+                if (!studentClass) missingFields.push('New Class');
+                if (!term) missingFields.push('Term');
+                if (!year) missingFields.push('Academic Year');
+                if (!previousClass) missingFields.push('Previous Class');
+                if (!previousPerformance) missingFields.push('Previous Performance');
+                
+                if (missingFields.length > 0) {
+                    showToast(`❌ Missing Required Fields: ${missingFields.join(', ')}`, 'error');
+                    return; // Stop form submission
+                }
+                
+                // Check if student is already registered for this term
+                const alreadyRegistered = registeredStudents.find(s => 
+                    s.fullName === studentName && 
+                    s.term === term && 
+                    s.academicYear === year &&
+                    s.type === 'Returning'
+                );
+                
+                if (alreadyRegistered) {
+                    showToast(`⚠️ ${studentName} is already registered for ${term} ${year}`, 'warning');
+                    return;
+                }
+                
+                // Create student object
+                const student = {
+                    id: `RET${Date.now()}`,
+                    fullName: studentName,
+                    gender: studentGender,
+                    class: studentClass,
+                    type: 'Returning',
+                    term: term,
+                    previousClass: previousClass,
+                    previousPerformance: previousPerformance,
+                    registrationDate: new Date().toISOString(),
+                    academicYear: year,
+                    requiredItems: requiredItemsStatus
+                };
+                
+                // Save to registered students
+                registeredStudents.push(student);
+                localStorage.setItem('registeredStudents', JSON.stringify(registeredStudents));
+                
+                showToast(`✅ SUCCESS: Returning student ${studentName} registered for ${term} ${year} with all requirements met!`, 'success');
+                
+                // Reset form
+                this.reset();
+                setAcademicYear();
+                
+                // Update stats
+                updateStats();
+            });
+            
+            // Quick action buttons
+            document.getElementById('exportAllStudentsBtn').addEventListener('click', function() {
+                exportToExcel(registeredStudents, 'All_Registered_Students');
+            });
+            
+            document.getElementById('exportByClassBtn').addEventListener('click', function() {
+                const selectedClass = prompt('Enter class name (e.g., S1A, S2B):');
+                if (selectedClass) {
+                    const filtered = registeredStudents.filter(s => s.class === selectedClass);
+                    if (filtered.length > 0) {
+                        exportToExcel(filtered, `Students_${selectedClass}`);
+                    } else {
+                        showToast('No students found in this class', 'warning');
+                    }
+                }
+            });
+            
+            document.getElementById('exportByTypeBtn').addEventListener('click', function() {
+                const type = prompt('Enter type (New or Returning):');
+                if (type) {
+                    const filtered = registeredStudents.filter(s => s.type === type);
+                    if (filtered.length > 0) {
+                        exportToExcel(filtered, `${type}_Students`);
+                    } else {
+                        showToast('No students found with this type', 'warning');
+                    }
+                }
+            });
+            
+            document.getElementById('viewAllRegisteredBtn').addEventListener('click', function() {
+                showAllRegisteredStudents();
+            });
+            
+            document.getElementById('exportResultsBtn').addEventListener('click', function() {
+                exportResultsReport();
+            });
+            
+            // Modal close button
+            document.getElementById('closeViewAllModal').addEventListener('click', function() {
+                document.getElementById('viewAllModal').classList.remove('open');
+            });
+            
+            // Apply filters button
+            document.getElementById('applyFilters').addEventListener('click', function() {
+                applyFilters();
+            });
+            
+            // Generate student ID when class changes
+            document.getElementById('class').addEventListener('change', generateStudentId);
+            
+            // Report functionality
+            document.getElementById('generateReportBtn').addEventListener('click', generateReport);
+            document.getElementById('exportExcelBtn').addEventListener('click', exportReportExcel);
+            document.getElementById('exportPdfBtn').addEventListener('click', exportReportPdf);
+            document.getElementById('attendanceReportBtn').addEventListener('click', generateAttendanceReport);
+        }
+
+        // Setup required items event listeners
+        function setupRequiredItemsListeners() {
+            // New student required items
+            document.getElementById('newVest').addEventListener('change', function() {
+                updateRequiredItemsStatus('new');
+            });
+            document.getElementById('newSocks').addEventListener('change', function() {
+                updateRequiredItemsStatus('new');
+            });
+            document.getElementById('newRim').addEventListener('change', function() {
+                updateRequiredItemsStatus('new');
+            });
+            document.getElementById('newToiletPaper').addEventListener('change', function() {
+                updateRequiredItemsStatus('new');
+            });
+            
+            // Returning student required items
+            document.getElementById('returningVest').addEventListener('change', function() {
+                updateRequiredItemsStatus('returning');
+            });
+            document.getElementById('returningSocks').addEventListener('change', function() {
+                updateRequiredItemsStatus('returning');
+            });
+            document.getElementById('returningRim').addEventListener('change', function() {
+                updateRequiredItemsStatus('returning');
+            });
+            document.getElementById('returningToiletPaper').addEventListener('change', function() {
+                updateRequiredItemsStatus('returning');
+            });
+        }
+
+        // Update required items status
+        function updateRequiredItemsStatus(formType) {
+            const prefix = formType === 'new' ? 'new' : 'returning';
+            const vestChecked = document.getElementById(`${prefix}Vest`).checked;
+            const socksChecked = document.getElementById(`${prefix}Socks`).checked;
+            const rimChecked = document.getElementById(`${prefix}Rim`).checked;
+            const toiletPaperChecked = document.getElementById(`${prefix}ToiletPaper`).checked;
+            
+            const allChecked = vestChecked && socksChecked && rimChecked && toiletPaperChecked;
+            
+            const statusElement = document.getElementById(`${prefix}ItemsStatus`);
+            const summaryElement = document.getElementById(`${prefix}ItemsSummary`);
+            
+            if (allChecked) {
+                statusElement.textContent = 'Complete';
+                statusElement.className = 'status-complete';
+                summaryElement.style.backgroundColor = '#d1fae5';
+                summaryElement.style.color = '#065f46';
+            } else {
+                statusElement.textContent = 'Incomplete';
+                statusElement.className = 'status-incomplete';
+                summaryElement.style.backgroundColor = '#fef3c7';
+                summaryElement.style.color = '#92400e';
+            }
+        }
+
+        // Get required items status
+        function getRequiredItemsStatus(formType) {
+            const prefix = formType === 'new' ? 'new' : 'returning';
+            
+            return {
+                vest: document.getElementById(`${prefix}Vest`).checked,
+                socks: document.getElementById(`${prefix}Socks`).checked,
+                rim: document.getElementById(`${prefix}Rim`).checked,
+                toiletPaper: document.getElementById(`${prefix}ToiletPaper`).checked
+            };
+        }
+
+        // Update date and time
+        function updateDateTime() {
+            const now = new Date();
+            const options = { 
+                weekday: 'long', 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            };
+            currentDateTime.textContent = now.toLocaleDateString('en-US', options);
+        }
+
+        // Populate returning student dropdown
+        function populateReturningStudents() {
+            // Clear existing options
+            returningStudentSelect.innerHTML = '<option value="">Select Student</option>';
+            
+            // Create a set to store unique student names
+            const uniqueStudents = new Set();
+            
+            // Add students from all classes (without class names)
+            for (const className in studentData) {
+                studentData[className].forEach(student => {
+                    // Remove any existing class information from the name
+                    const cleanName = student.replace(/\([^)]*\)/g, '').trim();
+                    uniqueStudents.add(cleanName);
+                });
+            }
+            
+            // Add unique students to dropdown
+            uniqueStudents.forEach(student => {
+                const option = document.createElement('option');
+                option.value = student;
+                option.textContent = student;
+                returningStudentSelect.appendChild(option);
+            });
+        }
+
+        // Generate student ID
+        function generateStudentId() {
+            const studentClass = document.getElementById('class').value;
+            if (!studentClass) return;
+            
+            // Generate a random ID based on class and current year
+            const year = new Date().getFullYear();
+            const classCode = studentClass.replace(/\s+/g, '');
+            const randomNum = Math.floor(100 + Math.random() * 900); // 3-digit random number
+            
+            document.getElementById('studentId').value = `${year}${classCode}${randomNum}`;
+        }
+
+        // Update statistics
+        function updateStats() {
+            // Calculate from registered students
+            const newStudents = registeredStudents.filter(s => s.type === 'New').length;
+            const returningStudents = registeredStudents.filter(s => s.type === 'Returning').length;
+            const totalStudents = registeredStudents.length;
+            const classes = Object.keys(studentData).length;
+            
+            newStudentCount.textContent = newStudents;
+            returningStudentCount.textContent = returningStudents;
+            totalStudentCount.textContent = totalStudents;
+            classesCount.textContent = classes;
+            
+            // Update progress bars
+            document.getElementById('newStudentPercent').textContent = `${Math.round((newStudents / 100) * 100)}%`;
+            document.getElementById('newStudentProgress').style.width = `${Math.min(100, Math.round((newStudents / 100) * 100))}%`;
+            
+            document.getElementById('returningStudentPercent').textContent = `${Math.round((returningStudents / 200) * 100)}%`;
+            document.getElementById('returningStudentProgress').style.width = `${Math.min(100, Math.round((returningStudents / 200) * 100))}%`;
+            
+            document.getElementById('totalStudentPercent').textContent = `${Math.round((totalStudents / 300) * 100)}%`;
+            document.getElementById('totalStudentProgress').style.width = `${Math.min(100, Math.round((totalStudents / 300) * 100))}%`;
+            
+            document.getElementById('classesPercent').textContent = `${Math.round((classes / 15) * 100)}%`;
+            document.getElementById('classesProgress').style.width = `${Math.round((classes / 15) * 100)}%`;
+        }
+        
+        // Export to Excel function - IMPROVED LAYOUT
+        function exportToExcel(data, filename) {
+            if (data.length === 0) {
+                showToast('No data to export', 'warning');
+                return;
+            }
+            
+            // Create workbook
+            const wb = XLSX.utils.book_new();
+            
+            // Separate new and returning students
+            const newStudents = data.filter(s => s.type === 'New');
+            const returningStudents = data.filter(s => s.type === 'Returning');
+            
+            // NEW STUDENTS SHEET - Show all gathered information
+            if (newStudents.length > 0) {
+                const newStudentsData = newStudents.map(student => ({
+                    'Student ID': student.id,
+                    'Full Name': student.fullName,
+                    'First Name': student.firstName || '',
+                    'Last Name': student.lastName || '',
+                    'Gender': student.gender || '',
+                    'Date of Birth': student.dob || '',
+                    'Class': student.class,
+                    'Type': student.type,
+                    'Parent Name': student.parentName || '',
+                    'Parent Contact': student.parentContact || '',
+                    'Relationship': student.relationship || '',
+                    'Parent Email': student.parentEmail || '',
+                    'Province': student.province || '',
+                    'District': student.district || '',
+                    'Sector': student.sector || '',
+                    'Cell': student.cell || '',
+                    'Village': student.village || '',
+                    'Registration Date': new Date(student.registrationDate).toLocaleDateString(),
+                    'Academic Year': student.academicYear || '',
+                    'Vest Brought': student.requiredItems?.vest ? 'Yes' : 'No',
+                    'Socks Brought': student.requiredItems?.socks ? 'Yes' : 'No',
+                    'Rim Brought': student.requiredItems?.rim ? 'Yes' : 'No',
+                    'Toilet Paper Brought': student.requiredItems?.toiletPaper ? 'Yes' : 'No'
+                }));
+                
+                const wsNew = XLSX.utils.json_to_sheet(newStudentsData);
+                XLSX.utils.book_append_sheet(wb, wsNew, 'New Students');
+            }
+            
+            // RETURNING STUDENTS SHEET - Show returning-specific information
+            if (returningStudents.length > 0) {
+                const returningStudentsData = returningStudents.map(student => ({
+                    'Student ID': student.id,
+                    'Full Name': student.fullName,
+                    'Gender': student.gender || '',
+                    'New Class': student.class,
+                    'Type': student.type,
+                    'Term': student.term || '',
+                    'Previous Class': student.previousClass || '',
+                    'Previous Performance': student.previousPerformance || '',
+                    'Registration Date': new Date(student.registrationDate).toLocaleDateString(),
+                    'Academic Year': student.academicYear || '',
+                    'Vest Brought': student.requiredItems?.vest ? 'Yes' : 'No',
+                    'Socks Brought': student.requiredItems?.socks ? 'Yes' : 'No',
+                    'Rim Brought': student.requiredItems?.rim ? 'Yes' : 'No',
+                    'Toilet Paper Brought': student.requiredItems?.toiletPaper ? 'Yes' : 'No'
+                }));
+                
+                const wsReturning = XLSX.utils.json_to_sheet(returningStudentsData);
+                XLSX.utils.book_append_sheet(wb, wsReturning, 'Returning Students');
+            }
+            
+            // Generate Excel file
+            XLSX.writeFile(wb, `${filename}_${new Date().toISOString().split('T')[0]}.xlsx`);
+            
+            showToast('Excel file exported successfully!', 'success');
+        }
+        
+        // Show all registered students
+        function showAllRegisteredStudents() {
+            const modal = document.getElementById('viewAllModal');
+            modal.classList.add('open');
+            displayAllStudents(registeredStudents);
+        }
+        
+        // Display students in table
+        function displayAllStudents(students) {
+            const tbody = document.getElementById('allStudentsTable');
+            tbody.innerHTML = '';
+            
+            if (students.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="5" class="text-center">No students registered yet</td></tr>';
+                return;
+            }
+            
+            students.forEach(student => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${student.id}</td>
+                    <td>${student.fullName}</td>
+                    <td>${student.class}</td>
+                    <td><span class="badge ${student.type === 'New' ? 'success' : 'warning'}">${student.type}</span></td>
+                    <td>${new Date(student.registrationDate).toLocaleDateString()}</td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+        
+        // Populate filter dropdowns
+        function populateFilterDropdowns() {
+            const filterClass = document.getElementById('filterClass');
+            const reportClass = document.getElementById('reportClass');
+            
+            // Add class options
+            for (const className in studentData) {
+                const option1 = document.createElement('option');
+                option1.value = className;
+                option1.textContent = className;
+                filterClass.appendChild(option1);
+                
+                const option2 = document.createElement('option');
+                option2.value = className;
+                option2.textContent = className;
+                reportClass.appendChild(option2);
+            }
+        }
+        
+        // Apply filters
+        function applyFilters() {
+            const selectedClass = document.getElementById('filterClass').value;
+            const selectedType = document.getElementById('filterType').value;
+            
+            let filtered = registeredStudents;
+            
+            if (selectedClass) {
+                filtered = filtered.filter(s => s.class === selectedClass);
+            }
+            
+            if (selectedType) {
+                filtered = filtered.filter(s => s.type === selectedType);
+            }
+            
+            displayAllStudents(filtered);
+        }
+
+        // Show toast notification
+        function showToast(message, type) {
+            toast.textContent = message;
+            toast.className = `toast ${type} show`;
+            
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
+        // Generate report based on filters
+        function generateReport() {
+            const selectedClass = document.getElementById('reportClass').value;
+            const selectedGender = document.getElementById('reportGender').value;
+            const selectedType = document.getElementById('reportType').value;
+            
+            let filtered = registeredStudents;
+            
+            if (selectedClass) {
+                filtered = filtered.filter(s => s.class === selectedClass);
+            }
+            
+            if (selectedGender) {
+                filtered = filtered.filter(s => s.gender === selectedGender);
+            }
+            
+            if (selectedType) {
+                filtered = filtered.filter(s => s.type === selectedType);
+            }
+            
+            // Update report summary
+            const totalStudents = filtered.length;
+            const maleStudents = filtered.filter(s => s.gender === 'Male').length;
+            const femaleStudents = filtered.filter(s => s.gender === 'Female').length;
+            
+            document.getElementById('reportTotalStudents').textContent = totalStudents;
+            document.getElementById('reportMaleStudents').textContent = maleStudents;
+            document.getElementById('reportFemaleStudents').textContent = femaleStudents;
+            
+            // Display report results
+            const tbody = document.getElementById('reportResults');
+            tbody.innerHTML = '';
+            
+            if (filtered.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" class="text-center">No students match the selected criteria</td></tr>';
+                return;
+            }
+            
+            filtered.forEach(student => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${student.id}</td>
+                    <td>${student.fullName}</td>
+                    <td>${student.gender || 'N/A'}</td>
+                    <td>${student.class}</td>
+                    <td><span class="badge ${student.type === 'New' ? 'success' : 'warning'}">${student.type}</span></td>
+                    <td>${new Date(student.registrationDate).toLocaleDateString()}</td>
+                `;
+                tbody.appendChild(row);
+            });
+            
+            showToast(`Report generated: ${totalStudents} students found`, 'success');
+        }
+        
+        // Export report to Excel
+        function exportReportExcel() {
+            const selectedClass = document.getElementById('reportClass').value;
+            const selectedGender = document.getElementById('reportGender').value;
+            const selectedType = document.getElementById('reportType').value;
+            
+            let filtered = registeredStudents;
+            
+            if (selectedClass) {
+                filtered = filtered.filter(s => s.class === selectedClass);
+            }
+            
+            if (selectedGender) {
+                filtered = filtered.filter(s => s.gender === selectedGender);
+            }
+            
+            if (selectedType) {
+                filtered = filtered.filter(s => s.type === selectedType);
+            }
+            
+            if (filtered.length === 0) {
+                showToast('No data to export', 'warning');
+                return;
+            }
+            
+            // Prepare data for Excel
+            const excelData = filtered.map(student => ({
+                'Student ID': student.id,
+                'Full Name': student.fullName,
+                'Gender': student.gender || 'N/A',
+                'Class': student.class,
+                'Type': student.type,
+                'Registration Date': new Date(student.registrationDate).toLocaleDateString(),
+                'Vest Brought': student.requiredItems?.vest ? 'Yes' : 'No',
+                'Socks Brought': student.requiredItems?.socks ? 'Yes' : 'No',
+                'Rim Brought': student.requiredItems?.rim ? 'Yes' : 'No',
+                'Toilet Paper Brought': student.requiredItems?.toiletPaper ? 'Yes' : 'No'
+            }));
+            
+            // Create workbook and worksheet
+            const wb = XLSX.utils.book_new();
+            const ws = XLSX.utils.json_to_sheet(excelData);
+            
+            // Add worksheet to workbook
+            XLSX.utils.book_append_sheet(wb, ws, 'Report');
+            
+            // Generate Excel file
+            const fileName = `Student_Report_${new Date().toISOString().split('T')[0]}.xlsx`;
+            XLSX.writeFile(wb, fileName);
+            
+            showToast('Excel report exported successfully!', 'success');
+        }
+        
+        // Export report to PDF
+        function exportReportPdf() {
+            const selectedClass = document.getElementById('reportClass').value;
+            const selectedGender = document.getElementById('reportGender').value;
+            const selectedType = document.getElementById('reportType').value;
+            
+            let filtered = registeredStudents;
+            
+            if (selectedClass) {
+                filtered = filtered.filter(s => s.class === selectedClass);
+            }
+            
+            if (selectedGender) {
+                filtered = filtered.filter(s => s.gender === selectedGender);
+            }
+            
+            if (selectedType) {
+                filtered = filtered.filter(s => s.type === selectedType);
+            }
+            
+            if (filtered.length === 0) {
+                showToast('No data to export', 'warning');
+                return;
+            }
+            
+            // Create PDF document
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            
+            // Add title
+            doc.setFontSize(16);
+            doc.text('KAGEYO TVET SCHOOL - STUDENT REPORT', 20, 20);
+            
+            // Add filters information
+            doc.setFontSize(10);
+            let filterText = 'Filters: ';
+            if (selectedClass) filterText += `Class: ${selectedClass} `;
+            if (selectedGender) filterText += `Gender: ${selectedGender} `;
+            if (selectedType) filterText += `Type: ${selectedType} `;
+            if (!selectedClass && !selectedGender && !selectedType) filterText += 'All Students';
+            
+            doc.text(filterText, 20, 30);
+            doc.text(`Report Date: ${new Date().toLocaleDateString()}`, 20, 35);
+            doc.text(`Generated By: ${currentUser.fullName || currentUser.username}`, 20, 40);
+            
+            // Prepare table data
+            const tableData = filtered.map(student => [
+                student.id,
+                student.fullName,
+                student.gender || 'N/A',
+                student.class,
+                student.type,
+                new Date(student.registrationDate).toLocaleDateString()
+            ]);
+            
+            // Add table
+            doc.autoTable({
+                startY: 45,
+                head: [['Student ID', 'Name', 'Gender', 'Class', 'Type', 'Registration Date']],
+                body: tableData,
+                theme: 'grid',
+                styles: { fontSize: 8 },
+                headStyles: { fillColor: [29, 78, 216] }
+            });
+            
+            // Save PDF
+            doc.save(`Student_Report_${new Date().toISOString().split('T')[0]}.pdf`);
+            
+            showToast('PDF report exported successfully!', 'success');
+        }
+        
+        // Generate attendance report
+        function generateAttendanceReport() {
+            const selectedClass = document.getElementById('reportClass').value;
+            const selectedGender = document.getElementById('reportGender').value;
+            
+            let filtered = registeredStudents;
+            
+            if (selectedClass) {
+                filtered = filtered.filter(s => s.class === selectedClass);
+            }
+            
+            if (selectedGender) {
+                filtered = filtered.filter(s => s.gender === selectedGender);
+            }
+            
+            // Calculate attendance statistics
+            const totalStudents = filtered.length;
+            const maleStudents = filtered.filter(s => s.gender === 'Male').length;
+            const femaleStudents = filtered.filter(s => s.gender === 'Female').length;
+            const newStudents = filtered.filter(s => s.type === 'New').length;
+            const returningStudents = filtered.filter(s => s.type === 'Returning').length;
+            
+            // Class distribution
+            const classCounts = {};
+            filtered.forEach(student => {
+                classCounts[student.class] = (classCounts[student.class] || 0) + 1;
+            });
+            
+            // Create PDF document
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            
+            // Add title
+            doc.setFontSize(16);
+            doc.text('KAGEYO TVET SCHOOL - ATTENDANCE REPORT', 20, 20);
+            
+            // Add report information
+            doc.setFontSize(10);
+            let filterText = 'Filters: ';
+            if (selectedClass) filterText += `Class: ${selectedClass} `;
+            if (selectedGender) filterText += `Gender: ${selectedGender} `;
+            if (!selectedClass && !selectedGender) filterText += 'All Students';
+            
+            doc.text(filterText, 20, 30);
+            doc.text(`Report Date: ${new Date().toLocaleDateString()}`, 20, 35);
+            doc.text(`Generated By: ${currentUser.fullName || currentUser.username}`, 20, 40);
+            
+            // Add summary statistics
+            doc.setFontSize(12);
+            doc.text('SUMMARY STATISTICS', 20, 55);
+            
+            doc.setFontSize(10);
+            doc.text(`Total Students: ${totalStudents}`, 20, 65);
+            doc.text(`Male Students: ${maleStudents}`, 20, 70);
+            doc.text(`Female Students: ${femaleStudents}`, 20, 75);
+            doc.text(`New Students: ${newStudents}`, 20, 80);
+            doc.text(`Returning Students: ${returningStudents}`, 20, 85);
+            
+            // Add class distribution
+            let yPos = 100;
+            doc.setFontSize(12);
+            doc.text('CLASS DISTRIBUTION', 20, yPos);
+            yPos += 10;
+            
+            doc.setFontSize(10);
+            for (const className in classCounts) {
+                if (yPos > 270) {
+                    doc.addPage();
+                    yPos = 20;
+                }
+                doc.text(`${className}: ${classCounts[className]} students`, 20, yPos);
+                yPos += 5;
+            }
+            
+            // Save PDF
+            doc.save(`Attendance_Report_${new Date().toISOString().split('T')[0]}.pdf`);
+            
+            showToast('Attendance report exported successfully!', 'success');
+        }
+
+        // Initialize the app when DOM is loaded
+        document.addEventListener('DOMContentLoaded', function() {
+            checkAuth();
+            if (currentUser) {
+                initApp();
+            }
+            
+            // Set up auth event listeners even before login
+            setupEventListeners();
+            
+            // Add default credentials info to login form
+            const loginForm = document.getElementById('loginFormElement');
+            const credentialsInfo = document.createElement('div');
+            credentialsInfo.className = 'mt-4 p-3 bg-blue-50 rounded-lg text-sm text-blue-700';
+            credentialsInfo.innerHTML = `
+                <p class="font-semibold">Demo Login Credentials:</p>
+                <p>Username: <strong>admin</strong></p>
+                <p>Password: <strong>admin123</strong></p>
+            `;
+            loginForm.appendChild(credentialsInfo);
+        });
+    </script>
+</body>
+</html>

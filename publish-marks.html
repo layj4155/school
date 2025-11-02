@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Publish Marks — Admin</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    .excel-table { border-collapse: collapse; width: 100%; }
+    .excel-table th, .excel-table td { border: 1px solid #e5e7eb; padding: 8px; }
+    .excel-table th { background:#f3f4f6; }
+  </style>
+</head>
+<body class="bg-gray-50 font-sans">
+  <div class="container mx-auto p-6">
+    <div class="flex justify-between items-center mb-6">
+      <h1 class="text-2xl font-bold">Publish Marks — Admin</h1>
+      <div class="space-x-2">
+        <a href="admin-dashboard.html" class="px-3 py-2 bg-blue-600 text-white rounded">Back to Dashboard</a>
+        <a href="student-data.html" class="px-3 py-2 bg-green-600 text-white rounded">Open Student Portal</a>
+      </div>
+    </div>
+
+    <div class="bg-white p-4 rounded shadow mb-4">
+      <div class="flex gap-4">
+        <div>
+          <label class="block text-sm font-medium mb-1">Class</label>
+          <select id="classSelect" class="border px-3 py-2 rounded w-60"></select>
+        </div>
+        <div>
+          <label class="block text-sm font-medium mb-1">Term</label>
+          <select id="termSelect" class="border px-3 py-2 rounded w-60">
+            <option value="term1">Term 1</option>
+            <option value="term2">Term 2</option>
+            <option value="term3">Term 3</option>
+          </select>
+        </div>
+        <div class="flex items-end">
+          <button id="loadBtn" class="px-4 py-2 bg-blue-600 text-white rounded">Load Students</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="tableWrap" class="bg-white p-4 rounded shadow mb-4 hidden">
+      <div class="overflow-x-auto">
+        <table class="excel-table w-full" id="marksTable">
+          <thead>
+            <tr>
+              <th>Student</th>
+              <th>Exam 1</th>
+              <th>Exam 2</th>
+              <th>Exam 3</th>
+              <th>Total / Avg</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+
+      <div class="flex justify-end gap-2 mt-4">
+        <button id="saveBtn" class="px-4 py-2 bg-yellow-500 text-white rounded">Save Draft</button>
+        <button id="publishBtn" class="px-4 py-2 bg-green-600 text-white rounded">Save & Publish</button>
+      </div>
+    </div>
+
+    <div id="notice" class="text-sm text-gray-600"></div>
+  </div>
+
+  <script>
+    // Try to load existing exam data or marks from localStorage
+    function readLocalKeys() {
+      const examData = JSON.parse(localStorage.getItem('kageyoExamData') || 'null');
+      const marksData = JSON.parse(localStorage.getItem('kageyoMarks') || 'null');
+      const publishedExam = JSON.parse(localStorage.getItem('publishedExamData') || 'null');
+      const publishedMarks = JSON.parse(localStorage.getItem('publishedMarks') || 'null');
+      return { examData, marksData, publishedExam, publishedMarks };
+    }
+
+    function getStudentListFromData(dataObj) {
+      // dataObj typically has class keys -> objects with students
+      if (!dataObj) return [];
+      const classes = Object.keys(dataObj);
+      if (classes.length === 0) return [];
+      const firstClass = classes[0];
+      // If structure contains student arrays, return that, else try to extract student names from nested objects
+      if (Array.isArray(dataObj[firstClass])) return classes;
+      return classes;
+    }
+
+    const classSelect = document.getElementById('classSelect');
+    const termSelect = document.getElementById('termSelect');
+    const loadBtn = document.getElementById('loadBtn');
+    const tableWrap = document.getElementById('tableWrap');
+    const marksTable = document.querySelector('#marksTable tbody');
+    const saveBtn = document.getElementById('saveBtn');
+    const publishBtn = document.getElementById('publishBtn');
+    const notice = document.getElementById('notice');
+
+    let currentExamData = {};
+
+    function populateClassOptions() {
+      const { examData, marksData, publishedExam, publishedMarks } = readLocalKeys();
+      const classes = new Set();
+      [examData, marksData, publishedExam, publishedMarks].forEach(obj => {
+        if (!obj) return;
+        Object.keys(obj).forEach(k => classes.add(k));
+      });
+
+      // If still empty, show instruction
+      if (classes.size === 0) {
+        classSelect.innerHTML = '<option value="">No classes found (open Admin Dashboard first)</option>';
+        notice.textContent = 'No class data found in localStorage. Open the Admin Dashboard once to initialize the student list, or paste your data into localStorage keys `kageyoExamData` / `kageyoMarks`.';
+        return;
+      }
+
+      classSelect.innerHTML = '<option value="">Select Class</option>' + Array.from(classes).map(c => `<option value="${c}">${c}</option>`).join('');
+    }
+
+    function loadStudentsForClass(className, term) {
+      // Prefer kageyoExamData -> publishedExamData -> kageyoMarks -> publishedMarks
+      const examData = JSON.parse(localStorage.getItem('kageyoExamData') || 'null');
+      const publishedExam = JSON.parse(localStorage.getItem('publishedExamData') || 'null');
+      const marksData = JSON.parse(localStorage.getItem('kageyoMarks') || 'null');
+      const publishedMarks = JSON.parse(localStorage.getItem('publishedMarks') || 'null');
+
+      // Try to derive student list
+      let students = [];
+      if (examData && examData[className] && examData[className][term]) {
+        students = Object.keys(examData[className][term]);
+        currentExamData = examData;
+      } else if (publishedExam && publishedExam[className] && publishedExam[className][term]) {
+        students = Object.keys(publishedExam[className][term]);
+        currentExamData = publishedExam;
+      } else if (marksData && marksData[className]) {
+        // marksData[className] contains midterm objects; student names are keys inside midterm1
+        const mid = marksData[className].midterm1 || marksData[className].midterm2 || marksData[className].midterm3 || {};
+        students = Object.keys(mid);
+        currentExamData = {};
+      } else if (publishedMarks && publishedMarks[className]) {
+        const mid = publishedMarks[className].midterm1 || publishedMarks[className].midterm2 || publishedMarks[className].midterm3 || {};
+        students = Object.keys(mid);
+        currentExamData = {};
+      }
+
+      // Render table
+      marksTable.innerHTML = '';
+      if (students.length === 0) {
+        marksTable.innerHTML = '<tr><td colspan="5" class="text-sm text-gray-600 p-4">No students found for this class/term.</td></tr>';
+        tableWrap.classList.remove('hidden');
+        return;
+      }
+
+      students.forEach(student => {
+        // Try to get existing exam values
+        const defaultVals = { exam1:'', exam2:'', exam3:'' };
+        let vals = { ...defaultVals };
+        if (examData && examData[className] && examData[className][term] && examData[className][term][student]) {
+          vals = Object.assign(vals, examData[className][term][student]);
+        } else if (publishedExam && publishedExam[className] && publishedExam[className][term] && publishedExam[className][term][student]) {
+          vals = Object.assign(vals, publishedExam[className][term][student]);
+        }
+
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${student}</td>
+          <td><input data-student="${student}" data-key="exam1" type="number" min="0" max="100" value="${vals.exam1 || ''}" class="border px-2 py-1 w-24"></td>
+          <td><input data-student="${student}" data-key="exam2" type="number" min="0" max="100" value="${vals.exam2 || ''}" class="border px-2 py-1 w-24"></td>
+          <td><input data-student="${student}" data-key="exam3" type="number" min="0" max="100" value="${vals.exam3 || ''}" class="border px-2 py-1 w-24"></td>
+          <td class="avg-cell">${computeRowAverage(vals)}</td>
+        `;
+
+        marksTable.appendChild(tr);
+      });
+
+      // Attach input listeners
+      marksTable.querySelectorAll('input').forEach(inp => {
+        inp.addEventListener('input', function() {
+          const row = this.closest('tr');
+          const exam1 = row.querySelector('input[data-key="exam1"]').value || 0;
+          const exam2 = row.querySelector('input[data-key="exam2"]').value || 0;
+          const exam3 = row.querySelector('input[data-key="exam3"]').value || 0;
+          row.querySelector('.avg-cell').textContent = computeRowAverage({exam1,exam2,exam3});
+        });
+      });
+
+      tableWrap.classList.remove('hidden');
+    }
+
+    function computeRowAverage(vals) {
+      const a = parseFloat(vals.exam1) || 0;
+      const b = parseFloat(vals.exam2) || 0;
+      const c = parseFloat(vals.exam3) || 0;
+      const count = (vals.exam1 !== '' ? 1:0) + (vals.exam2 !== '' ? 1:0) + (vals.exam3 !== '' ? 1:0);
+      if (count === 0) return '';
+      const avg = ((a+b+c)/ (count||1)).toFixed(1);
+      return avg;
+    }
+
+    function collectTableData() {
+      const rows = Array.from(marksTable.querySelectorAll('tr'));
+      const className = classSelect.value;
+      const term = termSelect.value;
+      if (!className) return null;
+
+      if (!currentExamData[className]) currentExamData[className] = {};
+      if (!currentExamData[className][term]) currentExamData[className][term] = {};
+
+      rows.forEach(r => {
+        const student = r.querySelector('input[data-student]') ? r.querySelector('input[data-student]').getAttribute('data-student') : null;
+        if (!student) return;
+        const e1 = r.querySelector('input[data-key="exam1"]').value;
+        const e2 = r.querySelector('input[data-key="exam2"]').value;
+        const e3 = r.querySelector('input[data-key="exam3"]').value;
+
+        currentExamData[className][term][student] = { exam1: e1, exam2: e2, exam3: e3 };
+      });
+
+      return { className, term };
+    }
+
+    function saveDraft() {
+      collectTableData();
+      localStorage.setItem('kageyoExamData', JSON.stringify(currentExamData));
+      notice.textContent = 'Draft saved to localStorage (kageyoExamData). Use Save & Publish to publish.';
+    }
+
+    function saveAndPublish() {
+      const info = collectTableData();
+      if (!info) { notice.textContent = 'Choose a class first.'; return; }
+
+      // Save exam data
+      localStorage.setItem('kageyoExamData', JSON.stringify(currentExamData));
+      localStorage.setItem('publishedExamData', JSON.stringify(currentExamData));
+
+      // Also set marksPublished flag so student portal picks it up
+      localStorage.setItem('marksPublished', 'true');
+      localStorage.setItem('publishTimestamp', new Date().toISOString());
+
+      notice.textContent = 'Exam marks published to student portal (publishedExamData). Students will see changes in Student Portal.';
+
+      // Notify other tabs via storage event by setting an unrelated key
+      localStorage.setItem('kageyoExamPublishTrigger', Date.now().toString());
+    }
+
+    // Event wiring
+    loadBtn.addEventListener('click', () => {
+      const className = classSelect.value;
+      const term = termSelect.value;
+      if (!className) { notice.textContent = 'Please select a class.'; return; }
+      notice.textContent = '';
+      loadStudentsForClass(className, term);
+    });
+
+    saveBtn.addEventListener('click', () => {
+      saveDraft();
+      showTemporary('Draft saved');
+    });
+
+    publishBtn.addEventListener('click', () => {
+      saveAndPublish();
+      showTemporary('Published');
+    });
+
+    function showTemporary(msg) {
+      const prev = notice.textContent;
+      notice.textContent = msg;
+      setTimeout(() => notice.textContent = prev, 2500);
+    }
+
+    // Init
+    populateClassOptions();
+  </script>
+</body>
+</html>

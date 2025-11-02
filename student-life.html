@@ -1,0 +1,1453 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Explore vibrant student life at Kageyo TVET School, including clubs, events, hostels, and more.">
+    <meta name="author" content="jobeuse | yobu | job | iradukunda">
+    <title>Student Life | Kageyo TVET School</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" integrity="sha512-9usAa10IRO0HhonpyAIVpjrylPvoDwiPUiKdWk5t3PyolY1cOd4DSE0Ga+ri4AuTroPR5aQvXU9xC6qOPnzFeg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" sizes="32x32" href="download.jpg">
+    <meta name="theme-color" content="#1D4ED8">
+    <!-- Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-XXXXXXXXXX');
+    </script>
+
+    <style>
+        /* Modern Navigation Styles */
+        .navbar {
+            background-color: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+        .navbar.sticky {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .nav-link {
+            position: relative;
+            padding-bottom: 0.5rem;
+            transition: color 0.3s ease;
+        }
+        .nav-link:hover::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background-color: #1D4ED8;
+            transition: width 0.3s ease;
+        }
+        .dropdown-menu {
+            display: none;
+            opacity: 0;
+            transform: translateY(10px);
+            transition: all 0.3s ease;
+            background-color: white;
+            border-radius: 0.5rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+        .dropdown:hover .dropdown-menu,
+        .dropdown-menu.active {
+            display: block;
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .dropdown-menu li a {
+            transition: background-color 0.2s ease, color 0.2s ease;
+        }
+        .dropdown-menu li a:hover {
+            background-color: #eff6ff;
+            color: #1D4ED8;
+        }
+
+        /* Banner Carousel Styles */
+        .banner-carousel {
+            position: relative;
+            height: 500px;
+            overflow: hidden;
+        }
+        .banner-slide {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-size: cover;
+            background-position: center;
+            opacity: 0;
+            transition: opacity 0.5s ease-in-out;
+        }
+        .banner-slide.active {
+            opacity: 1;
+        }
+        .banner-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(to bottom, rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.7));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
+        .banner-controls {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 10px;
+        }
+        .banner-dot {
+            width: 12px;
+            height: 12px;
+            background-color: rgba(255, 255, 255, 0.5);
+            border-radius: 50%;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        .banner-dot.active {
+            background-color: #1D4ED8;
+        }
+        .banner-prev, .banner-next {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(0, 0, 0, 0.5);
+            color: white;
+            padding: 10px;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        .banner-prev:hover, .banner-next:hover {
+            background: #1D4ED8;
+        }
+        .banner-prev {
+            left: 20px;
+        }
+        .banner-next {
+            right: 20px;
+        }
+
+        /* General Styles (Updated for Modern Look) */
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .container {
+            max-width: 1280px;
+        }
+        .section-title {
+            font-size: 2.25rem;
+            font-weight: 700;
+            color: #1D4ED8;
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        .club-card, .event-card, .testimonial-card {
+            background: white;
+            border-radius: 0.75rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .club-card:hover, .event-card:hover, .testimonial-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+        }
+        .photo-gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+        }
+        .photo-item img {
+            height: 220px;
+            border-radius: 0.75rem;
+        }
+        .photo-caption {
+            background: linear-gradient(transparent, rgba(0, 0, 0, 0.8));
+            border-radius: 0 0 0.75rem 0.75rem;
+        }
+        .back-to-top {
+            bottom: 80px;
+            right: 20px;
+            background: #1D4ED8;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        .back-to-top:hover {
+            background: #1E40AF;
+            transform: scale(1.1);
+        }
+
+        /* Mobile Styles */
+        @media (max-width: 768px) {
+            .navbar {
+                padding: 1rem;
+            }
+            #navbar {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 75%;
+                max-width: 300px;
+                height: 100vh;
+                background: white;
+                transform: translateX(-100%);
+                transition: transform 0.3s ease;
+                padding: 2rem 1rem;
+                box-shadow: 2px 0 8px rgba(0, 0, 0, 0.2);
+            }
+            #navbar.active {
+                transform: translateX(0);
+            }
+            .dropdown-menu {
+                position: static;
+                box-shadow: none;
+                background-color: #f8fafc;
+                border-left: 3px solid #1D4ED8;
+                margin-left: 1rem;
+            }
+            .banner-carousel {
+                height: 300px;
+            }
+            .banner-prev, .banner-next {
+                padding: 8px;
+            }
+            .photo-gallery {
+                grid-template-columns: 1fr;
+            }
+            .section-title {
+                font-size: 1.75rem;
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Mobile Menu Overlay -->
+    <div class="mobile-menu-overlay hidden fixed inset-0 bg-black bg-opacity-50 z-50" id="mobileOverlay"></div>
+
+    <!-- Back to Top Button -->
+    <button class="back-to-top hidden items-center justify-center" id="backToTop" aria-label="Back to top">
+        <i class="fas fa-chevron-up"></i>
+    </button>
+
+    <!-- Header with Modern Navigation -->
+    <header class="navbar" role="banner">
+        <div class="container mx-auto px-4 py-4 flex items-center justify-between">
+            <div class="flex items-center space-x-4">
+                <a href="index.html" aria-label="Kageyo TVET School Home">
+                    <img src="logo.jpg" alt="Kageyo TVET School Logo" class="w-16 h-16">
+                </a>
+                <div>
+                    <h1 class="text-2xl font-bold text-blue-600"><a href="index.html">KAGEYO TVET SCHOOL</a></h1>
+                    <p class="text-sm text-gray-500">WORK - COURAGE - SOLIDARITY</p>
+                </div>
+            </div>
+
+            <!-- Mobile Menu Button -->
+            <button class="mobile-menu-btn md:hidden flex items-center justify-center w-10 h-10 bg-blue-600 text-white rounded-md" id="mobileMenuBtn" aria-label="Toggle navigation menu" aria-expanded="false" aria-controls="navbar">
+                <i class="fas fa-bars"></i>
+            </button>
+
+            <!-- Navigation Menu -->
+            <nav id="navbar" class="md:flex md:items-center hidden md:w-auto" role="navigation" aria-label="Main navigation">
+                <ul class="flex flex-col md:flex-row md:space-x-8">
+                    <li><a href="index.html" class="nav-link text-blue-600 hover:text-blue-800 font-medium">Home</a></li>
+                    <li><a href="about.html" class="nav-link text-blue-600 hover:text-blue-800 font-medium">About Us</a></li>
+                    <li><a href="apply job.html" class="nav-link text-blue-600 hover:text-blue-800 font-medium">Admissions</a></li>
+                    <li class="relative dropdown group">
+                        <button class="nav-link text-blue-600 hover:text-blue-800 font-medium flex items-center" aria-expanded="false" aria-controls="academics-menu">
+                            Academics <i class="fas fa-chevron-down ml-2"></i>
+                        </button>
+                        <ul id="academics-menu" class="dropdown-menu absolute mt-2 w-48" role="menu">
+                            <li><a href="academics.html" class="block px-4 py-2 text-blue-600 hover:bg-blue-50">Academics Overview</a></li>
+                            <li><a href="pastpapers.html" class="block px-4 py-2 text-blue-600 hover:bg-blue-50">Past Papers</a></li>
+                            <li><a href="student-papers.html" class="block px-4 py-2 text-blue-600 hover:bg-blue-50">Student Papers</a></li>
+                            <li><a href="student-projects.html" class="block px-4 py-2 text-blue-600 hover:bg-blue-50">Student Projects</a></li>
+                        </ul>
+                    </li>
+                    <li class="relative dropdown group">
+                        <button class="nav-link text-blue-600 hover:text-blue-800 font-medium flex items-center" aria-expanded="false" aria-controls="student-menu">
+                            Student Info <i class="fas fa-chevron-down ml-2"></i>
+                        </button>
+                        <ul id="student-menu" class="dropdown-menu absolute mt-2 w-48" role="menu">
+                            <li><a href="student-registration.html" class="block px-4 py-2 text-blue-600 hover:bg-blue-50">Student Registration</a></li>
+                            <li><a href="student-data.html" class="block px-4 py-2 text-blue-600 hover:bg-blue-50">Student Portal</a></li>
+                            <li><a href="best-performers.html" class="block px-4 py-2 text-blue-600 hover:bg-blue-50">Best Performers</a></li>
+                            <li><a href="holiday-package.html" class="block px-4 py-2 text-blue-600 hover:bg-blue-50">Holiday Package</a></li>
+                            <li><a href="student-life.html" class="block px-4 py-2 text-blue-600 hover:bg-blue-50">Student Life</a></li>
+                        </ul>
+                    </li>
+                    <li><a href="login-new.html" class="nav-link text-blue-600 hover:text-blue-800 font-medium flex items-center"><i class="fas fa-sign-in-alt mr-2"></i>Login</a></li>
+                    <li class="relative dropdown group">
+                        <button class="nav-link text-blue-600 hover:text-blue-800 font-medium flex items-center" aria-expanded="false" aria-controls="admin-menu">
+                            Administration <i class="fas fa-chevron-down ml-2"></i>
+                        </button>
+                        <ul id="admin-menu" class="dropdown-menu absolute mt-2 w-48" role="menu">
+                            <li><a href="staff.html" class="block px-4 py-2 text-blue-600 hover:bg-blue-50">Staff</a></li>
+                            <li><a href="library.html" class="block px-4 py-2 text-blue-600 hover:bg-blue-50">Library</a></li>
+                            <li><a href="admin-dashboard.html" class="block px-4 py-2 text-blue-600 hover:bg-blue-50">Admin Dashboard</a></li>
+                        </ul>
+                    </li>
+                    <li><a href="trainers.html" class="nav-link text-blue-600 hover:text-blue-800 font-medium">Trainers</a></li>
+                    <li><a href="vocational-training.html" class="nav-link text-blue-600 hover:text-blue-800 font-medium">Vocational Training</a></li>
+                    <li class="relative dropdown group">
+                        <button class="nav-link text-blue-600 hover:text-blue-800 font-medium flex items-center" aria-expanded="false" aria-controls="more-menu">
+                            More <i class="fas fa-chevron-down ml-2"></i>
+                        </button>
+                        <ul id="more-menu" class="dropdown-menu absolute mt-2 w-48" role="menu">
+                            <li><a href="news.html" class="block px-4 py-2 text-blue-600 hover:bg-blue-50">News</a></li>
+                            <li><a href="events.html" class="block px-4 py-2 text-blue-600 hover:bg-blue-50">Events</a></li>
+                            <li><a href="announcements.html" class="block px-4 py-2 text-blue-600 hover:bg-blue-50">Announcements</a></li>
+                            <li><a href="head-teacher.html" class="block px-4 py-2 text-blue-600 hover:bg-blue-50">Head Teacher</a></li>
+                            <li><a href="employee-of-the-year.html" class="block px-4 py-2 text-blue-600 hover:bg-blue-50">Employee of the Year</a></li>
+                            <li><a href="forum.html" class="block px-4 py-2 text-blue-600 hover:bg-blue-50">Forum</a></li>
+                            <li><a href="developers.html" class="block px-4 py-2 text-blue-600 hover:bg-blue-50">Developers</a></li>
+                        </ul>
+                    </li>
+                    <li><a href="contact.html" class="nav-link text-blue-600 hover:text-blue-800 font-medium">Contact</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Dynamic Banner Carousel -->
+    <section class="banner-carousel" role="region" aria-label="Student Life Banner Carousel">
+        <div class="banner-slide" style="background-image: url('https://images.unsplash.com/photo-1523050854058-8df90110c9f1?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80')"></div>
+        <div class="banner-slide" style="background-image: url('https://images.unsplash.com/photo-1516321310766-78f0fcef81c5?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80')"></div>
+        <div class="banner-slide" style="background-image: url('https://images.unsplash.com/photo-1516321497487-e288fb19713f?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80')"></div>
+        <div class="banner-overlay">
+            <div class="container mx-auto px-4 text-white text-center">
+                <h2 class="text-4xl md:text-5xl font-bold mb-4">Vibrant Student Life at Kageyo TVET</h2>
+                <p class="text-xl md:text-2xl">Join a community where learning meets growth and opportunity</p>
+            </div>
+        </div>
+        <div class="banner-controls">
+            <div class="banner-dot" data-slide="0"></div>
+            <div class="banner-dot" data-slide="1"></div>
+            <div class="banner-dot" data-slide="2"></div>
+        </div>
+        <button class="banner-prev hidden md:block" aria-label="Previous slide"><i class="fas fa-chevron-left"></i></button>
+        <button class="banner-next hidden md:block" aria-label="Next slide"><i class="fas fa-chevron-right"></i></button>
+    </section>
+
+    <main role="main">
+        <!-- Clubs & Societies Section -->
+        <section id="clubs" class="py-16 bg-white" aria-label="Clubs and Societies">
+            <div class="container mx-auto px-4">
+                <h2 class="section-title">Clubs & Societies</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <div class="club-card p-6" data-club="ICT Club">
+                        <div class="text-5xl mb-4 text-center text-blue-600">💻</div>
+                        <h3 class="text-xl font-semibold text-blue-600 mb-2 text-center">ICT Club</h3>
+                        <p class="text-gray-600 text-center">Develop coding skills, explore robotics, and create innovative tech projects.</p>
+                        <button class="join-club block mt-4 bg-blue-600 text-white py-2 px-4 rounded-lg mx-auto hover:bg-blue-700" aria-label="Join ICT Club">Join Club</button>
+                        <div class="club-members mt-4 text-gray-600 text-center"></div>
+                    </div>
+                    <div class="club-card p-6" data-club="Debate Club">
+                        <div class="text-5xl mb-4 text-center text-blue-600">🎙️</div>
+                        <h3 class="text-xl font-semibold text-blue-600 mb-2 text-center">Debate Club</h3>
+                        <p class="text-gray-600 text-center">Sharpen your critical thinking and public speaking skills through engaging debates.</p>
+                        <button class="join-club block mt-4 bg-blue-600 text-white py-2 px-4 rounded-lg mx-auto hover:bg-blue-700" aria-label="Join Debate Club">Join Club</button>
+                        <div class="club-members mt-4 text-gray-600 text-center"></div>
+                    </div>
+                    <div class="club-card p-6" data-club="Music Club">
+                        <div class="text-5xl mb-4 text-center text-blue-600">🎶</div>
+                        <h3 class="text-xl font-semibold text-blue-600 mb-2 text-center">Music Club</h3>
+                        <p class="text-gray-600 text-center">Express yourself through music, from choir to instrumental performances.</p>
+                        <button class="join-club block mt-4 bg-blue-600 text-white py-2 px-4 rounded-lg mx-auto hover:bg-blue-700" aria-label="Join Music Club">Join Club</button>
+                        <div class="club-members mt-4 text-gray-600 text-center"></div>
+                    </div>
+                    <div class="club-card p-6" data-club="Sports Club">
+                        <div class="text-5xl mb-4 text-center text-blue-600">⚽</div>
+                        <h3 class="text-xl font-semibold text-blue-600 mb-2 text-center">Sports Club</h3>
+                        <p class="text-gray-600 text-center">Stay active with football, basketball, and other exciting sports activities.</p>
+                        <button class="join-club block mt-4 bg-blue-600 text-white py-2 px-4 rounded-lg mx-auto hover:bg-blue-700" aria-label="Join Sports Club">Join Club</button>
+                        <div class="club-members mt-4 text-gray-600 text-center"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Gallery Section -->
+        <section id="gallery" class="py-16 bg-gray-50" aria-label="School Events Gallery">
+            <div class="container mx-auto px-4">
+                <h2 class="section-title">School Events Gallery</h2>
+                <div class="photo-gallery">
+                    <div class="photo-item">
+                        <img src="https://images.unsplash.com/photo-1516321497487-e288fb19713f?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80" alt="Sports Day Event">
+                        <div class="photo-caption">
+                            <h3 class="font-bold">Sports Day</h3>
+                            <p class="text-sm">Annual athletics competition</p>
+                        </div>
+                    </div>
+                    <div class="photo-item">
+                        <img src="https://images.unsplash.com/photo-1516321310766-78f0fcef81c5?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80" alt="Cultural Day Event">
+                        <div class="photo-caption">
+                            <h3 class="font-bold">Cultural Day</h3>
+                            <p class="text-sm">Celebrating diverse traditions</p>
+                        </div>
+                    </div>
+                    <div class="photo-item">
+                        <img src="https://images.unsplash.com/photo-1523050854058-8df90110c9f1?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80" alt="Field Trip">
+                        <div class="photo-caption">
+                            <h3 class="font-bold">Field Trip</h3>
+                            <p class="text-sm">Educational outings</p>
+                        </div>
+                    </div>
+                    <div class="photo-item">
+                        <img src="https://images.unsplash.com/photo-1516321165247-7b905bd3b06b?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80" alt="Science Fair">
+                        <div class="photo-caption">
+                            <h3 class="font-bold">Science Fair</h3>
+                            <p class="text-sm">Student innovation showcase</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Testimonials Section -->
+        <section id="testimonials" class="py-16 bg-white" aria-label="Student Testimonials">
+            <div class="container mx-auto px-4">
+                <h2 class="section-title">What Our Students Say</h2>
+                <form id="testimonialForm" class="mb-6 max-w-2xl mx-auto">
+                    <input id="testimonialName" type="text" placeholder="Your Name" class="w-full p-4 border border-gray-300 rounded-lg mb-2 focus:border-blue-600 focus:outline-none" aria-label="Your Name">
+                    <select id="testimonialClass" class="w-full p-4 border border-gray-300 rounded-lg mb-2 focus:border-blue-600 focus:outline-none" aria-label="Your Class">
+                        <option value="">Select Class</option>
+                    </select>
+                    <textarea id="testimonialQuote" placeholder="Your Testimonial" rows="4" class="w-full p-4 border border-gray-300 rounded-lg mb-2 focus:border-blue-600 focus:outline-none" aria-label="Your Testimonial"></textarea>
+                    <button type="submit" class="bg-blue-600 text-white py-2 px-6 rounded-lg hover:bg-blue-700 transition" aria-label="Submit Testimonial">Submit</button>
+                </form>
+                <div id="testimonialContainer" class="grid grid-cols-1 md:grid-cols-3 gap-6"></div>
+            </div>
+        </section>
+
+        <!-- Hostel Life Section -->
+        <section id="hostel" class="py-16 bg-gray-50" aria-label="Hostel Life">
+            <div class="container mx-auto px-4">
+                <h2 class="section-title">Hostel Life</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="bg-white p-6 rounded-lg shadow">
+                        <p class="text-gray-600 mb-4">Our hostels offer a supportive environment with modern amenities, fostering both academic and personal growth.</p>
+                        <ul class="list-disc pl-5 text-gray-600 space-y-2">
+                            <li>Spacious, clean dormitories</li>
+                            <li>Nutritious meal plans</li>
+                            <li>Study and recreational areas</li>
+                            <li>24/7 security and support</li>
+                        </ul>
+                    </div>
+                    <div class="photo-gallery grid-cols-1">
+                        <div class="photo-item">
+                            <img src="https://images.unsplash.com/photo-1523050854058-8df90110c9f1?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80" alt="Hostel Room">
+                            <div class="photo-caption">
+                                <h3 class="font-bold">Hostel Facilities</h3>
+                                <p class="text-sm">Comfortable living spaces</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Student Leadership Section -->
+        <section id="leadership" class="py-16 bg-white" aria-label="Student Leadership">
+            <div class="container mx-auto px-4">
+                <h2 class="section-title">Student Leadership</h2>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="bg-white p-6 rounded-lg shadow text-center">
+                        <img src="https://via.placeholder.com/150?text=Jane+Doe" alt="Jane Doe, Head Prefect" class="w-24 h-24 rounded-full mx-auto mb-4 object-cover">
+                        <h3 class="text-xl font-semibold text-blue-600">Jane Doe</h3>
+                        <p class="text-gray-600">Head Prefect</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow text-center">
+                        <img src="https://via.placeholder.com/150?text=John+Smith" alt="John Smith, Sports Captain" class="w-24 h-24 rounded-full mx-auto mb-4 object-cover">
+                        <h3 class="text-xl font-semibold text-blue-600">John Smith</h3>
+                        <p class="text-gray-600">Sports Captain</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow text-center">
+                        <img src="https://via.placeholder.com/150?text=Mary+Johnson" alt="Mary Johnson, Cultural Coordinator" class="w-24 h-24 rounded-full mx-auto mb-4 object-cover">
+                        <h3 class="text-xl font-semibold text-blue-600">Mary Johnson</h3>
+                        <p class="text-gray-600">Cultural Coordinator</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Volunteering & Community Service Section -->
+        <section id="volunteering" class="py-16 bg-gray-50" aria-label="Volunteering and Community Service">
+            <div class="container mx-auto px-4">
+                <h2 class="section-title">Volunteering & Community Service</h2>
+                <p class="text-gray-600 text-center mb-6 max-w-2xl mx-auto">Our students engage in impactful community projects, fostering social responsibility and teamwork.</p>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="bg-white p-6 rounded-lg shadow">
+                        <h3 class="text-xl font-semibold text-blue-600 mb-2">Environmental Cleanup</h3>
+                        <p class="text-gray-600">Organizing regular cleanups to promote a sustainable community.</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow">
+                        <h3 class="text-xl font-semibold text-blue-600 mb-2">Charity Drives</h3>
+                        <p class="text-gray-600">Collecting donations to support local communities in need.</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow">
+                        <h3 class="text-xl font-semibold text-blue-600 mb-2">Tree Planting</h3>
+                        <p class="text-gray-600">Contributing to environmental sustainability through annual campaigns.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Upcoming Events Section -->
+        <section id="events" class="py-16 bg-white" aria-label="Upcoming Student Events">
+            <div class="container mx-auto px-4">
+                <h2 class="section-title">Upcoming Student Events</h2>
+                <div id="eventsContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+            </div>
+        </section>
+
+        <!-- Forum Section -->
+        <section id="forum" class="py-16 bg-gray-50" aria-label="Student Forum">
+            <div class="container mx-auto px-4">
+                <h2 class="section-title">Student Forum</h2>
+                <div class="max-w-2xl mx-auto bg-white p-6 rounded-lg shadow">
+                    <form id="forumForm" class="mb-6">
+                        <textarea id="forumInput" class="w-full p-4 border border-gray-300 rounded-lg focus:border-blue-600 focus:outline-none" rows="4" placeholder="Share your thoughts or discuss events..." aria-label="Forum input"></textarea>
+                        <button type="submit" class="mt-4 bg-blue-600 text-white py-2 px-6 rounded-lg hover:bg-blue-700 transition" aria-label="Post message">Post</button>
+                    </form>
+                    <div id="forumPosts" class="space-y-4"></div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-white py-12" aria-label="Footer with contact and quick links">
+        <div class="container mx-auto px-4">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">About Us</h3>
+                    <p class="text-sm text-gray-300">Kageyo TVET School is a public institution in Gicumbi District, Kaniga Sector, near Kageyo Tea Factory, dedicated to competence-based training.</p>
+                </div>
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">Quick Links</h3>
+                    <ul class="text-sm space-y-2 text-gray-300">
+                        <li><a href="index.html" class="hover:text-blue-400">Home</a></li>
+                        <li><a href="about.html" class="hover:text-blue-400">About Us</a></li>
+                        <li><a href="trades.html" class="hover:text-blue-400">Trades</a></li>
+                        <li><a href="news.html" class="hover:text-blue-400">News</a></li>
+                        <li><a href="events.html" class="hover:text-blue-400">Events</a></li>
+                        <li><a href="contact.html" class="hover:text-blue-400">Contact</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">Contact Us</h3>
+                    <p class="text-sm text-gray-300">Gicumbi District, Rwanda</p>
+                    <p class="text-sm text-gray-300">Phone: +250 738266603</p>
+                    <p class="text-sm text-gray-300">Email: kageyotvet@gmail.com</p>
+                    <div class="mt-4">
+                        <h4 class="font-semibold mb-2">Find Us</h4>
+                        <div class="h-48 rounded-lg overflow-hidden">
+                            <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3987.715583366576!2d30.05594977499401!3d-1.3999984357347166!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x19dca5b5e9b5b5b5%3A0x9b5b5b5b5b5b5b5b!2sGicumbi%20District%2C%20Rwanda!5e0!3m2!1sen!2sus!4v1690000000000!5m2!1sen!2sus" width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade" aria-label="Map showing Kageyo TVET School location"></iframe>
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">Follow Us</h3>
+                    <div class="flex space-x-4">
+                        <a href="https://facebook.com" target="_blank" class="text-gray-300 hover:text-blue-400" aria-label="Follow on Facebook"><i class="fab fa-facebook-f"></i></a>
+                        <a href="https://twitter.com" target="_blank" class="text-gray-300 hover:text-blue-400" aria-label="Follow on Twitter"><i class="fab fa-twitter"></i></a>
+                        <a href="https://instagram.com" target="_blank" class="text-gray-300 hover:text-blue-400" aria-label="Follow on Instagram"><i class="fab fa-instagram"></i></a>
+                        <a href="https://linkedin.com" target="_blank" class="text-gray-300 hover:text-blue-400" aria-label="Follow on LinkedIn"><i class="fab fa-linkedin-in"></i></a>
+                    </div>
+                    <div class="mt-6">
+                        <h3 class="text-lg font-semibold mb-4">School Hours</h3>
+                        <ul class="text-sm text-gray-300 space-y-1">
+                            <li>Monday - Friday: 7:30 AM - 5:00 PM</li>
+                            <li>Saturday: 8:00 AM - 12:00 PM</li>
+                            <li>Sunday: Closed</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <p class="text-center text-sm text-gray-300 mt-8">&copy; 2025 Kageyo TVET School. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- Chatbot Button -->
+    <button id="chatbot-toggle" class="fixed bottom-4 right-4 bg-blue-600 text-white p-4 rounded-full shadow-lg hover:bg-blue-700 transition" aria-label="Open chatbot" aria-expanded="false">
+        <i class="fas fa-robot"></i>
+    </button>
+
+    <!-- Chatbot Window -->
+    <div id="chatbot-window" class="hidden fixed bottom-20 right-4 w-80 md:w-96 max-h-[600px] bg-white rounded-lg shadow-xl z-50 overflow-hidden">
+        <div class="bg-blue-600 text-white p-4 flex justify-between items-center">
+            <span class="font-semibold">Kageyo Assistant</span>
+            <div class="flex items-center space-x-2">
+                <select id="language-selector" class="bg-blue-700 text-white rounded p-1" aria-label="Select language">
+                    <option value="en">English</option>
+                    <option value="rw">Kinyarwanda</option>
+                    <option value="fr">Français</option>
+                </select>
+                <button id="chatbot-close" class="text-white" aria-label="Close chatbot"><i class="fas fa-times"></i></button>
+            </div>
+        </div>
+        <div id="chatbot-messages" class="p-4 h-96 overflow-y-auto"></div>
+        <div class="p-4 border-t">
+            <input id="chatbot-input" type="text" class="w-full p-2 border rounded-lg focus:outline-none focus:border-blue-600" placeholder="Ask a question..." aria-label="Chatbot input">
+            <button id="chatbot-send" class="mt-2 bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700" aria-label="Send message">Send</button>
+        </div>
+    </div>
+
+    <script>
+        // Student lists for verification
+        const studentsByClass = {
+  "S1A": [
+    "ABEREYIMANA James",
+    "ABIMANA HIRWA Gany Blessing",
+    "AHISHAKIYE MANZI Aime Miguel",
+    "ASHIMWE Nate Brayan",
+    "Benedicto King Samuel",
+    "BUGINGO BEZA Keny",
+    "GASHUMBA NDAYISHIMIYE KIM Kenedy",
+    "IGENUKWISHATSE BYISHIMO Jean Maurice",
+    "IGIRANEZA CYUSA Milton",
+    "IHUMURE NSENGIYUMVA Heroine",
+    "INEZA Queen Deborah",
+    "IRABARUTA MUGISHA Credo",
+    "IRAKOZE Belle Amie",
+    "IRAKOZE Janviere",
+    "IRAKOZE Yanis",
+    "ISHIMWE UWASE Gabriella",
+    "ISIMBI UWASE Joyeuse",
+    "ITANGANEZA Parfait",
+    "KAMIKAZI Patience",
+    "MUNEZERO Enock",
+    "MUNEZERO Priscilla",
+    "MUTONIWASE Benitha",
+    "MUVUNYI UWIMPUHWE Benie Hortance",
+    "MWITENEZA Jean Pierre",
+    "NDARUHUTSE Danny",
+    "NGABONZIZA MUGISHA Boris",
+    "NGANZO Born Bercee",
+    "RORIRORA Gihozo Anella",
+    "UWANYAGASANI Cedrick",
+    "UWASE Benitha",
+    "UWIDUHAYE Pascaline",
+    "UWINEZA AKALIZA Martina",
+    "UWIZEYIMANA Valentine",
+    "YUBAHWE Anitha"
+  ],
+  "S1B": [
+    "ABAYISENGA Emmu Shalom",
+    "AMANI NSHUTI Claver",
+    "ARERWENEZA Laetitia",
+    "BAGABE Dieudonne",
+    "CYOMORO Nicky Prince",
+    "GAGA Lioness",
+    "IGANZE Olla Mireille",
+    "IGIRIMBABAZI Pamella",
+    "INEZA Aure Alexandrine",
+    "INEZA Deborah",
+    "INEZA KAMIKAZI TETA Promesse",
+    "IRAGENA Gloria",
+    "IRAGENA Laetitia",
+    "IRAME MUCYO Angelo",
+    "ISHEMA Rayan",
+    "ISHIMWE NGABO Hertier",
+    "ISHIMWE Olga",
+    "ISINGIZWE Ange Afurika Maombe",
+    "KAYITARE Caleb",
+    "KEZA UMI Abdoulatomani",
+    "KUNDA Beny Bienaime",
+    "KWIZERA MUHOZA Prince",
+    "MANZI Boaz",
+    "MBABAZI Blessed",
+    "MUNEZERO Gentil Hertier",
+    "MUNEZERO Yvette",
+    "MUTONIWASE Esther",
+    "NDIKUMWENAYO Jeannette",
+    "NIRAGIRE Aline",
+    "NIYONZIMA Lucky",
+    "RUDASINGWA",
+    "SHAMI Ianis Vangelis",
+    "UWASE GASARO Kelia",
+    "UWASE Sendrine",
+    "UWIZEYIMANA Chakilla",
+    "UYIZERA Regis"
+  ],
+  "S2A": [
+    "BYISHIMO Remy",
+    "BAHO AKARIZA Kevine",
+    "DUKUZUMUREMYI Janvier",
+    "GANZA AHADI TRESOR",
+    "IHIRWE Benitha",
+    "IKUNDABAYO Kevin",
+    "IMFURAYASE Aimee Ange",
+    "INEZA QUEEN LOVE",
+    "INEZA Ryan Merci",
+    "IRASUBIZA NANSI Nadia Lenatha",
+    "ISHIMWE Brianna",
+    "ISUMBINGABO HIRWA HERVE",
+    "KALIZA UNEJEJE Ella  Blassia",
+    "KAREKEZI SHIMWA SYLIVIE",
+    "KWIZE David",
+    "KWIZERA Richard",
+    "MANZI GANZA Fred",
+    "MBABAZI DORCAS",
+    "MUBIIRIGI Cyusa Prince",
+    "MUCYO MUGWANEZA Magnifique",
+    "MUSENGIMANA Marie Divine",
+    "NGABO Prince",
+    "NIYOMUKIZA STANISLAS",
+    "NIZEYIMANA Etienne",
+    "NYIRAHABAMUNGU Janviere",
+    "SHEMA NZAYITURIKI Benoit",
+    "TUYIZERE Solange",
+    "UFITEYEZU SERGE",
+    "UMUKUNDWA QUEEN VANESSA",
+    "UWAMASHIMWE JEANNETTE",
+    "UWASE Fabiola",
+    "UWIMANA Fideline",
+    "UWIMPUHWE JEROME",
+    "UWIZEYIMANA Patrick"
+  ],
+  "S2B": [
+    "ABE MUGISHA Antoine",
+    "ABIJURU Gift Kelly Joel",
+    "AGASARO Liza Briante",
+    "CYOMORO NIYONZIMA Iba Bright",
+    "GIRUMUGISHA MASSIMO",
+    "HERO KARENGERA Keutch",
+    "HIRWA KAZE  Danyllo",
+    "IGIHOZO Kellia",
+    "IGIKUNDIRO Fiston",
+    "IRERA PROMISE",
+    "IRIZA GWIZA Clenie",
+    "ISHIMWE  YVETTE",
+    "ISHIMWE Belyse",
+    "ISHIMWE NGABO Victory",
+    "KABANDA RUTERANA He Calvin",
+    "KAMALI IGIHOZO IRANZI Marie Mercie",
+    "KEZA SANGWA DIVINE",
+    "KWIBUKA GIFT CARTINE Arnal",
+    "MARIYAMUNGU JUDITH",
+    "MUTAGANDA Micky",
+    "NDAMUKUNDA GISA CHANELLA",
+    "NEZA LIZA Kenia",
+    "NIKWIMANIGIZE Bonheur",
+    "NIWEKARABO KELIA WIVINE",
+    "RWEMA NTETE Arthur",
+    "SEBAHIRE MUHINEZA Emmaus",
+    "TURIKUMWE LOVE MORE",
+    "TUYIZERE Mudathiru",
+    "UMWARI GATETE Christa",
+    "UWASE GIHOZO Chanella",
+    "UWINSHUTI Evelyne"
+  ],
+  "S3A": [
+    "ABAYO Samuella",
+    "BYIRINGIRO GWIZA SALOMON",
+    "IGIHOZO EVA ALLEN QUEEN",
+    "IGIZENEZA Benoit Gratus",
+    "IHIRWE FLORA",
+    "IHOZO Carine",
+    "IKUZWE TETA LEATITIA",
+    "INEZA Confiance Princesse",
+    "INEZA PIERRA",
+    "INEZA RUTAYISIRE Kellia",
+    "ISHIMWE KEVIN PRINCE",
+    "ISHIMWE NOELLA",
+    "KAYITARE Brave",
+    "MBIKESHIMANA SECONDINE",
+    "MUGANWA MAURICE",
+    "MUSHIME ISHEJA Natasha",
+    "MUYISENGE Gisele",
+    "NIWEMUGENI GENNIFER",
+    "NIYIBIZI ESPERANCE",
+    "NIYIGENA JEANNETTE",
+    "NIYO IGIRANEZA Emmanuel",
+    "NIYOGIKUNDIRO PASCALINE",
+    "NIYOMUKIZA ANYSIA",
+    "NIYO NGENZI DAVE FRIEND",
+    "NKURUNZIZA INEZA Messi",
+    "NSENGIMANA Benjamin",
+    "NTIVUGURUZWA Samuel",
+    "RUKUNDO Djabil",
+    "SHAMI IRAKOZE ALLIANCE",
+    "SHEMA HAGUMA Prince Gabin",
+    "TETA MARIE CLAIRE",
+    "TETERO Lucie",
+    "UMUGANWA Hidaya Aisha",
+    "UMUKUMBURWA MPETA FIDELINE",
+    "UWOYIREMEYE Faida"
+  ],
+  "S3B": [
+    "AKIMANIZANYE AGNES",
+    "ASHIMWE Aime Gloria",
+    "DUSABIMANA NIYIGENA Aline",
+    "GIHOZO IRIZA ENOLLA",
+    "HAKIZUMWAMI Samuel",
+    "HIRWA MANZI HAPPINESS",
+    "IGIRANEZA ESTHER",
+    "IHIRWE NSHUTI Ian Jadyne",
+    "IKUZO ELLA",
+    "IKUZWE ADUHIRE Louange",
+    "INEMA SYLVIA HEAVEN",
+    "INEZA NSHUTI HERVE",
+    "INEZA Peace",
+    "INGABIRE Ines",
+    "IRAGENA CYIZA Belyse",
+    "KATUSIME Jeanne d'Arc",
+    "MIZERO Aliane",
+    "MUGABEKAZI Parfaite",
+    "MUHAWENIMANA Nadine",
+    "MUNEZERO  ROSINE",
+    "MUSENGIMANA Ella Joy",
+    "MUTESA NELICKY",
+    "NGANZO Nalada",
+    "NIRAGIRE MIGNONE",
+    "NIYIGENA MUCYO MERCI MAXIME",
+    "NIYONGIRA Rene",
+    "NIYUBAHWE BIRORI Gloria",
+    "NTWALI SHEMA Honore",
+    "PENDA Oceanne Pamella",
+    "TUYISHIMIRE KEVINE",
+    "UMUBYEYI SENGA Benigne",
+    "UMUHIRE  Keza Odreille",
+    "UMWARI FIONA",
+    "UMWARI Natasha",
+    "UWIZEYE IRASUBIZA ERNESTINE"
+  ],
+  "L3 SWD": [
+    "ABIZERIMANA Benitha",
+    "AHISHAKIYE Janvier",
+    "BYIRINGIRO Eric",
+    "CYUBAHIRO Jackson",
+    "CYUZUZO Isaac",
+    "GIKUNDIRO Sandrine",
+    "HABIMANA Hamis",
+    "IBYIZA Speratha",
+    "IGIHOZO Frorence",
+    "INEZA MUGISHA Landry",
+    "INEZA TETA Gloria",
+    "IRABIZI Bowaze",
+    "IRAGENA Sendrine",
+    "IRASUBIZA Emille",
+    "IZABAYO Yves",
+    "KURUGISHURI Samson",
+    "KWIZERA Gad",
+    "MANISHIMWE Jean de Dieu",
+    "MUGISHA Brian",
+    "MUGISHA Isaac",
+    "MUNEZERO Danny",
+    "MUSHIMIYIMANA Marie Reine",
+    "MUSHIMIYIMANA Sumaya",
+    "MUSINGUZI Emmanuel",
+    "NDUWAYEZU Theophile",
+    "NIRAGIRE Daphine",
+    "NISHIMIRWE ISUBIRIZIGIHE Dani",
+    "NIWEMUGENI Liliane",
+    "NIYOGUSHIMWA Ange Christian",
+    "NIYONASENZE Beulla",
+    "NIYONKURU Vradimir",
+    "NYISHIMENTE Naome Nadine",
+    "TUGIRINSHUTI Evariste",
+    "TURINIMANA Augustin",
+    "TUYISHIMIRE Solange",
+    "UWUMUGISHA Pacifique",
+    "UMUTOZO Eduige",
+    "UMWARI Josiane",
+    "UWAMAHORO Ange UWASE",
+    "UWIDUHAYE Theodette",
+    "UWIMBABAZI Lydie",
+    "UWIMPUHWE Nadia",
+    "UWINGENEYE Claire"
+  ],
+  "S4A": [
+    "ABERA Esther",
+    "ABIJURU Josiane",
+    "BYIRINGIRO Justine",
+    "IGIZENEZA Divine",
+    "INEZA Alliance Benie",
+    "INGABIRE KAYIBANDA Germaine",
+    "IRAGENA KAYIRANGWA Elysa",
+    "IRAGENA Solange",
+    "IRAKOZE Aime",
+    "IRAKOZE Pascaline",
+    "ISHIMWE Fabrice",
+    "ISHIMWE TUYISENGE Emma",
+    "ISHIMWE Velentine",
+    "ITUZE GWIZA Sabrine",
+    "KAMIKAZI Derlene",
+    "KEZA EPA",
+    "MASEZERANO Fabrice",
+    "MBARUTSO IKUNDWE Bertin",
+    "MINAKUZESA Amina",
+    "MUCYO Ignace Omega",
+    "MUGABE Robert",
+    "MUKAHIRWA Julienne",
+    "MUKIRE WINNY Nicole",
+    "MUKUNDWA Faith",
+    "MUNEZERO Clemence",
+    "MUSHIMIYIMANA Angelique",
+    "MUTAMBA Xenie",
+    "NAMAHIRWE Ebenizelle",
+    "NDAYIZEYE Angelique",
+    "NIYOBYOSE Revelien",
+    "NIYONAMBAZA Elina",
+    "NYIHANZAMASO Yvette",
+    "NYIRAMUGISHA Berthilde",
+    "NYIRANSENGIYUMVA Aliance",
+    "NZAYISENGA Vanessa",
+    "SHIMIRWA Caline",
+    "TUMUSHIME Vedaste",
+    "TUYISHIMIRE Divine",
+    "TWAGIRIMANA Riberee",
+    "UMUGWANEZA Pascaline",
+    "UWAMARIYA Enysia",
+    "UWASE KABUGO Aline",
+    "UWASE Nicole",
+    "UWIMANA Odila"
+  ],
+  "S4B": [
+    "AKIMANA Cecile",
+    "AMIZERO Nadine",
+    "ASHIMIMANA Clementine",
+    "BAHATI Cleb",
+    "GAHONGAYIRE Pauline",
+    "GIKUNDIRO TUMUKUNDE Emelyne",
+    "HIRWA Bertin",
+    "HIRWA Fabrice",
+    "HUMURIZIBYOSE Ange",
+    "IGIRANEZA David",
+    "IGIRIMBABAZI Emelyne",
+    "INEZA Joy",
+    "INEZA Veronique",
+    "IRADUKUNDA Immaculee",
+    "IRADUKUNDA Rahab",
+    "IRAKOZE Marlene",
+    "IRANZI Aime",
+    "MUHAWENIMANA Noella",
+    "MUKESHIMANA Jeannette",
+    "MUNYANA Kellen",
+    "MUSHIMIYIMANA Henriette",
+    "MUTONI Queen",
+    "NIYONIZEYE Jean d'Amour",
+    "NIZIGIYIMANA Banjamin",
+    "NSHIMIYUMUKIZA Liliane",
+    "TUMUKUNDE Kevine",
+    "TURATSINZE Emmanuel",
+    "TUYAMBAZE Beatha",
+    "TUYISHIMIRE Marie Grace",
+    "UMUGWANEZA Beyonce",
+    "UMUGWANEZA Scovia",
+    "UMUKUNDWA Kelly",
+    "UMUTONI Pascaline",
+    "UMUTONIWASE Blandine",
+    "UWAMAHORO Zawadi",
+    "UWASE Jeannine",
+    "UWASE SANGWA Kevine",
+    "UWAYEZU Fiacrine",
+    "UWAYO Ester",
+    "UWIMANA Alice",
+    "UWITUZE Melisa",
+    "UWIZEYIMANA Odette",
+    "UWIZEYIMANA Sarah"
+  ],
+  "L4 SWD": [
+    "BIRORI Honorine",
+    "CYUZUZO Emile",
+    "DUSABE Anne Peline",
+    "GIKUNDIRO Shalom",
+    "GISUBIZO HIRWA Bonheur",
+    "GISUBIZO Jean Claude",
+    "IBANENATWE Gisele",
+    "INEZA Alida",
+    "IRADUKUNDA Josiane",
+    "IRAKOZE Hyacinthe",
+    "IRANKUNDA Pacifique",
+    "IRANZI Naome",
+    "IRUMVA HIRWA Arsene",
+    "ISHEMA Christian",
+    "ISHIMWE Jeanne Gentille",
+    "ISIMBI Golden",
+    "IZABAYO Emeritha",
+    "KWIZERA Derick",
+    "MUGISHA Aime Kevin",
+    "MUGISHA Arnold",
+    "MUNEZA Hillo Blandeco",
+    "MUPENZI Cedrick",
+    "NDAHIDWA Arnould",
+    "NDATIMANA Dodoce",
+    "NDIZIHIWE Alain Delys",
+    "NIRERE Evangeline",
+    "NISHIMWE Olive",
+    "NIYO Esther Kevine",
+    "NSHIMIYIMANA  Dominique",
+    "NTAGARAMA Teta Cynthia",
+    "NYIRAGUHIRWA Kevine",
+    "NYIRAMANA Jeanne",
+    "SHYAKA Clever Prince",
+    "TONY RAY Hilde",
+    "TURINAYO AMANI Basil",
+    "UMWIZERWA Sandrine",
+    "USANASE Benitha",
+    "UWASE Belyse",
+    "UWASE Gloria",
+    "WIBABARA Janici"
+  ],
+  "S5A": [
+    "AHISHAKIYE Annualithe",
+    "BYUKUSENGE Adeline",
+    "GIKUNDIRO Kessia",
+    "HAVUGIMANA Girbert",
+    "IGIRANEZA Dorcas",
+    "INGABIRE Sifa",
+    "IRADUKUNDA Confiance",
+    "IRAGANJE Thanks",
+    "IRAKOZE Dorcas",
+    "IYAMUMPAYE  Julienne",
+    "KANGUME Ines",
+    "MUGANWA Fulgence",
+    "MUKAHIRWA Benitha",
+    "MUKIZA  Leonce",
+    "MUSANGANYA Elyse",
+    "MUTONIWASE  Delphine",
+    "NDAYISHIMIYE Lambert",
+    "NIYIBIZI Samuel",
+    "NIYIDUHA  Carine",
+    "NIYINGABIRA Evelyne",
+    "TETA REPONSE  Meghan",
+    "UNEZEREWE  Ange Sharom",
+    "UWASE BWANAKWELI Scovia",
+    "UWASE Pauline",
+    "UWITUZE Sandrine",
+    "UWURUKUNDO Rosine",
+    "ZIGIRIMENA Darlene"
+  ],
+  "S5B": [
+    "CYUZUZO  Angel",
+    "CYUZUZO Ange Benigne",
+    "DUSHIMIMANA Jehovajureh",
+    "DUSHIMIYIMANA  Rosine",
+    "DUSINGIZIMANA Queen",
+    "IRADUHAYE Bless",
+    "ISHIMO AKARIZA Ange Sabrine",
+    "ISHIMWE  Fabiola Aime",
+    "ISHIMWE  Cynthia",
+    "ISHIMWE Clarisse",
+    "ISHIMWE Frank",
+    "ISHIMWE MPANO Honoline",
+    "IYONASENZE Bonheur",
+    "MANIRATANGA Elie",
+    "MANIRIHO  Jean Paul",
+    "NAMUKUNDIYICYO Pascaline",
+    "NIYONSHUTI Bruno",
+    "NIYUBAHWE Giselle",
+    "NTWARI NZABARINDA Guillaume",
+    "NYIRABAGENI Leonille",
+    "TUYIKUNDE  Marie Ange",
+    "UMWARIWASE Stella Divine",
+    "UWAMAHORO HIRWA Berthe",
+    "UWAMURERA Anitha",
+    "UWIDUHAYE Belise",
+    "UWIHANGANYE  Ezechiel"
+  ],
+  "S6A": [
+    "DATIVE BENIHIRWE",
+    "DORCAS DUSABIRANE",
+    "KEVINE IFASHUWACU",
+    "AIME PATRICK IMFURANASE",
+    "DIVINE INGABIRE",
+    "NATALIE IRAKARAMA",
+    "PHIONAH KABATESI",
+    "DIANE MUHONGERWA",
+    "Agnes MUKAMABANO",
+    "LILIANE MUKAMUGABO",
+    "DEVOTHE MUKAMUGISHA",
+    "CLARISSE MUKARUKUNDO",
+    "MICHELINE MUKESHIMANA",
+    "DENYSE MUNEZERO",
+    "GAUDENCE MUREKAZE",
+    "CLAUDINE MUSHIMIYIMANA",
+    "ANGELINA MUTEZIMANA",
+    "ANITHA MUTUYIMANA",
+    "ESTHER NISHIMWE UWIJURU",
+    "DELIPHINE NIYIKORA",
+    "LAURENCE NIYITANGINGABIRE",
+    "ISMAEL NIYOMUTABAZI",
+    "INNOCENT NIYONGIRA",
+    "CLARISSE NIYONSENGA",
+    "Nobel PRINCE Anathole",
+    "EDEN SHALOM SANGWA",
+    "EVANGELINE TUMUSIFU",
+    "Eliane TUYISHIME",
+    "Marie Ange TUYIZERE",
+    "HELENE UMUHUZA",
+    "Benize UMURISA HOGOZA",
+    "Alice UMUTONI",
+    "STEPHANIE UMUTONIWASE",
+    "enatha UMUTONIWASE",
+    "Charlotte UWABEZA",
+    "BEATHA UWAMAHORO",
+    "DIANE UWAMBAJIMANA",
+    "JOSIANE UWINEZA",
+    "Henriette UWINEZA",
+    "Joselyne UWIRAGIYE",
+    "Consolee UWUMUGISHA"
+  ],
+  "S6B": [
+    "AHIMBAZWE CONSTANT",
+    "AKURUKUNDO Adeline",
+    "DUSHIMIMANA Albine",
+    "DUSINGIZIMANA Monica",
+    "DUSINGIZIMANA Faustine",
+    "GASARO Lucky",
+    "IRATUZI PRINCE",
+    "ISHIMWE Clementine",
+    "IYAMUDUHAYE FORTUNEE",
+    "KAYESU HOPE",
+    "KAYESU FLORENCE",
+    "KIREZI ANGEL",
+    "MUGANWA JOYCE",
+    "MUGENIWAYEZU HENRIETTE",
+    "MUHAWIMANA Aline",
+    "MUHORAKEYE ALLIANCE",
+    "MUKANDAYISHIMIYE Sylivie",
+    "MUTIMAWURUGO ESTHER",
+    "MUTONIWASE Bella",
+    "NDACYAYISENGA ANITHA",
+    "NDAYISHIMIYE SAMUEL",
+    "NIKUZE Jean Pierre",
+    "NIRERE LOUISE",
+    "NIYINDEMERA MUTABARUKA Eunice Helena",
+    "NIYINGENERA JOYEUSE",
+    "NIYOKWIZERWA LILIANE",
+    "NIYONAGIZE AZELE",
+    "NYAMPINGA PROVIDENCE",
+    "NYIRAKANYANA Sandrine",
+    "NYIRANIZEYIMANA Clesence",
+    "NYIRIMBABAZI Olive",
+    "TUYISENGE SANDRINE",
+    "UMURORA JOSIANE",
+    "UWAYISENGA ESPERANCE",
+    "UWERA Diane",
+    "UWIDUHAYE CHARITE",
+    "UWINEZA Jeanne d'Arc",
+    "UWINGABIRE Albertine",
+    "UWIZESERANO SANDRINE",
+    "UWONKUNDA Henriette",
+    "YEBARE PHIONAH"
+  ]
+};
+
+        // Function to verify student
+        function isValidStudent(className, studentName) {
+            return studentsByClass[className] && studentsByClass[className].includes(studentName.trim());
+        }
+
+        // Navigation Sticky Effect
+        const navbar = document.querySelector('.navbar');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 50) {
+                navbar.classList.add('sticky');
+            } else {
+                navbar.classList.remove('sticky');
+            }
+        });
+
+        // Mobile Navigation Toggle
+        const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+        const navbarMenu = document.getElementById('navbar');
+        const mobileOverlay = document.getElementById('mobileOverlay');
+        mobileMenuBtn.addEventListener('click', () => {
+            navbarMenu.classList.toggle('active');
+            mobileOverlay.classList.toggle('hidden');
+            document.body.style.overflow = navbarMenu.classList.contains('active') ? 'hidden' : '';
+            mobileMenuBtn.setAttribute('aria-expanded', navbarMenu.classList.contains('active'));
+        });
+        mobileOverlay.addEventListener('click', () => {
+            navbarMenu.classList.remove('active');
+            mobileOverlay.classList.add('hidden');
+            document.body.style.overflow = '';
+            mobileMenuBtn.setAttribute('aria-expanded', 'false');
+        });
+
+        // Banner Carousel
+        const slides = document.querySelectorAll('.banner-slide');
+        const dots = document.querySelectorAll('.banner-dot');
+        const prevBtn = document.querySelector('.banner-prev');
+        const nextBtn = document.querySelector('.banner-next');
+        let currentSlide = 0;
+
+        function showSlide(index) {
+            slides.forEach((slide, i) => {
+                slide.classList.toggle('active', i === index);
+                dots[i].classList.toggle('active', i === index);
+            });
+        }
+
+        function nextSlide() {
+            currentSlide = (currentSlide + 1) % slides.length;
+            showSlide(currentSlide);
+        }
+
+        function prevSlide() {
+            currentSlide = (currentSlide - 1 + slides.length) % slides.length;
+            showSlide(currentSlide);
+        }
+
+        dots.forEach(dot => {
+            dot.addEventListener('click', () => {
+                currentSlide = parseInt(dot.dataset.slide);
+                showSlide(currentSlide);
+            });
+        });
+
+        prevBtn.addEventListener('click', prevSlide);
+        nextBtn.addEventListener('click', nextSlide);
+
+        // Auto-slide every 5 seconds
+        let slideInterval = setInterval(nextSlide, 5000);
+        document.querySelector('.banner-carousel').addEventListener('mouseenter', () => clearInterval(slideInterval));
+        document.querySelector('.banner-carousel').addEventListener('mouseleave', () => slideInterval = setInterval(nextSlide, 5000));
+
+        // Back to Top
+        const backToTopButton = document.getElementById('backToTop');
+        window.addEventListener('scroll', () => {
+            backToTopButton.classList.toggle('hidden', window.scrollY < 300);
+        });
+        backToTopButton.addEventListener('click', () => {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+
+        // Dynamic Testimonials
+        const testimonialForm = document.getElementById('testimonialForm');
+        const testimonialName = document.getElementById('testimonialName');
+        const testimonialClass = document.getElementById('testimonialClass');
+        const testimonialQuote = document.getElementById('testimonialQuote');
+        const testimonialContainer = document.getElementById('testimonialContainer');
+
+        // Populate class options
+        Object.keys(studentsByClass).forEach(cls => {
+            const option = document.createElement('option');
+            option.value = cls;
+            option.textContent = cls;
+            testimonialClass.appendChild(option);
+        });
+
+        function loadTestimonials() {
+            const storedTestimonials = JSON.parse(localStorage.getItem('testimonials')) || [];
+            testimonialContainer.innerHTML = '';
+            storedTestimonials.forEach(testimonial => {
+                const div = document.createElement('div');
+                div.className = 'testimonial-card p-6 text-center';
+                div.innerHTML = `
+                    <img src="https://via.placeholder.com/100?text=${testimonial.name.charAt(0)}" alt="${testimonial.name}" class="w-16 h-16 rounded-full mx-auto mb-4 object-cover">
+                    <p class="text-gray-600 italic mb-4">"${testimonial.quote}"</p>
+                    <p class="font-semibold text-blue-600">${testimonial.name} (${testimonial.className})</p>
+                `;
+                testimonialContainer.appendChild(div);
+            });
+        }
+
+        testimonialForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const name = testimonialName.value.trim();
+            const className = testimonialClass.value;
+            const quote = testimonialQuote.value.trim();
+            if (name && className && quote && isValidStudent(className, name)) {
+                const storedTestimonials = JSON.parse(localStorage.getItem('testimonials')) || [];
+                storedTestimonials.push({ name, className, quote });
+                localStorage.setItem('testimonials', JSON.stringify(storedTestimonials));
+                loadTestimonials();
+                testimonialName.value = '';
+                testimonialClass.value = '';
+                testimonialQuote.value = '';
+                alert('Testimonial submitted successfully.');
+            } else {
+                alert('Invalid name or class. Please verify your details.');
+            }
+        });
+
+        loadTestimonials();
+
+        // Dynamic Club Joining
+        const joinButtons = document.querySelectorAll('.join-club');
+        joinButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                const club = button.parentElement.dataset.club;
+                const name = prompt('Enter your name:');
+                const className = prompt('Enter your class (e.g., S1A):');
+                if (name && className && isValidStudent(className, name.trim())) {
+                    const storedMembers = JSON.parse(localStorage.getItem('clubMembers')) || {};
+                    if (!storedMembers[club]) storedMembers[club] = [];
+                    storedMembers[club].push({ name: name.trim(), className });
+                    localStorage.setItem('clubMembers', JSON.stringify(storedMembers));
+                    loadClubMembers();
+                    alert(`You have joined ${club} successfully.`);
+                } else {
+                    alert('Invalid name or class. Please verify your details.');
+                }
+            });
+        });
+
+        function loadClubMembers() {
+            const storedMembers = JSON.parse(localStorage.getItem('clubMembers')) || {};
+            document.querySelectorAll('.club-card').forEach(card => {
+                const club = card.dataset.club;
+                const membersDiv = card.querySelector('.club-members');
+                membersDiv.innerHTML = '';
+                if (storedMembers[club] && storedMembers[club].length > 0) {
+                    membersDiv.innerHTML = `<p class="font-bold">Members (${storedMembers[club].length}):</p><ul class="list-disc pl-4">${storedMembers[club].map(m => `<li>${m.name} (${m.className})</li>`).join('')}</ul>`;
+                }
+            });
+        }
+
+        loadClubMembers();
+
+        // Dynamic Events (original static)
+        const events = [
+            { title: 'Inter-class Football Tournament', date: 'November 5, 2025', description: 'Join the exciting football match with classmates.' },
+            { title: 'Cultural Week', date: 'November 10-15, 2025', description: 'Celebrate diversity through performances.' },
+            { title: 'Science Fair', date: 'November 20, 2025', description: 'Showcase innovative projects.' },
+        ];
+
+        const eventsContainer = document.getElementById('eventsContainer');
+        events.forEach(event => {
+            const div = document.createElement('div');
+            div.className = 'event-card p-6';
+            div.innerHTML = `
+                <h3 class="text-xl font-semibold text-blue-600 mb-2">${event.title}</h3>
+                <p class="text-gray-600 mb-2"><i class="fas fa-calendar-alt mr-2"></i>${event.date}</p>
+                <p class="text-gray-600">${event.description}</p>
+            `;
+            eventsContainer.appendChild(div);
+        });
+
+        // Forum Functionality
+        const forumForm = document.getElementById('forumForm');
+        const forumInput = document.getElementById('forumInput');
+        const forumPosts = document.getElementById('forumPosts');
+
+        function loadForumPosts() {
+            const storedPosts = JSON.parse(localStorage.getItem('forumPosts')) || [];
+            forumPosts.innerHTML = '';
+            storedPosts.forEach(post => {
+                const div = document.createElement('div');
+                div.className = 'bg-white p-4 rounded-lg shadow';
+                div.innerHTML = `
+                    <p class="font-semibold text-blue-600">${post.author}</p>
+                    <p class="text-gray-600">${post.content}</p>
+                    <p class="text-gray-500 text-sm mt-2"><i class="fas fa-clock mr-2"></i>${post.date}</p>
+                `;
+                forumPosts.appendChild(div);
+            });
+        }
+
+        forumForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const content = forumInput.value.trim();
+            if (content) {
+                const newPost = {
+                    author: 'Anonymous Student',
+                    content,
+                    date: new Date().toLocaleString(),
+                };
+                const storedPosts = JSON.parse(localStorage.getItem('forumPosts')) || [];
+                storedPosts.push(newPost);
+                localStorage.setItem('forumPosts', JSON.stringify(storedPosts));
+                loadForumPosts();
+                forumInput.value = '';
+            }
+        });
+
+        document.addEventListener('DOMContentLoaded', loadForumPosts);
+
+        // Chatbot Functionality (Simplified)
+        const chatbotToggle = document.getElementById('chatbot-toggle');
+        const chatbotWindow = document.getElementById('chatbot-window');
+        const chatbotClose = document.getElementById('chatbot-close');
+        const chatbotMessages = document.getElementById('chatbot-messages');
+        const chatbotInput = document.getElementById('chatbot-input');
+        const chatbotSend = document.getElementById('chatbot-send');
+        let currentLanguage = 'en';
+
+        chatbotToggle.addEventListener('click', () => {
+            chatbotWindow.classList.toggle('hidden');
+            chatbotToggle.setAttribute('aria-expanded', !chatbotWindow.classList.contains('hidden'));
+            if (!chatbotWindow.classList.contains('hidden') && !chatbotMessages.children.length) {
+                addBotMessage('Welcome to Kageyo TVET! How can I assist you today?');
+            }
+        });
+
+        chatbotClose.addEventListener('click', () => {
+            chatbotWindow.classList.add('hidden');
+            chatbotToggle.setAttribute('aria-expanded', 'false');
+        });
+
+        chatbotSend.addEventListener('click', sendMessage);
+        chatbotInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') sendMessage();
+        });
+
+        function sendMessage() {
+            const message = chatbotInput.value.trim();
+            if (message) {
+                addUserMessage(message);
+                chatbotInput.value = '';
+                setTimeout(() => processMessage(message), 500);
+            }
+        }
+
+        function addUserMessage(message) {
+            const div = document.createElement('div');
+            div.className = 'bg-blue-100 p-3 rounded-lg mb-2 max-w-[80%] ml-auto';
+            div.textContent = message;
+            chatbotMessages.appendChild(div);
+            chatbotMessages.scrollTop = chatbotMessages.scrollHeight;
+        }
+
+        function addBotMessage(message) {
+            const div = document.createElement('div');
+            div.className = 'bg-gray-100 p-3 rounded-lg mb-2 max-w-[80%] flex items-start';
+            div.innerHTML = `
+                <img src="logo.jpg" alt="Kageyo Assistant" class="w-8 h-8 rounded-full mr-2">
+                <p>${message}</p>
+            `;
+            chatbotMessages.appendChild(div);
+            chatbotMessages.scrollTop = chatbotMessages.scrollHeight;
+        }
+
+        function processMessage(message) {
+            const lowerMessage = message.toLowerCase();
+            let response = 'I\u2019m not sure I understand. Try asking about our courses, admissions, or student life!';
+            if (lowerMessage.includes('courses') || lowerMessage.includes('programs')) {
+                response = 'We offer 18 courses including Software Development, Accounting, and Networking. Visit our Trades page for more details!';
+            } else if (lowerMessage.includes('admission') || lowerMessage.includes('apply')) {
+                response = 'Apply online via our Admissions page. The deadline is July 15, 2025!';
+            } else if (lowerMessage.includes('student life')) {
+                response = 'Student life at Kageyo TVET is vibrant with clubs, events, and hostel facilities. Explore this page for more!';
+            }
+            addBotMessage(response);
+        }
+    </script>
+</body>
+</html>

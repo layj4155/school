@@ -1,0 +1,824 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Kageyo TVET School - Dynamic Academic Resources with AI-powered features">
+    <meta name="author" content="jobeuse| yobu| job| iradukunda">
+    <title>Dynamic Academic Resources | Kageyo TVET School</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    
+    <style>
+        /* Base styles from index.html */
+        .hero-bg {
+            background-image: url('WEB_1.JPG');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+        .hero-overlay {
+            background-image: linear-gradient(to bottom, rgba(0,123,255,0), rgba(17, 0, 255, 0.9));
+        }
+        
+        /* Academic resources specific styles */
+        .academic-section {
+            background-color: #f8fafc;
+            border-radius: 0.5rem;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            border-left: 4px solid #1D4ED8;
+        }
+        
+        .resource-card {
+            background-color: white;
+            border-radius: 0.5rem;
+            padding: 1.5rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            margin-bottom: 1rem;
+        }
+        
+        .resource-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.1);
+        }
+        
+        .download-btn {
+            background-color: #1D4ED8;
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 0.25rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: background-color 0.3s ease;
+        }
+        
+        .download-btn:hover {
+            background-color: #1E40AF;
+        }
+        
+        /* NEW INNOVATIVE STYLES */
+        
+        /* AI Assistant Panel */
+        .ai-assistant {
+            background: linear-gradient(135deg, #1D4ED8 0%, #3B82F6 100%);
+            color: white;
+            border-radius: 0.5rem;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        
+        .ai-response {
+            background-color: rgba(255,255,255,0.1);
+            border-radius: 0.5rem;
+            padding: 1rem;
+            margin-top: 1rem;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        
+        /* Interactive Progress Tracker */
+        .progress-tracker {
+            background-color: white;
+            border-radius: 0.5rem;
+            padding: 1.5rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+        }
+        
+        .progress-bar {
+            height: 10px;
+            background-color: #e5e7eb;
+            border-radius: 5px;
+            overflow: hidden;
+            margin: 1rem 0;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #1D4ED8, #3B82F6);
+            border-radius: 5px;
+            transition: width 0.5s ease;
+        }
+        
+        /* Dynamic Resource Cards */
+        .dynamic-card {
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .card-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(29, 78, 216, 0.9);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .dynamic-card:hover .card-overlay {
+            opacity: 1;
+        }
+        
+        /* Interactive Calendar */
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 5px;
+            margin-top: 1rem;
+        }
+        
+        .calendar-day {
+            background-color: white;
+            border-radius: 0.25rem;
+            padding: 0.5rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .calendar-day:hover {
+            background-color: #e5e7eb;
+        }
+        
+        .calendar-day.event {
+            background-color: #1D4ED8;
+            color: white;
+        }
+        
+        .calendar-day.today {
+            border: 2px solid #1D4ED8;
+        }
+        
+        /* 3D Flip Cards for Courses */
+        .flip-card {
+            perspective: 1000px;
+            height: 200px;
+            margin-bottom: 1rem;
+        }
+        
+        .flip-card-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            text-align: center;
+            transition: transform 0.6s;
+            transform-style: preserve-3d;
+        }
+        
+        .flip-card:hover .flip-card-inner {
+            transform: rotateY(180deg);
+        }
+        
+        .flip-card-front, .flip-card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+            border-radius: 0.5rem;
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        
+        .flip-card-front {
+            background-color: white;
+            color: #1D4ED8;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .flip-card-back {
+            background-color: #1D4ED8;
+            color: white;
+            transform: rotateY(180deg);
+        }
+        
+        /* Real-time Updates Badge */
+        .update-badge {
+            position: absolute;
+            top: -10px;
+            right: -10px;
+            background-color: #EF4444;
+            color: white;
+            border-radius: 50%;
+            width: 25px;
+            height: 25px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+        
+        /* Dark mode support */
+        .dark-mode {
+            background-color: #1F2937;
+            color: #F9FAFB;
+        }
+        
+        .dark-mode .resource-card {
+            background-color: #374151;
+            color: #F9FAFB;
+        }
+        
+        /* Mobile responsive improvements */
+        @media (max-width: 768px) {
+            .academic-section {
+                padding: 1rem;
+            }
+            
+            .calendar-grid {
+                grid-template-columns: repeat(7, 1fr);
+                font-size: 0.75rem;
+            }
+            
+            .flip-card {
+                height: 150px;
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-100 font-roboto">
+    <!-- Header -->
+    <header class="bg-white shadow" role="banner">
+        <div class="bg-blue-600 text-white py-2">
+            <div class="container mx-auto px-4 flex justify-between items-center">
+                <div class="flex items-center space-x-4">
+                    <button id="darkModeToggle" class="text-white hover:text-blue-200 transition">
+                        <i class="fas fa-moon"></i> Dark Mode
+                    </button>
+                    <span id="liveTime" class="text-sm"></span>
+                </div>
+                <a href="https://wa.me/1234567890" target="_blank" class="hover:underline" aria-label="Join Kageyo TVET School WhatsApp Group">
+                    <i class="fab fa-whatsapp mr-2" aria-hidden="true"></i>Join WhatsApp Group
+                </a>
+            </div>
+        </div>
+        <div class="container mx-auto px-4 py-4">
+            <nav class="flex flex-wrap items-center justify-between">
+                <div class="flex items-center space-x-4">
+                    <a href="index.html" aria-label="Kageyo TVET School Home">
+                        <img src="logo.jpg" alt="Kageyo TVET School Logo" class="w-20 h-20">
+                    </a>
+                    <div>
+                        <h1>
+                            <a href="index.html" class="text-2xl font-bold text-blue-600">KAGEYO TVET SCHOOL</a>
+                        </h1>
+                        <p class="text-sm text-gray-500">WORK - COURAGE - SOLIDARITY</p>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <button id="notificationsBtn" class="relative p-2 text-blue-600 hover:text-blue-800">
+                        <i class="fas fa-bell"></i>
+                        <span id="notificationCount" class="absolute -top-1 -right-1 bg-red-500 text-white rounded-full w-5 h-5 text-xs flex items-center justify-center hidden">3</span>
+                    </button>
+                </div>
+            </nav>
+        </div>
+        <div class="hero-bg h-64 flex items-center justify-center text-center hero-overlay" role="region" aria-label="Academic Resources">
+            <div class="container mx-auto px-4">
+                <h2 class="text-3xl font-bold text-white mb-4">Dynamic Academic Resources</h2>
+                <p class="text-white text-lg">AI-Powered Learning Hub with Real-time Updates</p>
+            </div>
+        </div>
+    </header>
+
+    <main role="main" class="py-8">
+        <div class="container mx-auto px-4">
+            <!-- AI Assistant Panel -->
+            <section class="ai-assistant" aria-label="AI Learning Assistant">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-2xl font-bold">AI Learning Assistant</h2>
+                    <span class="bg-white text-blue-600 px-2 py-1 rounded text-sm flex items-center">
+                        <i class="fas fa-robot mr-1"></i> Online
+                    </span>
+                </div>
+                <p class="mb-4">Ask me anything about courses, schedules, or academic policies. I can help you find resources and plan your studies.</p>
+                <div class="flex">
+                    <input type="text" id="aiQuestion" placeholder="e.g., What's the deadline for Software Development project?" class="flex-grow p-3 rounded-l text-gray-800">
+                    <button id="askAI" class="bg-white text-blue-600 px-4 rounded-r font-bold">Ask</button>
+                </div>
+                <div id="aiResponse" class="ai-response hidden">
+                    <div class="flex items-start">
+                        <i class="fas fa-robot mr-2 mt-1 text-blue-200"></i>
+                        <div id="responseText"></div>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- Progress Tracker -->
+            <section class="progress-tracker" aria-label="Academic Progress Tracker">
+                <h2 class="text-2xl font-bold text-blue-600 mb-4">Your Academic Progress</h2>
+                <div class="flex justify-between mb-2">
+                    <span>Current Semester Progress</span>
+                    <span id="progressPercent">65%</span>
+                </div>
+                <div class="progress-bar">
+                    <div id="progressFill" class="progress-fill" style="width: 65%"></div>
+                </div>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4">
+                    <div class="text-center">
+                        <div class="text-2xl font-bold text-blue-600">12</div>
+                        <div class="text-sm text-gray-600">Courses Completed</div>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-2xl font-bold text-blue-600">4</div>
+                        <div class="text-sm text-gray-600">Current Courses</div>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-2xl font-bold text-blue-600">86%</div>
+                        <div class="text-sm text-gray-600">Average Grade</div>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-2xl font-bold text-blue-600">45</div>
+                        <div class="text-sm text-gray-600">Days to Exams</div>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- Interactive Calendar -->
+            <section class="academic-section" aria-label="Interactive Academic Calendar">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-2xl font-bold text-blue-600">Interactive Academic Calendar</h2>
+                    <div class="flex space-x-2">
+                        <button id="prevMonth" class="p-2 text-blue-600 hover:bg-blue-100 rounded">
+                            <i class="fas fa-chevron-left"></i>
+                        </button>
+                        <button id="nextMonth" class="p-2 text-blue-600 hover:bg-blue-100 rounded">
+                            <i class="fas fa-chevron-right"></i>
+                        </button>
+                    </div>
+                </div>
+                <div id="currentMonth" class="text-lg font-semibold text-center mb-4">November 2024</div>
+                <div class="calendar-grid">
+                    <!-- Calendar days will be populated by JavaScript -->
+                </div>
+                <div id="eventDetails" class="mt-4 p-4 bg-blue-50 rounded hidden">
+                    <h3 class="font-bold text-blue-600" id="eventTitle"></h3>
+                    <p id="eventDescription" class="text-gray-700"></p>
+                    <p id="eventDate" class="text-sm text-gray-500 mt-2"></p>
+                </div>
+            </section>
+            
+            <!-- Dynamic Course Materials -->
+            <section class="academic-section" aria-label="Dynamic Course Materials">
+                <h2 class="text-2xl font-bold text-blue-600 mb-6">Dynamic Course Materials</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Software Development -->
+                    <div class="flip-card">
+                        <div class="flip-card-inner">
+                            <div class="flip-card-front">
+                                <h3 class="text-xl font-bold">Software Development</h3>
+                                <p class="mt-2">Latest updates: <span id="sdUpdateDate" class="font-semibold">2 days ago</span></p>
+                                <div class="mt-4 flex justify-center">
+                                    <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center">
+                                        <i class="fas fa-code text-blue-600 text-2xl"></i>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="flip-card-back">
+                                <h3 class="text-xl font-bold">Software Development</h3>
+                                <ul class="mt-2 text-left text-sm">
+                                    <li class="mb-1"><i class="fas fa-check mr-2"></i> New Python modules added</li>
+                                    <li class="mb-1"><i class="fas fa-check mr-2"></i> Web project deadline: Dec 15</li>
+                                    <li class="mb-1"><i class="fas fa-check mr-2"></i> Guest lecture on AI next week</li>
+                                </ul>
+                                <button class="mt-4 bg-white text-blue-600 px-4 py-2 rounded font-bold">
+                                    Access Materials
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Accounting -->
+                    <div class="flip-card">
+                        <div class="flip-card-inner">
+                            <div class="flip-card-front">
+                                <h3 class="text-xl font-bold">Accounting</h3>
+                                <p class="mt-2">Latest updates: <span class="font-semibold">1 week ago</span></p>
+                                <div class="mt-4 flex justify-center">
+                                    <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center">
+                                        <i class="fas fa-calculator text-blue-600 text-2xl"></i>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="flip-card-back">
+                                <h3 class="text-xl font-bold">Accounting</h3>
+                                <ul class="mt-2 text-left text-sm">
+                                    <li class="mb-1"><i class="fas fa-check mr-2"></i> Tax calculation exercises updated</li>
+                                    <li class="mb-1"><i class="fas fa-check mr-2"></i> Mid-term test results available</li>
+                                    <li class="mb-1"><i class="fas fa-check mr-2"></i> Financial software training scheduled</li>
+                                </ul>
+                                <button class="mt-4 bg-white text-blue-600 px-4 py-2 rounded font-bold">
+                                    Access Materials
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Networking & IT -->
+                    <div class="flip-card">
+                        <div class="flip-card-inner">
+                            <div class="flip-card-front">
+                                <h3 class="text-xl font-bold">Networking & IT</h3>
+                                <p class="mt-2">Latest updates: <span class="font-semibold">Today</span></p>
+                                <div class="mt-4 flex justify-center">
+                                    <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center">
+                                        <i class="fas fa-network-wired text-blue-600 text-2xl"></i>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="flip-card-back">
+                                <h3 class="text-xl font-bold">Networking & IT</h3>
+                                <ul class="mt-2 text-left text-sm">
+                                    <li class="mb-1"><i class="fas fa-check mr-2"></i> New cybersecurity lab available</li>
+                                    <li class="mb-1"><i class="fas fa-check mr-2"></i> Practical exam scheduled for Nov 30</li>
+                                    <li class="mb-1"><i class="fas fa-check mr-2"></i> Cisco certification workshop added</li>
+                                </ul>
+                                <button class="mt-4 bg-white text-blue-600 px-4 py-2 rounded font-bold">
+                                    Access Materials
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Computer Systems -->
+                    <div class="flip-card">
+                        <div class="flip-card-inner">
+                            <div class="flip-card-front">
+                                <h3 class="text-xl font-bold">Computer Systems</h3>
+                                <p class="mt-2">Latest updates: <span class="font-semibold">3 days ago</span></p>
+                                <div class="mt-4 flex justify-center">
+                                    <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center">
+                                        <i class="fas fa-desktop text-blue-600 text-2xl"></i>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="flip-card-back">
+                                <h3 class="text-xl font-bold">Computer Systems</h3>
+                                <ul class="mt-2 text-left text-sm">
+                                    <li class="mb-1"><i class="fas fa-check mr-2"></i> Hardware troubleshooting guide updated</li>
+                                    <li class="mb-1"><i class="fas fa-check mr-2"></i> New components available in lab</li>
+                                    <li class="mb-1"><i class="fas fa-check mr-2"></i> System design project assigned</li>
+                                </ul>
+                                <button class="mt-4 bg-white text-blue-600 px-4 py-2 rounded font-bold">
+                                    Access Materials
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- Real-time Updates Section -->
+            <section class="academic-section" aria-label="Real-time Updates">
+                <h2 class="text-2xl font-bold text-blue-600 mb-6">Real-time Updates & Announcements</h2>
+                <div id="updatesContainer" class="space-y-4">
+                    <!-- Updates will be populated by JavaScript -->
+                </div>
+            </section>
+            
+            <!-- Study Planner -->
+            <section class="academic-section" aria-label="Personal Study Planner">
+                <h2 class="text-2xl font-bold text-blue-600 mb-6">Personal Study Planner</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <h3 class="text-lg font-semibold mb-4">Add Study Task</h3>
+                        <div class="flex mb-4">
+                            <input type="text" id="taskInput" placeholder="Enter study task" class="flex-grow p-2 border rounded-l">
+                            <button id="addTask" class="bg-blue-600 text-white px-4 rounded-r">Add</button>
+                        </div>
+                        <div id="taskList" class="space-y-2">
+                            <!-- Tasks will be added here -->
+                        </div>
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-semibold mb-4">Weekly Study Goals</h3>
+                        <div class="bg-blue-50 p-4 rounded">
+                            <div class="flex justify-between mb-2">
+                                <span>Software Development</span>
+                                <span>4/6 hours</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 67%"></div>
+                            </div>
+                            
+                            <div class="flex justify-between mb-2 mt-4">
+                                <span>Accounting</span>
+                                <span>3/5 hours</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 60%"></div>
+                            </div>
+                            
+                            <div class="flex justify-between mb-2 mt-4">
+                                <span>Networking</span>
+                                <span>2/4 hours</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 50%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-blue-900 text-white py-8">
+        <div class="container mx-auto px-4">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <div>
+                    <h3 class="text-lg font-bold mb-4">About Us</h3>
+                    <p class="text-sm">Kageyo TVET School is located in Gicumbi district, Kaniga sector near Kageyo tea factory and is a public TVET school.</p>
+                </div>
+                <div>
+                    <h3 class="text-lg font-bold mb-4">Quick Links</h3>
+                    <ul class="text-sm space-y-2">
+                        <li><a href="index.html" class="hover:underline">Home</a></li>
+                        <li><a href="about.html" class="hover:underline">About Us</a></li>
+                        <li><a href="trades.html" class="hover:underline">Trades</a></li>
+                        <li><a href="contact.html" class="hover:underline">Contact</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-lg font-bold mb-4">Contact Us</h3>
+                    <p class="text-sm">Gicumbi District, Rwanda</p>
+                    <p class="text-sm">Phone: +250 738266603</p>
+                    <p class="text-sm">Email: kageyotvet@gmail.com</p>
+                </div>
+                <div>
+                    <h3 class="text-lg font-bold mb-4">Follow Us</h3>
+                    <div class="flex space-x-4">
+                        <a href="https://facebook.com" target="_blank" aria-label="Follow on Facebook"><i class="fab fa-facebook-f" aria-hidden="true"></i></a>
+                        <a href="https://twitter.com" target="_blank" aria-label="Follow on Twitter"><i class="fab fa-twitter" aria-hidden="true"></i></a>
+                        <a href="https://instagram.com" target="_blank" aria-label="Follow on Instagram"><i class="fab fa-instagram" aria-hidden="true"></i></a>
+                    </div>
+                </div>
+            </div>
+            <p class="text-center text-sm mt-8">&copy; 2024 Kageyo TVET School. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Real-time clock
+        function updateTime() {
+            const now = new Date();
+            const options = { 
+                weekday: 'long', 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit'
+            };
+            document.getElementById('liveTime').textContent = now.toLocaleDateString('en-US', options);
+        }
+        setInterval(updateTime, 1000);
+        updateTime();
+        
+        // Dark Mode Toggle
+        document.getElementById('darkModeToggle').addEventListener('click', function() {
+            document.body.classList.toggle('dark-mode');
+            this.innerHTML = document.body.classList.contains('dark-mode') 
+                ? '<i class="fas fa-sun"></i> Light Mode' 
+                : '<i class="fas fa-moon"></i> Dark Mode';
+        });
+        
+        // AI Assistant
+        document.getElementById('askAI').addEventListener('click', function() {
+            const question = document.getElementById('aiQuestion').value;
+            if (question.trim() === '') return;
+            
+            const responseDiv = document.getElementById('aiResponse');
+            const responseText = document.getElementById('responseText');
+            
+            // Show loading state
+            responseText.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Thinking...';
+            responseDiv.classList.remove('hidden');
+            
+            // Simulate AI response after a delay
+            setTimeout(() => {
+                let response = '';
+                
+                if (question.toLowerCase().includes('software') || question.toLowerCase().includes('development')) {
+                    response = "The deadline for the Software Development project is December 15, 2024. You can find the project requirements in the 'Projects' section of the course materials. I recommend starting with the front-end development first, as the back-end integration usually takes more time.";
+                } else if (question.toLowerCase().includes('exam') || question.toLowerCase().includes('schedule')) {
+                    response = "The final exams are scheduled from June 2-13, 2025. The specific schedule for each course will be published one month before exams. Make sure to check the exam schedule regularly for any updates.";
+                } else if (question.toLowerCase().includes('material') || question.toLowerCase().includes('resource')) {
+                    response = "All course materials are available in the 'Dynamic Course Materials' section. You can access them by clicking on the flip cards for each course. New materials are added every week, so check back regularly.";
+                } else if (question.toLowerCase().includes('policy') || question.toLowerCase().includes('rule')) {
+                    response = "Our academic policies require at least 80% attendance, and plagiarism is strictly prohibited. You can find the complete academic policy document in the 'Academic Policies' section. If you have specific questions about a policy, feel free to ask.";
+                } else {
+                    response = "I understand you're asking about: '" + question + "'. For the most accurate information, I recommend checking the specific section related to your query on this page. If you need more detailed assistance, please contact the administration office.";
+                }
+                
+                responseText.innerHTML = response;
+            }, 1500);
+        });
+        
+        // Interactive Calendar
+        let currentDate = new Date();
+        
+        function renderCalendar() {
+            const monthNames = ["January", "February", "March", "April", "May", "June",
+                "July", "August", "September", "October", "November", "December"
+            ];
+            
+            document.getElementById('currentMonth').textContent = 
+                `${monthNames[currentDate.getMonth()]} ${currentDate.getFullYear()}`;
+            
+            const calendarGrid = document.querySelector('.calendar-grid');
+            calendarGrid.innerHTML = '';
+            
+            // Add day headers
+            const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+            days.forEach(day => {
+                const dayElement = document.createElement('div');
+                dayElement.className = 'font-bold text-center';
+                dayElement.textContent = day;
+                calendarGrid.appendChild(dayElement);
+            });
+            
+            // Get first day of month and number of days
+            const firstDay = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1).getDay();
+            const daysInMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0).getDate();
+            
+            // Add empty cells for days before the first day of the month
+            for (let i = 0; i < firstDay; i++) {
+                const emptyCell = document.createElement('div');
+                calendarGrid.appendChild(emptyCell);
+            }
+            
+            // Add days of the month
+            const today = new Date();
+            const events = {
+                5: { title: "Software Project Due", description: "Submit your web development project" },
+                12: { title: "Accounting Mid-term", description: "Mid-term examination in Room 101" },
+                18: { title: "Networking Lab", description: "Practical session in Networking Lab" },
+                25: { title: "Career Guidance", description: "Workshop on job opportunities" }
+            };
+            
+            for (let day = 1; day <= daysInMonth; day++) {
+                const dayElement = document.createElement('div');
+                dayElement.className = 'calendar-day';
+                dayElement.textContent = day;
+                
+                // Check if today
+                if (currentDate.getMonth() === today.getMonth() && 
+                    currentDate.getFullYear() === today.getFullYear() && 
+                    day === today.getDate()) {
+                    dayElement.classList.add('today');
+                }
+                
+                // Check if has event
+                if (events[day]) {
+                    dayElement.classList.add('event');
+                    dayElement.addEventListener('click', function() {
+                        document.getElementById('eventTitle').textContent = events[day].title;
+                        document.getElementById('eventDescription').textContent = events[day].description;
+                        document.getElementById('eventDate').textContent = 
+                            `${monthNames[currentDate.getMonth()]} ${day}, ${currentDate.getFullYear()}`;
+                        document.getElementById('eventDetails').classList.remove('hidden');
+                    });
+                }
+                
+                calendarGrid.appendChild(dayElement);
+            }
+        }
+        
+        document.getElementById('prevMonth').addEventListener('click', function() {
+            currentDate.setMonth(currentDate.getMonth() - 1);
+            renderCalendar();
+        });
+        
+        document.getElementById('nextMonth').addEventListener('click', function() {
+            currentDate.setMonth(currentDate.getMonth() + 1);
+            renderCalendar();
+        });
+        
+        // Initialize calendar
+        renderCalendar();
+        
+        // Real-time Updates
+        const updates = [
+            { id: 1, title: "New Software Development Module", content: "A new module on React.js has been added to the Software Development course.", time: "2 hours ago", urgent: true },
+            { id: 2, title: "Library Extended Hours", content: "The library will remain open until 8 PM during exam preparation period.", time: "1 day ago", urgent: false },
+            { id: 3, title: "Guest Lecture Announcement", content: "Industry expert John Smith will give a talk on Cybersecurity on November 20.", time: "3 days ago", urgent: true }
+        ];
+        
+        function renderUpdates() {
+            const updatesContainer = document.getElementById('updatesContainer');
+            updatesContainer.innerHTML = '';
+            
+            updates.forEach(update => {
+                const updateElement = document.createElement('div');
+                updateElement.className = 'resource-card relative';
+                updateElement.innerHTML = `
+                    ${update.urgent ? '<div class="update-badge"><i class="fas fa-exclamation"></i></div>' : ''}
+                    <h3 class="font-bold text-blue-600">${update.title}</h3>
+                    <p class="text-gray-700 mt-2">${update.content}</p>
+                    <div class="flex justify-between items-center mt-4">
+                        <span class="text-sm text-gray-500">${update.time}</span>
+                        <button class="text-blue-600 hover:underline">View Details</button>
+                    </div>
+                `;
+                updatesContainer.appendChild(updateElement);
+            });
+        }
+        
+        renderUpdates();
+        
+        // Simulate new update every 30 seconds
+        setInterval(() => {
+            const newUpdate = {
+                id: updates.length + 1,
+                title: "New Study Material Available",
+                content: "Additional practice exercises have been uploaded for the Accounting course.",
+                time: "Just now",
+                urgent: Math.random() > 0.7
+            };
+            
+            updates.unshift(newUpdate);
+            if (updates.length > 5) updates.pop();
+            
+            renderUpdates();
+            
+            // Show notification
+            document.getElementById('notificationCount').classList.remove('hidden');
+            document.getElementById('notificationCount').textContent = updates.length;
+        }, 30000);
+        
+        // Study Planner
+        document.getElementById('addTask').addEventListener('click', function() {
+            const taskInput = document.getElementById('taskInput');
+            const taskText = taskInput.value.trim();
+            
+            if (taskText === '') return;
+            
+            const taskList = document.getElementById('taskList');
+            const taskElement = document.createElement('div');
+            taskElement.className = 'flex items-center justify-between p-2 bg-blue-50 rounded';
+            taskElement.innerHTML = `
+                <span>${taskText}</span>
+                <button class="text-red-500 hover:text-red-700">
+                    <i class="fas fa-times"></i>
+                </button>
+            `;
+            
+            taskElement.querySelector('button').addEventListener('click', function() {
+                taskElement.remove();
+            });
+            
+            taskList.appendChild(taskElement);
+            taskInput.value = '';
+        });
+        
+        // Allow adding task with Enter key
+        document.getElementById('taskInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                document.getElementById('addTask').click();
+            }
+        });
+        
+        // Notification button
+        document.getElementById('notificationsBtn').addEventListener('click', function() {
+            alert(`You have ${updates.length} new updates. Check the "Real-time Updates" section for details.`);
+            document.getElementById('notificationCount').classList.add('hidden');
+        });
+        
+        // Simulate progress updates
+        setInterval(() => {
+            const progressPercent = document.getElementById('progressPercent');
+            const progressFill = document.getElementById('progressFill');
+            
+            // Random progress between 60% and 70% for demo
+            const newProgress = 60 + Math.floor(Math.random() * 11);
+            progressPercent.textContent = `${newProgress}%`;
+            progressFill.style.width = `${newProgress}%`;
+        }, 10000);
+    </script>
+</body>
+</html>

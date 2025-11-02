@@ -1,0 +1,1746 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modern Library Management System</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #1D4ED8; /* Matched to index.html primary blue */
+            --primary-dark: #1E40AF; /* Matched hover/deeper blue */
+            --secondary: #10b981;
+            --accent: #f59e0b;
+            --light: #f8fafc;
+            --dark: #1e293b;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #0f172a, #1e3a8a); /* Retained but can be adjusted if needed */
+            color: var(--dark);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            min-height: 100vh;
+        }
+        
+        /* Navigation Styles */
+        .navbar {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1rem;
+        }
+        
+        .nav-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 0;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            font-weight: 700;
+            font-size: 1.5rem;
+            color: var(--primary);
+            text-decoration: none;
+        }
+        
+        .logo i {
+            margin-right: 0.5rem;
+            font-size: 1.75rem;
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 1.5rem;
+        }
+        
+        .nav-link {
+            color: var(--dark);
+            text-decoration: none;
+            font-weight: 500;
+            padding: 0.5rem 0.75rem;
+            border-radius: 0.5rem;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        
+        .nav-link:hover {
+            color: var(--primary);
+            background-color: rgba(29, 78, 216, 0.1); /* Adjusted to match index blue opacity */
+        }
+        
+        .nav-link.active {
+            color: var(--primary);
+            background-color: rgba(29, 78, 216, 0.15); /* Adjusted to match index blue opacity */
+        }
+        
+        .nav-link.active::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0.75rem;
+            right: 0.75rem;
+            height: 2px;
+            background-color: var(--primary);
+            border-radius: 1px;
+        }
+        
+        .mobile-menu-btn {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: var(--dark);
+            cursor: pointer;
+        }
+        
+        @media (max-width: 768px) {
+            .mobile-menu-btn {
+                display: block;
+            }
+            
+            .nav-links {
+                position: absolute;
+                top: 100%;
+                left: 0;
+                right: 0;
+                background: white;
+                flex-direction: column;
+                padding: 1rem;
+                box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+                display: none;
+            }
+            
+            .nav-links.show {
+                display: flex;
+            }
+            
+            .nav-link {
+                padding: 0.75rem 1rem;
+                border-radius: 0.5rem;
+            }
+        }
+        
+        .card {
+            background: white;
+            border-radius: 1rem;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+        
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(29, 78, 216, 0.4); /* Adjusted shadow to match index blue */
+        }
+        
+        .btn-success {
+            background: var(--secondary);
+            color: white;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-success:hover {
+            background: #0d9668;
+            transform: translateY(-2px);
+        }
+        
+        .btn-danger {
+            background: #ef4444;
+            color: white;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-danger:hover {
+            background: #dc2626;
+            transform: translateY(-2px);
+        }
+        
+        .table-container {
+            max-width: 100%;
+            overflow-x: auto;
+            border-radius: 0.75rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        th {
+            background: var(--primary);
+            color: white;
+            font-weight: 600;
+            text-align: left;
+            padding: 0.75rem 1rem;
+        }
+        
+        td {
+            padding: 0.75rem 1rem;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        
+        tr:nth-child(even) {
+            background-color: #f8fafc;
+        }
+        
+        tr:hover {
+            background-color: #f1f5f9;
+        }
+        
+        .overdue {
+            background-color: #fee2e2 !important;
+        }
+        
+        .book-popup {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            backdrop-filter: blur(5px);
+        }
+        
+        .book-popup.active {
+            display: flex;
+            animation: fadeIn 0.3s ease;
+        }
+        
+        .book-popup-content {
+            background: white;
+            padding: 2rem;
+            border-radius: 1rem;
+            max-width: 90%;
+            width: 500px;
+            position: relative;
+            box-shadow: 0 20px 25px rgba(0, 0, 0, 0.2);
+            transform: translateY(0);
+            animation: slideUp 0.3s ease;
+        }
+        
+        .close-popup {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #64748b;
+            transition: color 0.3s ease;
+        }
+        
+        .close-popup:hover {
+            color: var(--primary);
+        }
+        
+        .input-field {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 1px solid #cbd5e1;
+            border-radius: 0.5rem;
+            transition: all 0.3s ease;
+            font-size: 1rem;
+        }
+        
+        .input-field:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(29, 78, 216, 0.2); /* Adjusted focus ring to match index blue */
+        }
+        
+        .stats-card {
+            background: white;
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            text-align: center;
+            transition: transform 0.3s ease;
+        }
+        
+        .stats-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .stats-number {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin: 0.5rem 0;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        @keyframes slideUp {
+            from { 
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to { 
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .book-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        
+        .book-item:last-child {
+            border-bottom: none;
+        }
+        
+        .notification {
+            position: fixed;
+            top: 1rem;
+            right: 1rem;
+            padding: 1rem 1.5rem;
+            border-radius: 0.5rem;
+            color: white;
+            z-index: 1100;
+            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+            transform: translateX(120%);
+            transition: transform 0.4s ease;
+        }
+        
+        .notification.show {
+            transform: translateX(0);
+        }
+        
+        .notification.success {
+            background: var(--secondary);
+        }
+        
+        .notification.error {
+            background: #ef4444;
+        }
+
+        #loginContainer {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        #loginForm {
+            background: white;
+            padding: 2rem;
+            border-radius: 1rem;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            width: 300px;
+            text-align: center;
+        }
+
+        #mainContent {
+            display: none;
+        }
+
+        #loginError {
+            color: #ef4444;
+            margin-top: 1rem;
+            display: none;
+        }
+        
+        .page {
+            display: none;
+        }
+        
+        .page.active {
+            display: block;
+        }
+        
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-left: 1rem;
+        }
+        
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--primary);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body class="min-h-screen">
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-content">
+                <a href="#" class="logo">
+                    <i class="fas fa-book"></i>
+                    <span>LibraryMS</span>
+                </a>
+                
+                <div class="nav-links" id="navLinks">
+                    <a href="#" class="nav-link active" data-page="dashboard">
+                        <i class="fas fa-home mr-2"></i>Dashboard
+                    </a>
+                    <a href="#" class="nav-link" data-page="borrow">
+                        <i class="fas fa-book-reader mr-2"></i>Borrow Books
+                    </a>
+                    <a href="#" class="nav-link" data-page="return">
+                        <i class="fas fa-history mr-2"></i>Return History
+                    </a>
+                    <a href="#" class="nav-link" data-page="students">
+                        <i class="fas fa-users mr-2"></i>Students
+                    </a>
+                    <a href="#" class="nav-link" data-page="settings">
+                        <i class="fas fa-cog mr-2"></i>Settings
+                    </a>
+                </div>
+                
+                <div class="user-profile">
+                    <div class="user-avatar">A</div>
+                    <div>
+                        <div class="font-medium">Admin User</div>
+                        <div class="text-xs text-gray-500">Librarian</div>
+                    </div>
+                </div>
+                
+                <button class="mobile-menu-btn" id="mobileMenuBtn">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <div id="loginContainer">
+        <form id="loginForm">
+            <h2 class="text-2xl font-bold text-gray-800 mb-4">Login to Library System</h2>
+            <input type="password" id="password" class="input-field mb-4" placeholder="Enter password" required />
+            <button type="submit" class="btn-primary w-full py-3 rounded-lg font-semibold">Login</button>
+            <p id="loginError">Incorrect password. Please try again.</p>
+        </form>
+    </div>
+
+    <div id="mainContent">
+        <!-- Dashboard Page -->
+        <div id="dashboard" class="page active">
+            <div class="max-w-7xl mx-auto p-4 sm:p-6">
+                <!-- Header -->
+                <header class="text-center mb-8">
+                    <h1 class="text-3xl sm:text-4xl font-bold text-white mb-2">📚 Modern Library Management System</h1>
+                    <p class="text-blue-200 text-lg">Efficiently manage book borrowing and returns</p>
+                </header>
+                
+                <!-- Stats Section -->
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
+                    <div class="stats-card">
+                        <div class="text-gray-500"><i class="fas fa-users text-xl"></i></div>
+                        <div class="stats-number" id="totalStudents">0</div>
+                        <div class="text-gray-600 font-medium">Active Students</div>
+                    </div>
+                    <div class="stats-card">
+                        <div class="text-gray-500"><i class="fas fa-book text-xl"></i></div>
+                        <div class="stats-number" id="totalBooks">0</div>
+                        <div class="text-gray-600 font-medium">Books Borrowed</div>
+                    </div>
+                    <div class="stats-card">
+                        <div class="text-gray-500"><i class="fas fa-clock text-xl"></i></div>
+                        <div class="stats-number" id="todayRecords">0</div>
+                        <div class="text-gray-600 font-medium">Today's Borrows</div>
+                    </div>
+                </div>
+                
+                <!-- Recent Activity -->
+                <div class="card p-6 mb-8">
+                    <h2 class="text-xl font-semibold text-gray-800 mb-4 pb-2 border-b border-gray-200">
+                        <i class="fas fa-chart-line mr-2"></i>Recent Activity
+                    </h2>
+                    <div class="space-y-4">
+                        <div class="flex justify-between items-center p-3 bg-blue-50 rounded-lg">
+                            <div class="flex items-center">
+                                <div class="bg-blue-100 p-2 rounded-full mr-3">
+                                    <i class="fas fa-book text-blue-600"></i>
+                                </div>
+                                <div>
+                                    <p class="font-medium">New book borrowed</p>
+                                    <p class="text-sm text-gray-500">James borrowed "Mathematics Textbook"</p>
+                                </div>
+                            </div>
+                            <span class="text-sm text-gray-500">2 hours ago</span>
+                        </div>
+                        <div class="flex justify-between items-center p-3 bg-green-50 rounded-lg">
+                            <div class="flex items-center">
+                                <div class="bg-green-100 p-2 rounded-full mr-3">
+                                    <i class="fas fa-undo-alt text-green-600"></i>
+                                </div>
+                                <div>
+                                    <p class="font-medium">Book returned</p>
+                                    <p class="text-sm text-gray-500">Sarah returned "Science Guide"</p>
+                                </div>
+                            </div>
+                            <span class="text-sm text-gray-500">5 hours ago</span>
+                        </div>
+                        <div class="flex justify-between items-center p-3 bg-yellow-50 rounded-lg">
+                            <div class="flex items-center">
+                                <div class="bg-yellow-100 p-2 rounded-full mr-3">
+                                    <i class="fas fa-exclamation-triangle text-yellow-600"></i>
+                                </div>
+                                <div>
+                                    <p class="font-medium">Overdue book</p>
+                                    <p class="text-sm text-gray-500">Michael has an overdue book "History Notes"</p>
+                                </div>
+                            </div>
+                            <span class="text-sm text-gray-500">1 day ago</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Quick Actions -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="card p-6">
+                        <h3 class="text-lg font-semibold text-gray-800 mb-4">Quick Actions</h3>
+                        <div class="space-y-3">
+                            <button class="w-full btn-primary py-3 rounded-lg font-semibold flex items-center justify-center">
+                                <i class="fas fa-plus-circle mr-2"></i>Add New Book
+                            </button>
+                            <button class="w-full btn-success py-3 rounded-lg font-semibold flex items-center justify-center">
+                                <i class="fas fa-user-plus mr-2"></i>Register Student
+                            </button>
+                            <button class="w-full bg-purple-600 text-white py-3 rounded-lg font-semibold flex items-center justify-center hover:bg-purple-700 transition">
+                                <i class="fas fa-chart-bar mr-2"></i>View Reports
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="card p-6">
+                        <h3 class="text-lg font-semibold text-gray-800 mb-4">System Status</h3>
+                        <div class="space-y-4">
+                            <div class="flex justify-between items-center">
+                                <span class="text-gray-600">Database</span>
+                                <span class="bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs font-medium">Online</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-gray-600">Backup</span>
+                                <span class="bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs font-medium">Completed</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-gray-600">Storage</span>
+                                <span class="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-xs font-medium">65% Used</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-gray-600">Last Update</span>
+                                <span class="text-gray-500 text-sm">Today, 10:30 AM</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Borrow Books Page -->
+        <div id="borrow" class="page">
+            <div class="max-w-7xl mx-auto p-4 sm:p-6">
+                <header class="text-center mb-8">
+                    <h1 class="text-3xl sm:text-4xl font-bold text-white mb-2">Borrow Books</h1>
+                    <p class="text-blue-200 text-lg">Manage book borrowing process</p>
+                </header>
+                
+                <div class="card p-6 sm:p-8">
+                    <!-- Borrow Form -->
+                    <form id="borrowForm" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+                        <div>
+                            <label class="block font-semibold text-gray-700 mb-2">Student Name</label>
+                            <input type="text" id="name" list="studentNames" required class="input-field" placeholder="Enter student name" />
+                        </div>
+
+                        <div>
+                            <label class="block font-semibold text-gray-700 mb-2">Class / Section</label>
+                            <input type="text" id="classSection" required class="input-field" placeholder="e.g. S3 ICT" />
+                        </div>
+
+                        <div>
+                            <label class="block font-semibold text-gray-700 mb-2">Books (max 5, comma separated)</label>
+                            <input type="text" id="books" required class="input-field" placeholder="e.g. Math, Science, English" />
+                        </div>
+
+                        <div class="flex items-end">
+                            <button type="submit" class="btn-primary w-full py-3 rounded-lg font-semibold">
+                                <i class="fas fa-plus-circle mr-2"></i>Add Record
+                            </button>
+                        </div>
+                    </form>
+
+                    <!-- Search and Actions -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                        <div>
+                            <label class="block font-semibold text-gray-700 mb-2">
+                                <i class="fas fa-search mr-2"></i>Search Student, Class, or Return By
+                            </label>
+                            <input type="text" id="searchBox" class="input-field" placeholder="Type student name, class, or return date..." />
+                        </div>
+                        <div class="flex items-end justify-end space-x-3">
+                            <button id="exportBtn" class="btn-success px-4 py-2 rounded-lg font-semibold">
+                                <i class="fas fa-file-export mr-2"></i>Export
+                            </button>
+                            <button id="clearAll" class="btn-danger px-4 py-2 rounded-lg font-semibold">
+                                <i class="fas fa-trash-alt mr-2"></i>Clear All
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Borrowed Books Table -->
+                    <div class="mb-12">
+                        <h2 class="text-xl font-semibold text-gray-800 mb-4 pb-2 border-b border-gray-200">
+                            <i class="fas fa-list-alt mr-2"></i>Borrowed Books List
+                        </h2>
+                        <div class="table-container">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Name</th>
+                                        <th>Class / Section</th>
+                                        <th>Books Borrowed</th>
+                                        <th>Count</th>
+                                        <th>Borrow Date</th>
+                                        <th>Borrow Time</th>
+                                        <th>Return By</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="borrowTable"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Return History Page -->
+        <div id="return" class="page">
+            <div class="max-w-7xl mx-auto p-4 sm:p-6">
+                <header class="text-center mb-8">
+                    <h1 class="text-3xl sm:text-4xl font-bold text-white mb-2">Return History</h1>
+                    <p class="text-blue-200 text-lg">View returned books and fines</p>
+                </header>
+                
+                <div class="card p-6 sm:p-8">
+                    <!-- Returned Books Table -->
+                    <div>
+                        <h2 class="text-xl font-semibold text-gray-800 mb-4 pb-2 border-b border-gray-200">
+                            <i class="fas fa-history mr-2"></i>Returned Books List
+                        </h2>
+                        <div class="table-container">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Name</th>
+                                        <th>Class / Section</th>
+                                        <th>Books Returned</th>
+                                        <th>Count</th>
+                                        <th>Borrow Date</th>
+                                        <th>Borrow Time</th>
+                                        <th>Return Date</th>
+                                        <th>Return Time</th>
+                                        <th>Fine (RWF)</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="returnedTable"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Students Page -->
+        <div id="students" class="page">
+            <div class="max-w-7xl mx-auto p-4 sm:p-6">
+                <header class="text-center mb-8">
+                    <h1 class="text-3xl sm:text-4xl font-bold text-white mb-2">Student Management</h1>
+                    <p class="text-blue-200 text-lg">Manage student information and records</p>
+                </header>
+                
+                <div class="card p-6 sm:p-8">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                        <div class="stats-card">
+                            <div class="text-gray-500"><i class="fas fa-user-graduate text-xl"></i></div>
+                            <div class="stats-number">342</div>
+                            <div class="text-gray-600 font-medium">Total Students</div>
+                        </div>
+                        <div class="stats-card">
+                            <div class="text-gray-500"><i class="fas fa-book text-xl"></i></div>
+                            <div class="stats-number">127</div>
+                            <div class="text-gray-600 font-medium">Active Borrowers</div>
+                        </div>
+                        <div class="stats-card">
+                            <div class="text-gray-500"><i class="fas fa-exclamation-triangle text-xl"></i></div>
+                            <div class="stats-number">8</div>
+                            <div class="text-gray-600 font-medium">Overdue Students</div>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-6">
+                        <h2 class="text-xl font-semibold text-gray-800 mb-4">Student List</h2>
+                        <div class="overflow-x-auto">
+                            <table class="min-w-full">
+                                <thead>
+                                    <tr>
+                                        <th class="px-4 py-2 bg-gray-100 text-left">ID</th>
+                                        <th class="px-4 py-2 bg-gray-100 text-left">Name</th>
+                                        <th class="px-4 py-2 bg-gray-100 text-left">Class</th>
+                                        <th class="px-4 py-2 bg-gray-100 text-left">Books Borrowed</th>
+                                        <th class="px-4 py-2 bg-gray-100 text-left">Status</th>
+                                        <th class="px-4 py-2 bg-gray-100 text-left">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td class="px-4 py-2 border-b">S001</td>
+                                        <td class="px-4 py-2 border-b">ABEREYIMANA James</td>
+                                        <td class="px-4 py-2 border-b">S1A</td>
+                                        <td class="px-4 py-2 border-b">2</td>
+                                        <td class="px-4 py-2 border-b"><span class="bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs">Active</span></td>
+                                        <td class="px-4 py-2 border-b">
+                                            <button class="text-blue-600 hover:text-blue-800 mr-2"><i class="fas fa-eye"></i></button>
+                                            <button class="text-green-600 hover:text-green-800"><i class="fas fa-edit"></i></button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="px-4 py-2 border-b">S002</td>
+                                        <td class="px-4 py-2 border-b">ABIMANA HIRWA Gany Blessing</td>
+                                        <td class="px-4 py-2 border-b">S1A</td>
+                                        <td class="px-4 py-2 border-b">0</td>
+                                        <td class="px-4 py-2 border-b"><span class="bg-gray-100 text-gray-800 px-2 py-1 rounded-full text-xs">Inactive</span></td>
+                                        <td class="px-4 py-2 border-b">
+                                            <button class="text-blue-600 hover:text-blue-800 mr-2"><i class="fas fa-eye"></i></button>
+                                            <button class="text-green-600 hover:text-green-800"><i class="fas fa-edit"></i></button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Settings Page -->
+        <div id="settings" class="page">
+            <div class="max-w-7xl mx-auto p-4 sm:p-6">
+                <header class="text-center mb-8">
+                    <h1 class="text-3xl sm:text-4xl font-bold text-white mb-2">System Settings</h1>
+                    <p class="text-blue-200 text-lg">Configure library system preferences</p>
+                </header>
+                
+                <div class="card p-6 sm:p-8">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <div>
+                            <h2 class="text-xl font-semibold text-gray-800 mb-4">General Settings</h2>
+                            <div class="space-y-4">
+                                <div>
+                                    <label class="block font-medium text-gray-700 mb-2">Library Name</label>
+                                    <input type="text" class="input-field" value="Modern School Library">
+                                </div>
+                                <div>
+                                    <label class="block font-medium text-gray-700 mb-2">Fine Rate (RWF per day)</label>
+                                    <input type="number" class="input-field" value="100">
+                                </div>
+                                <div>
+                                    <label class="block font-medium text-gray-700 mb-2">Max Borrowing Period (days)</label>
+                                    <input type="number" class="input-field" value="7">
+                                </div>
+                                <div>
+                                    <label class="block font-medium text-gray-700 mb-2">Max Books Per Student</label>
+                                    <input type="number" class="input-field" value="5">
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <h2 class="text-xl font-semibold text-gray-800 mb-4">Notification Settings</h2>
+                            <div class="space-y-4">
+                                <div class="flex items-center justify-between">
+                                    <span class="text-gray-700">Email Notifications</span>
+                                    <label class="relative inline-flex items-center cursor-pointer">
+                                        <input type="checkbox" class="sr-only peer" checked>
+                                        <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                                    </label>
+                                </div>
+                                <div class="flex items-center justify-between">
+                                    <span class="text-gray-700">Overdue Alerts</span>
+                                    <label class="relative inline-flex items-center cursor-pointer">
+                                        <input type="checkbox" class="sr-only peer" checked>
+                                        <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                                    </label>
+                                </div>
+                                <div class="flex items-center justify-between">
+                                    <span class="text-gray-700">Weekly Reports</span>
+                                    <label class="relative inline-flex items-center cursor-pointer">
+                                        <input type="checkbox" class="sr-only peer">
+                                        <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                                    </label>
+                                </div>
+                            </div>
+                            
+                            <div class="mt-8">
+                                <button class="btn-primary w-full py-3 rounded-lg font-semibold">
+                                    <i class="fas fa-save mr-2"></i>Save Settings
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notification -->
+    <div id="notification" class="notification"></div>
+
+    <script>
+        // Mobile menu functionality
+        const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+        const navLinks = document.getElementById('navLinks');
+        
+        mobileMenuBtn.addEventListener('click', () => {
+            navLinks.classList.toggle('show');
+        });
+        
+        // Close mobile menu when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!navLinks.contains(e.target) && !mobileMenuBtn.contains(e.target)) {
+                navLinks.classList.remove('show');
+            }
+        });
+        
+        // Page navigation
+        const navLinksList = document.querySelectorAll('.nav-link');
+        const pages = document.querySelectorAll('.page');
+        
+        navLinksList.forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                
+                // Remove active class from all links and pages
+                navLinksList.forEach(l => l.classList.remove('active'));
+                pages.forEach(p => p.classList.remove('active'));
+                
+                // Add active class to clicked link and corresponding page
+                link.classList.add('active');
+                const pageId = link.getAttribute('data-page');
+                document.getElementById(pageId).classList.add('active');
+                
+                // Close mobile menu after navigation
+                navLinks.classList.remove('show');
+            });
+        });
+        
+        // Login functionality
+        const loginForm = document.getElementById("loginForm");
+        const passwordInput = document.getElementById("password");
+        const loginError = document.getElementById("loginError");
+        const loginContainer = document.getElementById("loginContainer");
+        const mainContent = document.getElementById("mainContent");
+
+        loginForm.addEventListener("submit", (e) => {
+            e.preventDefault();
+            const enteredPassword = passwordInput.value.trim();
+            if (enteredPassword === "kageyo002") {
+                loginContainer.style.display = "none";
+                mainContent.style.display = "block";
+            } else {
+                loginError.style.display = "block";
+            }
+        });
+
+        const form = document.getElementById("borrowForm");
+        const borrowTable = document.getElementById("borrowTable");
+        const returnedTable = document.getElementById("returnedTable");
+        const searchBox = document.getElementById("searchBox");
+        const clearAllBtn = document.getElementById("clearAll");
+        const exportBtn = document.getElementById("exportBtn");
+        const notification = document.getElementById("notification");
+        
+        // Stats elements
+        const totalStudentsEl = document.getElementById("totalStudents");
+        const totalBooksEl = document.getElementById("totalBooks");
+        const todayRecordsEl = document.getElementById("todayRecords");
+
+        let borrowData = JSON.parse(localStorage.getItem("borrowData")) || [];
+        let returnedData = JSON.parse(localStorage.getItem("returnedData")) || [];
+
+        const fineRate = 100; // RWF per day per book
+
+        // Student data from Excel (extracted and integrated)
+        const students = [
+            // S1A
+            {'class': 'S1A', 'name': 'ABEREYIMANA James'},
+            {'class': 'S1A', 'name': 'ABIMANA HIRWA Gany Blessing'},
+            {'class': 'S1A', 'name': 'AHISHAKIYE MANZI Aime Miguel'},
+            {'class': 'S1A', 'name': 'ASHIMWE Nate Brayan'},
+            {'class': 'S1A', 'name': 'Benedicto King Samuel'},
+            {'class': 'S1A', 'name': 'BUGINGO BEZA Keny'},
+            {'class': 'S1A', 'name': 'GASHUMBA NDAYISHIMIYE KIM Kenedy'},
+            {'class': 'S1A', 'name': 'IGENUKWISHATSE BYISHIMO Jean Maurice'},
+            {'class': 'S1A', 'name': 'IGIRANEZA CYUSA Milton'},
+            {'class': 'S1A', 'name': 'IHUMURE NSENGIYUMVA Heroine'},
+            {'class': 'S1A', 'name': 'INEZA Queen Deborah'},
+            {'class': 'S1A', 'name': 'IRABARUTA MUGISHA Credo'},
+            {'class': 'S1A', 'name': 'IRAKOZE Belle Amie'},
+            {'class': 'S1A', 'name': 'IRAKOZE Janviere'},
+            {'class': 'S1A', 'name': 'IRAKOZE Yanis'},
+            {'class': 'S1A', 'name': 'ISHIMWE UWASE Gabriella'},
+            {'class': 'S1A', 'name': 'ISIMBI UWASE Joyeuse'},
+            {'class': 'S1A', 'name': 'ITANGANEZA Parfait'},
+            {'class': 'S1A', 'name': 'KAMIKAZI Patience'},
+            {'class': 'S1A', 'name': 'MUNEZERO Enock'},
+            {'class': 'S1A', 'name': 'MUNEZERO Priscilla'},
+            {'class': 'S1A', 'name': 'MUTONIWASE Benitha'},
+            {'class': 'S1A', 'name': 'MUVUNYI UWIMPUHWE Benie Hortance'},
+            {'class': 'S1A', 'name': 'MWITENEZA Jean Pierre'},
+            {'class': 'S1A', 'name': 'NDARUHUTSE Danny'},
+            {'class': 'S1A', 'name': 'NGABONZIZA MUGISHA Boris'},
+            {'class': 'S1A', 'name': 'NGANZO Born Bercee'},
+            {'class': 'S1A', 'name': 'RORIRORA Gihozo Anella'},
+            {'class': 'S1A', 'name': 'UWANYAGASANI Cedrick'},
+            {'class': 'S1A', 'name': 'UWASE Benitha'},
+            {'class': 'S1A', 'name': 'UWIDUHAYE Pascaline'},
+            {'class': 'S1A', 'name': 'UWINEZA AKALIZA Martina'},
+            {'class': 'S1A', 'name': 'UWIZEYIMANA Valentine'},
+            {'class': 'S1A', 'name': 'YUBAHWE Anitha'},
+            // S1B
+            {'class': 'S1B', 'name': 'ABAYISENGA Emmu Shalom'},
+            {'class': 'S1B', 'name': 'AMANI NSHUTI Claver'},
+            {'class': 'S1B', 'name': 'ARERWENEZA Laetitia'},
+            {'class': 'S1B', 'name': 'BAGABE Dieudonne'},
+            {'class': 'S1B', 'name': 'CYOMORO Nicky Prince'},
+            {'class': 'S1B', 'name': 'GAGA Lioness'},
+            {'class': 'S1B', 'name': 'IGANZE Olla Mireille'},
+            {'class': 'S1B', 'name': 'IGIRIMBABAZI Pamella'},
+            {'class': 'S1B', 'name': 'INEZA Aure Alexandrine'},
+            {'class': 'S1B', 'name': 'INEZA Deborah'},
+            {'class': 'S1B', 'name': 'INEZA KAMIKAZI TETA Promesse'},
+            {'class': 'S1B', 'name': 'IRAGENA Gloria'},
+            {'class': 'S1B', 'name': 'IRAGENA Laetitia'},
+            {'class': 'S1B', 'name': 'IRAME MUCYO Angelo'},
+            {'class': 'S1B', 'name': 'ISHEMA Rayan'},
+            {'class': 'S1B', 'name': 'ISHIMWE NGABO Hertier'},
+            {'class': 'S1B', 'name': 'ISHIMWE Olga'},
+            {'class': 'S1B', 'name': 'ISINGIZWE Ange Afurika Maombe'},
+            {'class': 'S1B', 'name': 'KAYITARE Caleb'},
+            {'class': 'S1B', 'name': 'KEZA UMI Abdoulatomani'},
+            {'class': 'S1B', 'name': 'KUNDA Beny Bienaime'},
+            {'class': 'S1B', 'name': 'KWIZERA MUHOZA Prince'},
+            {'class': 'S1B', 'name': 'MANZI Boaz'},
+            {'class': 'S1B', 'name': 'MBABAZI Blessed'},
+            {'class': 'S1B', 'name': 'MUNEZERO Gentil Hertier'},
+            {'class': 'S1B', 'name': 'MUNEZERO Yvette'},
+            {'class': 'S1B', 'name': 'MUTONIWASE Esther'},
+            {'class': 'S1B', 'name': 'NDIKUMWENAYO Jeannette'},
+            {'class': 'S1B', 'name': 'NIRAGIRE Aline'},
+            {'class': 'S1B', 'name': 'NIYONZIMA Lucky'},
+            {'class': 'S1B', 'name': 'RUDASINGWA'},
+            {'class': 'S1B', 'name': 'SHAMI Ianis Vangelis'},
+            {'class': 'S1B', 'name': 'UWASE GASARO Kelia'},
+            {'class': 'S1B', 'name': 'UWASE Sendrine'},
+            {'class': 'S1B', 'name': 'UWIZEYIMANA Chakilla'},
+            {'class': 'S1B', 'name': 'UYIZERA Regis'},
+            // S2A
+            {'class': 'S2A', 'name': 'BYISHIMO Remy'},
+            {'class': 'S2A', 'name': 'BAHO AKARIZA Kevine'},
+            {'class': 'S2A', 'name': 'DUKUZUMUREMYI Janvier'},
+            {'class': 'S2A', 'name': 'GANZA AHADI TRESOR'},
+            {'class': 'S2A', 'name': 'IHIRWE Benitha'},
+            {'class': 'S2A', 'name': 'IKUNDABAYO Kevin'},
+            {'class': 'S2A', 'name': 'IMFURAYASE Aimee Ange'},
+            {'class': 'S2A', 'name': 'INEZA QUEEN LOVE'},
+            {'class': 'S2A', 'name': 'INEZA Ryan Merci'},
+            {'class': 'S2A', 'name': 'IRASUBIZA NANSI Nadia Lenatha'},
+            {'class': 'S2A', 'name': 'ISHIMWE Brianna'},
+            {'class': 'S2A', 'name': 'ISUMBINGABO HIRWA HERVE'},
+            {'class': 'S2A', 'name': 'KALIZA UNEJEJE Ella Blassia'},
+            {'class': 'S2A', 'name': 'KAREKEZI SHIMWA SYLIVIE'},
+            {'class': 'S2A', 'name': 'KWIZE David'},
+            {'class': 'S2A', 'name': 'KWIZERA Richard'},
+            {'class': 'S2A', 'name': 'MANZI GANZA Fred'},
+            {'class': 'S2A', 'name': 'MBABAZI DORCAS'},
+            {'class': 'S2A', 'name': 'MUBIIRIGI Cyusa Prince'},
+            {'class': 'S2A', 'name': 'MUCYO MUGWANEZA Magnifique'},
+            {'class': 'S2A', 'name': 'MUSENGIMANA Marie Divine'},
+            {'class': 'S2A', 'name': 'NGABO Prince'},
+            {'class': 'S2A', 'name': 'NIYOMUKIZA STANISLAS'},
+            {'class': 'S2A', 'name': 'NIZEYIMANA Etienne'},
+            {'class': 'S2A', 'name': 'NYIRAHABAMUNGU Janviere'},
+            {'class': 'S2A', 'name': 'SHEMA NZAYITURIKI Benoit'},
+            {'class': 'S2A', 'name': 'TUYIZERE Solange'},
+            {'class': 'S2A', 'name': 'UFITEYEZU SERGE'},
+            {'class': 'S2A', 'name': 'UMUKUNDWA QUEEN VANESSA'},
+            {'class': 'S2A', 'name': 'UWAMASHIMWE JEANNETTE'},
+            {'class': 'S2A', 'name': 'UWASE Fabiola'},
+            {'class': 'S2A', 'name': 'UWIMANA Fideline'},
+            {'class': 'S2A', 'name': 'UWIMPUHWE JEROME'},
+            {'class': 'S2A', 'name': 'UWIZEYIMANA Patrick'},
+            // S2B
+            {'class': 'S2B', 'name': 'ABE MUGISHA Antoine'},
+            {'class': 'S2B', 'name': 'ABIJURU Gift Kelly Joel'},
+            {'class': 'S2B', 'name': 'AGASARO Liza Briante'},
+            {'class': 'S2B', 'name': 'CYOMORO NIYONZIMA Iba Bright'},
+            {'class': 'S2B', 'name': 'GIRUMUGISHA MASSIMO'},
+            {'class': 'S2B', 'name': 'HERO KARENGERA Keutch'},
+            {'class': 'S2B', 'name': 'HIRWA KAZE Danyllo'},
+            {'class': 'S2B', 'name': 'IGIHOZO Kellia'},
+            {'class': 'S2B', 'name': 'IGIKUNDIRO Fiston'},
+            {'class': 'S2B', 'name': 'IRERA PROMISE'},
+            {'class': 'S2B', 'name': 'IRIZA GWIZA Clenie'},
+            {'class': 'S2B', 'name': 'ISHIMWE YVETTE'},
+            {'class': 'S2B', 'name': 'ISHIMWE Belyse'},
+            {'class': 'S2B', 'name': 'ISHIMWE NGABO Victory'},
+            {'class': 'S2B', 'name': 'KABANDA RUTERANA He Calvin'},
+            {'class': 'S2B', 'name': 'KAMALI IGIHOZO IRANZI Marie Mercie'},
+            {'class': 'S2B', 'name': 'KEZA SANGWA DIVINE'},
+            {'class': 'S2B', 'name': 'KWIBUKA GIFT CARTINE Arnal'},
+            {'class': 'S2B', 'name': 'MARIYAMUNGU JUDITH'},
+            {'class': 'S2B', 'name': 'MUTAGANDA Micky'},
+            {'class': 'S2B', 'name': 'NDAMUKUNDA GISA CHANELLA'},
+            {'class': 'S2B', 'name': 'NEZA LIZA Kenia'},
+            {'class': 'S2B', 'name': 'NIKWIMANIGIZE Bonheur'},
+            {'class': 'S2B', 'name': 'NIWEKARABO KELIA WIVINE'},
+            {'class': 'S2B', 'name': 'RWEMA NTETE Arthur'},
+            {'class': 'S2B', 'name': 'SEBAHIRE MUHINEZA Emmaus'},
+            {'class': 'S2B', 'name': 'TUMUKUNDE LOVE MORE'},
+            {'class': 'S2B', 'name': 'TUYISHIMIRE Mudathiru'},
+            {'class': 'S2B', 'name': 'UMWARI GATETE Christa'},
+            {'class': 'S2B', 'name': 'UWASE GIHOZO Chanella'},
+            {'class': 'S2B', 'name': 'UWINSHUTI Evelyne'},
+            // S3A
+            {'class': 'S3A', 'name': 'ABAYO Samuella'},
+            {'class': 'S3A', 'name': 'BYIRINGIRO GWIZA SALOMON'},
+            {'class': 'S3A', 'name': 'IGIHOZO EVA ALLEN QUEEN'},
+            {'class': 'S3A', 'name': 'IGIZENEZA Benoit Gratus'},
+            {'class': 'S3A', 'name': 'IHIRWE FLORA'},
+            {'class': 'S3A', 'name': 'IHOZO Carine'},
+            {'class': 'S3A', 'name': 'IKUZWE TETA LEATITIA'},
+            {'class': 'S3A', 'name': 'INEZA Confiance Princesse'},
+            {'class': 'S3A', 'name': 'INEZA PIERRA'},
+            {'class': 'S3A', 'name': 'INEZA RUTAYISIRE Kellia'},
+            {'class': 'S3A', 'name': 'ISHIMWE KEVIN PRINCE'},
+            {'class': 'S3A', 'name': 'ISHIMWE NOELLA'},
+            {'class': 'S3A', 'name': 'KAYITARE Brave'},
+            {'class': 'S3A', 'name': 'MBIKESHIMANA SECONDINE'},
+            {'class': 'S3A', 'name': 'MUGANWA MAURICE'},
+            {'class': 'S3A', 'name': 'MUSHIME ISHEJA Natasha'},
+            {'class': 'S3A', 'name': 'MUYISENGE Gisele'},
+            {'class': 'S3A', 'name': 'NIWEMUGENI GENNIFER'},
+            {'class': 'S3A', 'name': 'NIYIBIZI ESPERANCE'},
+            {'class': 'S3A', 'name': 'NIYIGENA JEANNETTE'},
+            {'class': 'S3A', 'name': 'NIYO IGIRANEZA Emmanuel'},
+            {'class': 'S3A', 'name': 'NIYOGIKUNDIRO PASCALINE'},
+            {'class': 'S3A', 'name': 'NIYOMUKIZA ANYSIA'},
+            {'class': 'S3A', 'name': 'NIYO NGENZI DAVE FRIEND'},
+            {'class': 'S3A', 'name': 'NKURUNZIZA INEZA Messi'},
+            {'class': 'S3A', 'name': 'NSENGIMANA Benjamin'},
+            {'class': 'S3A', 'name': 'NTIVUGURUZWA Samuel'},
+            {'class': 'S3A', 'name': 'RUKUNDO Djabil'},
+            {'class': 'S3A', 'name': 'SHAMI IRAKOZE ALLIANCE'},
+            {'class': 'S3A', 'name': 'SHEMA HAGUMA Prince Gabin'},
+            {'class': 'S3A', 'name': 'TUMUKUNDE TETA MARIE CLAIRE'},
+            {'class': 'S3A', 'name': 'TETERO Lucie'},
+            {'class': 'S3A', 'name': 'UMUGANWA Hidaya Aisha'},
+            {'class': 'S3A', 'name': 'UMUKUMBURWA MPETA FIDELINE'},
+            {'class': 'S3A', 'name': 'UWOYIREMEYE Faida'},
+            // S3B
+            {'class': 'S3B', 'name': 'AKIMANIZANYE AGNES'},
+            {'class': 'S3B', 'name': 'ASHIMWE Aime Gloria'},
+            {'class': 'S3B', 'name': 'DUSABIMANA NIYIGENA Aline'},
+            {'class': 'S3B', 'name': 'GIHOZO IRIZA ENOLLA'},
+            {'class': 'S3B', 'name': 'HAKIZUMWAMI Samuel'},
+            {'class': 'S3B', 'name': 'HIRWA MANZI HAPPINESS'},
+            {'class': 'S3B', 'name': 'IGIRANEZA ESTHER'},
+            {'class': 'S3B', 'name': 'IHIRWE NSHUTI Ian Jadyne'},
+            {'class': 'S3B', 'name': 'IKUZO ELLA'},
+            {'class': 'S3B', 'name': 'IKUZWE ADUHIRE Louange'},
+            {'class': 'S3B', 'name': 'INEMA SYLVIA HEAVEN'},
+            {'class': 'S3B', 'name': 'INEZA NSHUTI HERVE'},
+            {'class': 'S3B', 'name': 'INEZA Peace'},
+            {'class': 'S3B', 'name': 'INGABIRE Ines'},
+            {'class': 'S3B', 'name': 'IRAGENA CYIZA Belyse'},
+            {'class': 'S3B', 'name': 'KATUSIME Jeanne d\'Arc'},
+            {'class': 'S3B', 'name': 'MIZERO Aliane'},
+            {'class': 'S3B', 'name': 'MUGABEKAZI Parfaite'},
+            {'class': 'S3B', 'name': 'MUHAWENIMANA Nadine'},
+            {'class': 'S3B', 'name': 'MUNEZERO ROSINE'},
+            {'class': 'S3B', 'name': 'MUSENGIMANA Ella Joy'},
+            {'class': 'S3B', 'name': 'MUTESA NELICKY'},
+            {'class': 'S3B', 'name': 'NGANZO Nalada'},
+            {'class': 'S3B', 'name': 'NIRAGIRE MIGNONE'},
+            {'class': 'S3B', 'name': 'NIYIGENA MUCYO MERCI MAXIME'},
+            {'class': 'S3B', 'name': 'NIYONGIRA Rene'},
+            {'class': 'S3B', 'name': 'NIYUBAHWE BIRORI Gloria'},
+            {'class': 'S3B', 'name': 'NTWALI SHEMA Honore'},
+            {'class': 'S3B', 'name': 'PENDA Oceanne Pamella'},
+            {'class': 'S3B', 'name': 'TUYISHIMIRE KEVINE'},
+            {'class': 'S3B', 'name': 'UMUBYEYI SENGA Benigne'},
+            {'class': 'S3B', 'name': 'UMUHIRE Keza Odreille'},
+            {'class': 'S3B', 'name': 'UMWARI FIONA'},
+            {'class': 'S3B', 'name': 'UMWARI Natasha'},
+            {'class': 'S3B', 'name': 'UWIZEYE IRASUBIZA ERNESTINE'},
+            // L3 SWD
+            {'class': 'L3 SWD', 'name': 'ABIZERIMANA Benitha'},
+            {'class': 'L3 SWD', 'name': 'AHISHAKIYE Janvier'},
+            {'class': 'L3 SWD', 'name': 'BYIRINGIRO Eric'},
+            {'class': 'L3 SWD', 'name': 'CYUBAHIRO Jackson'},
+            {'class': 'L3 SWD', 'name': 'CYUZUZO Isaac'},
+            {'class': 'L3 SWD', 'name': 'GIKUNDIRO Sandrine'},
+            {'class': 'L3 SWD', 'name': 'HABIMANA Hamis'},
+            {'class': 'L3 SWD', 'name': 'IBYIZA Speratha'},
+            {'class': 'L3 SWD', 'name': 'IGIHOZO Frorence'},
+            {'class': 'L3 SWD', 'name': 'INEZA MUGISHA Landry'},
+            {'class': 'L3 SWD', 'name': 'INEZA TETA Gloria'},
+            {'class': 'L3 SWD', 'name': 'IRABIZI Bowaze'},
+            {'class': 'L3 SWD', 'name': 'IRAGENA Sendrine'},
+            {'class': 'L3 SWD', 'name': 'IRAKOZE Hyacinthe'},
+            {'class': 'L3 SWD', 'name': 'IZABAYO Yves'},
+            {'class': 'L3 SWD', 'name': 'KURUGISHURI Samson'},
+            {'class': 'L3 SWD', 'name': 'KWIZERA Gad'},
+            {'class': 'L3 SWD', 'name': 'MANISHIMWE Jean de Dieu'},
+            {'class': 'L3 SWD', 'name': 'MUGISHA Brian'},
+            {'class': 'L3 SWD', 'name': 'MUGISHA Isaac'},
+            {'class': 'L3 SWD', 'name': 'MUNEZERO Danny'},
+            {'class': 'L3 SWD', 'name': 'MUSHIMIYIMANA Marie Reine'},
+            {'class': 'L3 SWD', 'name': 'MUSHIMIYIMANA Sumaya'},
+            {'class': 'L3 SWD', 'name': 'MUSINGUZI Emmanuel'},
+            {'class': 'L3 SWD', 'name': 'NDUWAYEZU Theophile'},
+            {'class': 'L3 SWD', 'name': 'NIRAGIRE Daphine'},
+            {'class': 'L3 SWD', 'name': 'NISHIMIRWE ISUBIRIZIGIHE Dani'},
+            {'class': 'L3 SWD', 'name': 'NIWEMUGENI Liliane'},
+            {'class': 'L3 SWD', 'name': 'NIYOGUSHIMWA Ange Christian'},
+            {'class': 'L3 SWD', 'name': 'NIYONASENZE Beulla'},
+            {'class': 'L3 SWD', 'name': 'NIYONKURU Vradimir'},
+            {'class': 'L3 SWD', 'name': 'NYISHIMENTE Naome Nadine'},
+            {'class': 'L3 SWD', 'name': 'TUGIRINSHUTI Evariste'},
+            {'class': 'L3 SWD', 'name': 'TURINIMANA Augustin'},
+            {'class': 'L3 SWD', 'name': 'TUYISHIMIRE Solange'},
+            {'class': 'L3 SWD', 'name': 'UWUMUGISHA Pacifique'},
+            {'class': 'L3 SWD', 'name': 'UMUTOZO Eduige'},
+            {'class': 'L3 SWD', 'name': 'UMWARI Josiane'},
+            {'class': 'L3 SWD', 'name': 'UWAMAHORO Ange UWASE'},
+            {'class': 'L3 SWD', 'name': 'UWIDUHAYE Theodette'},
+            {'class': 'L3 SWD', 'name': 'UWIMBABAZI Lydie'},
+            {'class': 'L3 SWD', 'name': 'UWIMPUHWE Nadia'},
+            {'class': 'L3 SWD', 'name': 'UWINGENEYE Claire'},
+            // S4A
+            {'class': 'S4A', 'name': 'ABERA Esther'},
+            {'class': 'S4A', 'name': 'ABIJURU Josiane'},
+            {'class': 'S4A', 'name': 'BYIRINGIRO Justine'},
+            {'class': 'S4A', 'name': 'IGIZENEZA Divine'},
+            {'class': 'S4A', 'name': 'INEZA Alliance Benie'},
+            {'class': 'S4A', 'name': 'INGABIRE KAYIBANDA Germaine'},
+            {'class': 'S4A', 'name': 'IRAGENA KAYIRANGWA Elysa'},
+            {'class': 'S4A', 'name': 'IRAGENA Solange'},
+            {'class': 'S4A', 'name': 'IRAKOZE Aime'},
+            {'class': 'S4A', 'name': 'IRAKOZE Pascaline'},
+            {'class': 'S4A', 'name': 'ISHIMWE Fabrice'},
+            {'class': 'S4A', 'name': 'ISHIMWE TUYISENGE Emma'},
+            {'class': 'S4A', 'name': 'ISHIMWE Velentine'},
+            {'class': 'S4A', 'name': 'ITUZE GWIZA Sabrine'},
+            {'class': 'S4A', 'name': 'KAMIKAZI Derlene'},
+            {'class': 'S4A', 'name': 'KEZA EPA'},
+            {'class': 'S4A', 'name': 'MASEZERANO Fabrice'},
+            {'class': 'S4A', 'name': 'MBARUTSO IKUNDWE Bertin'},
+            {'class': 'S4A', 'name': 'MINAKUZESA Amina'},
+            {'class': 'S4A', 'name': 'MUCYO Ignace Omega'},
+            {'class': 'S4A', 'name': 'MUGABE Robert'},
+            {'class': 'S4A', 'name': 'MUKAHIRWA Julienne'},
+            {'class': 'S4A', 'name': 'MUKIRE WINNY Nicole'},
+            {'class': 'S4A', 'name': 'MUKUNDWA Faith'},
+            {'class': 'S4A', 'name': 'MUNEZERO Clemence'},
+            {'class': 'S4A', 'name': 'MUSHIMIYIMANA Angelique'},
+            {'class': 'S4A', 'name': 'MUTAMBA Xenie'},
+            {'class': 'S4A', 'name': 'NAMAHIRWE Ebenizelle'},
+            {'class': 'S4A', 'name': 'NDAYIZEYE Angelique'},
+            {'class': 'S4A', 'name': 'NIYOBYOSE Revelien'},
+            {'class': 'S4A', 'name': 'NIYONAMBAZA Elina'},
+            {'class': 'S4A', 'name': 'NYIHANZAMASO Yvette'},
+            {'class': 'S4A', 'name': 'NYIRAMUGISHA Berthilde'},
+            {'class': 'S4A', 'name': 'NYIRANSENGIYUMVA Aliance'},
+            {'class': 'S4A', 'name': 'NZAYISENGA Vanessa'},
+            {'class': 'S4A', 'name': 'SHIMIRWA Caline'},
+            {'class': 'S4A', 'name': 'TUMUSHIME Vedaste'},
+            {'class': 'S4A', 'name': 'TUYISHIMIRE Divine'},
+            {'class': 'S4A', 'name': 'TWAGIRIMANA Riberee'},
+            {'class': 'S4A', 'name': 'UMUGWANEZA Pascaline'},
+            {'class': 'S4A', 'name': 'UWAMARIYA Enysia'},
+            {'class': 'S4A', 'name': 'UWASE KABUGO Aline'},
+            {'class': 'S4A', 'name': 'UWASE Nicole'},
+            {'class': 'S4A', 'name': 'UWIMANA Odila'},
+            // S4B
+            {'class': 'S4B', 'name': 'AKIMANA Cecile'},
+            {'class': 'S4B', 'name': 'AMIZERO Nadine'},
+            {'class': 'S4B', 'name': 'ASHIMIMANA Clementine'},
+            {'class': 'S4B', 'name': 'BAHATI Cleb'},
+            {'class': 'S4B', 'name': 'GAHONGAYIRE Pauline'},
+            {'class': 'S4B', 'name': 'GIKUNDIRO TUMUKUNDE Emelyne'},
+            {'class': 'S4B', 'name': 'HIRWA Bertin'},
+            {'class': 'S4B', 'name': 'HIRWA Fabrice'},
+            {'class': 'S4B', 'name': 'HUMURIZIBYOSE Ange'},
+            {'class': 'S4B', 'name': 'IGIRANEZA David'},
+            {'class': 'S4B', 'name': 'IGIRIMBABAZI Emelyne'},
+            {'class': 'S4B', 'name': 'INEZA Joy'},
+            {'class': 'S4B', 'name': 'INEZA Veronique'},
+            {'class': 'S4B', 'name': 'IRADUKUNDA Immaculee'},
+            {'class': 'S4B', 'name': 'IRADUKUNDA Rahab'},
+            {'class': 'S4B', 'name': 'IRAKOZE Marlene'},
+            {'class': 'S4B', 'name': 'IRANZI Aime'},
+            {'class': 'S4B', 'name': 'MUHAWENIMANA Noella'},
+            {'class': 'S4B', 'name': 'MUKESHIMANA Jeannette'},
+            {'class': 'S4B', 'name': 'MUNYANA Kellen'},
+            {'class': 'S4B', 'name': 'MUSHIMIYIMANA Henriette'},
+            {'class': 'S4B', 'name': 'MUTONI Queen'},
+            {'class': 'S4B', 'name': 'NIYONIZEYE Jean d\'Amour'},
+            {'class': 'S4B', 'name': 'NIZIGIYIMANA Banjamin'},
+            {'class': 'S4B', 'name': 'NSHIMIYUMUKIZA Liliane'},
+            {'class': 'S4B', 'name': 'TUMUKUNDE Kevine'},
+            {'class': 'S4B', 'name': 'TURATSINZE Emmanuel'},
+            {'class': 'S4B', 'name': 'TUYAMBAZE Beatha'},
+            {'class': 'S4B', 'name': 'TUYISHIMIRE Marie Grace'},
+            {'class': 'S4B', 'name': 'UMUGWANEZA Beyonce'},
+            {'class': 'S4B', 'name': 'UMUGWANEZA Scovia'},
+            {'class': 'S4B', 'name': 'UMUKUNDWA Kelly'},
+            {'class': 'S4B', 'name': 'UMUTONI Pascaline'},
+            {'class': 'S4B', 'name': 'UMUTONIWASE Blandine'},
+            {'class': 'S4B', 'name': 'UWAMAHORO Zawadi'},
+            {'class': 'S4B', 'name': 'UWASE Jeannine'},
+            {'class': 'S4B', 'name': 'UWASE SANGWA Kevine'},
+            {'class': 'S4B', 'name': 'UWAYEZU Fiacrine'},
+            {'class': 'S4B', 'name': 'UWAYO Ester'},
+            {'class': 'S4B', 'name': 'UWIMANA Alice'},
+            {'class': 'S4B', 'name': 'UWITUZE Melisa'},
+            {'class': 'S4B', 'name': 'UWIZEYIMANA Odette'},
+            {'class': 'S4B', 'name': 'UWIZEYIMANA Sarah'},
+            // L4 SWD
+            {'class': 'L4 SWD', 'name': 'BIRORI Honorine'},
+            {'class': 'L4 SWD', 'name': 'CYUZUZO Emile'},
+            {'class': 'L4 SWD', 'name': 'DUSABE Anne Peline'},
+            {'class': 'L4 SWD', 'name': 'GIKUNDIRO Shalom'},
+            {'class': 'L4 SWD', 'name': 'GISUBIZO HIRWA Bonheur'},
+            {'class': 'L4 SWD', 'name': 'GISUBIZO Jean Claude'},
+            {'class': 'L4 SWD', 'name': 'IBANENATWE Gisele'},
+            {'class': 'L4 SWD', 'name': 'INEZA Alida'},
+            {'class': 'L4 SWD', 'name': 'IRADUKUNDA Josiane'},
+            {'class': 'L4 SWD', 'name': 'IRAKOZE Hyacinthe'},
+            {'class': 'L4 SWD', 'name': 'IRANKUNDA Pacifique'},
+            {'class': 'L4 SWD', 'name': 'IRANZI Naome'},
+            {'class': 'L4 SWD', 'name': 'IRUMVA HIRWA Arsene'},
+            {'class': 'L4 SWD', 'name': 'ISHEMA Christian'},
+            {'class': 'L4 SWD', 'name': 'ISHIMWE Jeanne Gentille'},
+            {'class': 'L4 SWD', 'name': 'ISIMBI Golden'},
+            {'class': 'L4 SWD', 'name': 'IZABAYO Emeritha'},
+            {'class': 'L4 SWD', 'name': 'KWIZERA Derick'},
+            {'class': 'L4 SWD', 'name': 'MUGISHA Aime Kevin'},
+            {'class': 'L4 SWD', 'name': 'MUGISHA Arnold'},
+            {'class': 'L4 SWD', 'name': 'MUNEZA Hillo Blandeco'},
+            {'class': 'L4 SWD', 'name': 'MUPENZI Cedrick'},
+            {'class': 'L4 SWD', 'name': 'NDAHIDWA Arnould'},
+            {'class': 'L4 SWD', 'name': 'NDATIMANA Dodoce'},
+            {'class': 'L4 SWD', 'name': 'NDIZIHIWE Alain Delys'},
+            {'class': 'L4 SWD', 'name': 'NDIRERE Evangeline'},
+            {'class': 'L4 SWD', 'name': 'NISHIMWE Olive'},
+            {'class': 'L4 SWD', 'name': 'NIYO Esther Kevine'},
+            {'class': 'L4 SWD', 'name': 'NSHIMIYIMANA Dominique'},
+            {'class': 'L4 SWD', 'name': 'NTAGARAMA Teta Cynthia'},
+            {'class': 'L4 SWD', 'name': 'NYIRAGUHIRWA Kevine'},
+            {'class': 'L4 SWD', 'name': 'NYIRAMANA Jeanne'},
+            {'class': 'L4 SWD', 'name': 'SHYAKA Clever Prince'},
+            {'class': 'L4 SWD', 'name': 'TONY RAY Hilde'},
+            {'class': 'L4 SWD', 'name': 'TURINAYO AMANI Basil'},
+            {'class': 'L4 SWD', 'name': 'UMWIZERWA Sandrine'},
+            {'class': 'L4 SWD', 'name': 'USANASE Benitha'},
+            {'class': 'L4 SWD', 'name': 'UWASE Belyse'},
+            {'class': 'L4 SWD', 'name': 'UWASE Gloria'},
+            {'class': 'L4 SWD', 'name': 'WIBABARA Janici'},
+            // S5A
+            {'class': 'S5A', 'name': 'AHISHAKIYE Annualithe'},
+            {'class': 'S5A', 'name': 'BYUKUSENGE Adeline'},
+            {'class': 'S5A', 'name': 'GIKUNDIRO Kessia'},
+            {'class': 'S5A', 'name': 'HAVUGIMANA Girbert'},
+            {'class': 'S5A', 'name': 'IGIRANEZA Dorcas'},
+            {'class': 'S5A', 'name': 'INGABIRE Sifa'},
+            {'class': 'S5A', 'name': 'IRADUKUNDA Confiance'},
+            {'class': 'S5A', 'name': 'IRAGANJE Thanks'},
+            {'class': 'S5A', 'name': 'IRAKOZE Dorcas'},
+            {'class': 'S5A', 'name': 'IYAMUMPAYE Julienne'},
+            {'class': 'S5A', 'name': 'KANGUME Ines'},
+            {'class': 'S5A', 'name': 'MUGANWA Fulgence'},
+            {'class': 'S5A', 'name': 'MUKAHIRWA Benitha'},
+            {'class': 'S5A', 'name': 'MUKIZA Leonce'},
+            {'class': 'S5A', 'name': 'MUSANGANYA Elyse'},
+            {'class': 'S5A', 'name': 'MUTONIWASE Delphine'},
+            {'class': 'S5A', 'name': 'NDAYISHIMIYE Lambert'},
+            {'class': 'S5A', 'name': 'NIYIBIZI Samuel'},
+            {'class': 'S5A', 'name': 'NIYIDUHA Carine'},
+            {'class': 'S5A', 'name': 'NIYINGABIRA Evelyne'},
+            {'class': 'S5A', 'name': 'TETA REPONSE Meghan'},
+            {'class': 'S5A', 'name': 'UNEZEREWE Ange Sharom'},
+            {'class': 'S5A', 'name': 'UWASE BWANAKWELI Scovia'},
+            {'class': 'S5A', 'name': 'UWASE Pauline'},
+            {'class': 'S5A', 'name': 'UWITUZE Sandrine'},
+            {'class': 'S5A', 'name': 'UWURUKUNDO Rosine'},
+            {'class': 'S5A', 'name': 'ZIGIRIMENA Darlene'},
+            // S5B
+            {'class': 'S5B', 'name': 'CYUZUZO Angel'},
+            {'class': 'S5B', 'name': 'CYUZUZO Ange Benigne'},
+            {'class': 'S5B', 'name': 'DUSHIMIMANA Jehovajureh'},
+            {'class': 'S5B', 'name': 'DUSHIMIYIMANA Rosine'},
+            {'class': 'S5B', 'name': 'DUSINGIZIMANA Queen'},
+            {'class': 'S5B', 'name': 'IRADUHAYE Bless'},
+            {'class': 'S5B', 'name': 'ISHIMO AKARIZA Ange Sabrine'},
+            {'class': 'S5B', 'name': 'ISHIMWE Fabiola Aime'},
+            {'class': 'S5B', 'name': 'ISHIMWE Cynthia'},
+            {'class': 'S5B', 'name': 'ISHIMWE Clarisse'},
+            {'class': 'S5B', 'name': 'ISHIMWE Frank'},
+            {'class': 'S5B', 'name': 'ISHIMWE MPANO Honoline'},
+            {'class': 'S5B', 'name': 'IYONASENZE Bonheur'},
+            {'class': 'S5B', 'name': 'MANIRATANGA Elie'},
+            {'class': 'S5B', 'name': 'MANIRIHO Jean Paul'},
+            {'class': 'S5B', 'name': 'NAMUKUNDIYICYO Pascaline'},
+            {'class': 'S5B', 'name': 'NIYONSHUTI Bruno'},
+            {'class': 'S5B', 'name': 'NIYUBAHWE Giselle'},
+            {'class': 'S5B', 'name': 'NTWARI NZABARINDA Guillaume'},
+            {'class': 'S5B', 'name': 'NYIRABAGENI Leonille'},
+            {'class': 'S5B', 'name': 'TUYIKUNDE Marie Ange'},
+            {'class': 'S5B', 'name': 'UMWARIWASE Stella Divine'},
+            {'class': 'S5B', 'name': 'UWAMAHORO HIRWA Berthe'},
+            {'class': 'S5B', 'name': 'UWAMURERA Anitha'},
+            {'class': 'S5B', 'name': 'UWIDUHAYE Belise'},
+            {'class': 'S5B', 'name': 'UWIHANGANYE Ezechiel'},
+            // S6A
+            {'class': 'S6A', 'name': 'BENIHIRWE DATIVE'},
+            {'class': 'S6A', 'name': 'DUSABIRANE DORCAS'},
+            {'class': 'S6A', 'name': 'IFASHUWACU KEVINE'},
+            {'class': 'S6A', 'name': 'IMFURANASE AIME PATRICK'},
+            {'class': 'S6A', 'name': 'INGABIRE DIVINE'},
+            {'class': 'S6A', 'name': 'IRAKARAMA NATALIE'},
+            {'class': 'S6A', 'name': 'KABATESI PHIONAH'},
+            {'class': 'S6A', 'name': 'MUHONGERWA DIANE'},
+            {'class': 'S6A', 'name': 'MUKAMABANO Agnes'},
+            {'class': 'S6A', 'name': 'MUKAMUGABO LILIANE'},
+            {'class': 'S6A', 'name': 'MUKAMUGISHA DEVOTHE'},
+            {'class': 'S6A', 'name': 'MUKARUKUNDO CLARISSE'},
+            {'class': 'S6A', 'name': 'MUKESHIMANA MICHELINE'},
+            {'class': 'S6A', 'name': 'MUNEZERO DENYSE'},
+            {'class': 'S6A', 'name': 'MUREKAZE GAUDENCE'},
+            {'class': 'S6A', 'name': 'MUSHIMIYIMANA CLAUDINE'},
+            {'class': 'S6A', 'name': 'MUTEZIMANA ANGELINA'},
+            {'class': 'S6A', 'name': 'MUTUYIMANA ANITHA'},
+            {'class': 'S6A', 'name': 'NISHIMWE UWIJURU ESTHER'},
+            {'class': 'S6A', 'name': 'NIYIKORA DELIPHINE'},
+            {'class': 'S6A', 'name': 'NIYITANGINGABIRE LAURENCE'},
+            {'class': 'S6A', 'name': 'NIYOMUTABAZI ISMAEL'},
+            {'class': 'S6A', 'name': 'NIYONGIRA INNOCENT'},
+            {'class': 'S6A', 'name': 'NIYONSENGA CLARISSE'},
+            {'class': 'S6A', 'name': 'PRINCE Anathole Nobel'},
+            {'class': 'S6A', 'name': 'SANGWA EDEN SHALOM'},
+            {'class': 'S6A', 'name': 'TUMUSIFU EVANGELINE'},
+            {'class': 'S6A', 'name': 'TUYISHIME Eliane'},
+            {'class': 'S6A', 'name': 'TUYIZERE Marie Ange'},
+            {'class': 'S6A', 'name': 'UMUHUZA HELENE'},
+            {'class': 'S6A', 'name': 'UMURISA HOGOZA Benize'},
+            {'class': 'S6A', 'name': 'UMUTONI Alice'},
+            {'class': 'S6A', 'name': 'UMUTONIWASE STEPHANIE'},
+            {'class': 'S6A', 'name': 'UMUTONIWASE enatha'},
+            {'class': 'S6A', 'name': 'UWABEZA Charlotte'},
+            {'class': 'S6A', 'name': 'UWAMAHORO BEATHA'},
+            {'class': 'S6A', 'name': 'UWAMBAJIMANA DIANE'},
+            {'class': 'S6A', 'name': 'UWINEZA JOSIANE'},
+            {'class': 'S6A', 'name': 'UWINEZA Henriette'},
+            {'class': 'S6A', 'name': 'UWIRAGIYE Joselyne'},
+            {'class': 'S6A', 'name': 'UWUMUGISHA Consolee'},
+            // S6B
+            {'class': 'S6B', 'name': 'AHIMBAZWE CONSTANT'},
+            {'class': 'S6B', 'name': 'AKURUKUNDO Adeline'},
+            {'class': 'S6B', 'name': 'DUSHIMIMANA Albine'},
+            {'class': 'S6B', 'name': 'DUSINGIZIMANA Monica'},
+            {'class': 'S6B', 'name': 'DUSINGIZIMANA Faustine'},
+            {'class': 'S6B', 'name': 'GASARO Lucky'},
+            {'class': 'S6B', 'name': 'IRATUZI PRINCE'},
+            {'class': 'S6B', 'name': 'ISHIMWE Clementine'},
+            {'class': 'S6B', 'name': 'IYAMUDUHAYE FORTUNEE'},
+            {'class': 'S6B', 'name': 'KAYESU HOPE'},
+            {'class': 'S6B', 'name': 'KAYESU FLORENCE'},
+            {'class': 'S6B', 'name': 'KIREZI ANGEL'},
+            {'class': 'S6B', 'name': 'MUGANWA JOYCE'},
+            {'class': 'S6B', 'name': 'MUGENIWAYEZU HENRIETTE'},
+            {'class': 'S6B', 'name': 'MUHAWIMANA Aline'},
+            {'class': 'S6B', 'name': 'MUHORAKEYE ALLIANCE'},
+            {'class': 'S6B', 'name': 'MUKANDAYISHIMIYE Sylivie'},
+            {'class': 'S6B', 'name': 'MUTIMAWURUGO ESTHER'},
+            {'class': 'S6B', 'name': 'MUTONIWASE Bella'},
+            {'class': 'S6B', 'name': 'NDACYAYISENGA ANITHA'},
+            {'class': 'S6B', 'name': 'NDAYISHIMIYE SAMUEL'},
+            {'class': 'S6B', 'name': 'NIKUZE Jean Pierre'},
+            {'class': 'S6B', 'name': 'NIRERE LOUISE'},
+            {'class': 'S6B', 'name': 'NIYINDEMERA MUTABARUKA Eunice Helena'},
+            {'class': 'S6B', 'name': 'NIYINGENERA JOYEUSE'},
+            {'class': 'S6B', 'name': 'NIYOKWIZERWA LILIANE'},
+            {'class': 'S6B', 'name': 'NIYONAGIZE AZELE'},
+            {'class': 'S6B', 'name': 'NYAMPINGA PROVIDENCE'},
+            {'class': 'S6B', 'name': 'NYIRAKANYANA Sandrine'},
+            {'class': 'S6B', 'name': 'NYIRANIZEYIMANA Clesence'},
+            {'class': 'S6B', 'name': 'NYIRIMBABAZI Olive'},
+            {'class': 'S6B', 'name': 'TUYISENGE SANDRINE'},
+            {'class': 'S6B', 'name': 'UMURORA JOSIANE'},
+            {'class': 'S6B', 'name': 'UWAYISENGA ESPERANCE'},
+            {'class': 'S6B', 'name': 'UWERA Diane'},
+            {'class': 'S6B', 'name': 'UWIDUHAYE CHARITE'},
+            {'class': 'S6B', 'name': 'UWINEZA Jeanne d\'Arc'},
+            {'class': 'S6B', 'name': 'UWINGABIRE Albertine'},
+            {'class': 'S6B', 'name': 'UWIZESERANO SANDRINE'},
+            {'class': 'S6B', 'name': 'UWONKUNDA Henriette'},
+            {'class': 'S6B', 'name': 'YEBARE PHIONAH'}
+        ];
+
+        // Set up autocomplete for student names
+        const nameInput = document.getElementById('name');
+        const classInput = document.getElementById('classSection');
+        const studentMap = new Map();
+        students.forEach(s => studentMap.set(s.name.toLowerCase(), s.class));
+
+        const datalist = document.createElement('datalist');
+        datalist.id = 'studentNames';
+        students.forEach(s => {
+            const option = document.createElement('option');
+            option.value = s.name;
+            datalist.appendChild(option);
+        });
+        document.body.appendChild(datalist);
+
+        // Auto-fill class on name selection or exact match
+        nameInput.addEventListener('change', () => {
+            const val = nameInput.value.trim().toLowerCase();
+            if (studentMap.has(val)) {
+                classInput.value = studentMap.get(val);
+            }
+        });
+
+        function calculateReturnDate(borrowDate) {
+            const date = new Date(borrowDate);
+            date.setDate(date.getDate() + 7);
+            return date.toLocaleDateString();
+        }
+
+        function calculateFine(expectedReturnDate, actualReturnDate, numBooks) {
+            const expected = new Date(expectedReturnDate);
+            const actual = new Date(actualReturnDate);
+            const diffTime = actual - expected;
+            const daysOverdue = Math.max(0, Math.ceil(diffTime / (1000 * 60 * 60 * 24)));
+            return daysOverdue * fineRate * numBooks;
+        }
+
+        function saveData() {
+            localStorage.setItem("borrowData", JSON.stringify(borrowData));
+            localStorage.setItem("returnedData", JSON.stringify(returnedData));
+            updateStats();
+        }
+
+        function updateStats() {
+            totalStudentsEl.textContent = borrowData.length;
+            const totalBooks = borrowData.reduce((total, record) => total + record.books.length, 0);
+            totalBooksEl.textContent = totalBooks;
+            const today = new Date().toLocaleDateString();
+            const todayCount = borrowData.filter(record => record.date === today).length;
+            todayRecordsEl.textContent = todayCount;
+        }
+
+        function showNotification(message, type = 'success') {
+            notification.textContent = message;
+            notification.className = `notification ${type}`;
+            notification.classList.add('show');
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 3000);
+        }
+
+        function renderBorrowTable(data = borrowData) {
+            borrowTable.innerHTML = "";
+            document.querySelectorAll(".book-popup").forEach(popup => popup.remove());
+
+            if (data.length === 0) {
+                borrowTable.innerHTML = `<tr><td colspan="9" class="p-6 text-center text-gray-500">No records found</td></tr>`;
+                return;
+            }
+
+            data.forEach((entry, index) => {
+                const popupId = `book-popup-${index}`;
+                const row = document.createElement("tr");
+                const isOverdue = new Date() > new Date(entry.returnDate);
+                if (isOverdue) {
+                    row.classList.add('overdue');
+                }
+                row.innerHTML = `
+                    <td class="font-medium text-gray-700">${index + 1}</td>
+                    <td class="font-medium text-gray-900">
+                        <div class="flex items-center">
+                            <span>${entry.name}</span>
+                            <button class="view-books-btn bg-blue-100 text-blue-700 px-2 py-1 ml-2 rounded text-xs hover:bg-blue-200 transition" data-popup="${popupId}">
+                                <i class="fas fa-eye mr-1"></i>View
+                            </button>
+                        </div>
+                    </td>
+                    <td class="text-gray-700">${entry.classSection}</td>
+                    <td class="text-gray-700">${entry.books.join(", ")}</td>
+                    <td class="text-gray-900 font-semibold">${entry.books.length}</td>
+                    <td class="text-gray-600">${entry.date}</td>
+                    <td class="text-gray-600">${entry.time}</td>
+                    <td class="text-gray-600">${entry.returnDate}</td>
+                    <td>
+                        <button class="returnBtn btn-success px-3 py-1 rounded text-sm">
+                            <i class="fas fa-check mr-1"></i>Return All
+                        </button>
+                    </td>
+                `;
+                borrowTable.appendChild(row);
+
+                const popup = document.createElement("div");
+                popup.className = "book-popup";
+                popup.id = popupId;
+
+                let bookListHTML = entry.books.map((book, i) => `
+                    <div class="book-item">
+                        <div>
+                            <span class="font-medium">${i + 1}. ${book}</span>
+                            <span class="text-gray-500 text-sm"> (Return by: ${entry.returnDate})</span>
+                        </div>
+                        <button class="returnBook btn-success px-3 py-1 rounded text-sm" data-book="${book}">
+                            <i class="fas fa-undo-alt mr-1"></i>Return
+                        </button>
+                    </div>
+                `).join("");
+
+                popup.innerHTML = `
+                    <div class="book-popup-content">
+                        <span class="close-popup"><i class="fas fa-times"></i></span>
+                        <h3 class="font-bold text-gray-900 text-xl mb-2">${entry.name}</h3>
+                        <p class="text-gray-600 mb-1"><strong>Class/Section:</strong> ${entry.classSection}</p>
+                        <p class="text-gray-600 mb-1"><strong>Borrow Date:</strong> ${entry.date}</p>
+                        <p class="text-gray-600 mb-4"><strong>Total Books:</strong> ${entry.books.length}</p>
+                        <div class="mt-2 max-h-60 overflow-y-auto">${bookListHTML}</div>
+                    </div>
+                `;
+                document.body.appendChild(popup);
+
+                row.querySelector(".view-books-btn").addEventListener("click", () => popup.classList.add("active"));
+                popup.querySelector(".close-popup").addEventListener("click", () => popup.classList.remove("active"));
+                popup.addEventListener("click", e => { if (e.target === popup) popup.classList.remove("active"); });
+
+                // Return individual book
+                popup.querySelectorAll(".returnBook").forEach(btn => {
+                    btn.addEventListener("click", () => {
+                        const bookToRemove = btn.dataset.book;
+                        const now = new Date();
+                        const fine = calculateFine(entry.returnDate, now.toLocaleDateString(), 1);
+                        const returnRecord = {
+                            name: entry.name,
+                            classSection: entry.classSection,
+                            books: [bookToRemove],
+                            date: entry.date,
+                            time: entry.time,
+                            returnDate: now.toLocaleDateString(),
+                            returnTime: now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+                            fine: fine
+                        };
+                        returnedData.push(returnRecord);
+
+                        entry.books = entry.books.filter(b => b !== bookToRemove);
+                        
+                        if (entry.books.length === 0) {
+                            borrowData.splice(borrowData.indexOf(entry), 1);
+                            popup.remove();
+                            showNotification(`All books returned by ${entry.name} with fine ${fine} RWF`, 'success');
+                        } else {
+                            showNotification(`"${bookToRemove}" returned by ${entry.name} with fine ${fine} RWF`, 'success');
+                        }
+                        
+                        saveData();
+                        renderBorrowTable();
+                        renderReturnedTable();
+                    });
+                });
+
+                // Return all
+                row.querySelector(".returnBtn").addEventListener("click", () => {
+                    const now = new Date();
+                    const fine = calculateFine(entry.returnDate, now.toLocaleDateString(), entry.books.length);
+                    const returnRecord = {
+                        name: entry.name,
+                        classSection: entry.classSection,
+                        books: [...entry.books],
+                        date: entry.date,
+                        time: entry.time,
+                        returnDate: now.toLocaleDateString(),
+                        returnTime: now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+                        fine: fine
+                    };
+                    returnedData.push(returnRecord);
+
+                    borrowData.splice(borrowData.indexOf(entry), 1);
+                    saveData();
+                    popup.remove();
+                    renderBorrowTable();
+                    renderReturnedTable();
+                    showNotification(`All books returned by ${entry.name} with fine ${fine} RWF`, 'success');
+                });
+            });
+            
+            updateStats();
+        }
+
+        function renderReturnedTable(data = returnedData) {
+            returnedTable.innerHTML = "";
+            if (data.length === 0) {
+                returnedTable.innerHTML = `<tr><td colspan="10" class="p-6 text-center text-gray-500">No returned records found</td></tr>`;
+                return;
+            }
+
+            data.forEach((entry, index) => {
+                const row = document.createElement("tr");
+                row.innerHTML = `
+                    <td class="font-medium text-gray-700">${index + 1}</td>
+                    <td class="font-medium text-gray-900">${entry.name}</td>
+                    <td class="text-gray-700">${entry.classSection}</td>
+                    <td class="text-gray-700">${entry.books.join(", ")}</td>
+                    <td class="text-gray-900 font-semibold">${entry.books.length}</td>
+                    <td class="text-gray-600">${entry.date}</td>
+                    <td class="text-gray-600">${entry.time}</td>
+                    <td class="text-gray-600">${entry.returnDate}</td>
+                    <td class="text-gray-600">${entry.returnTime}</td>
+                    <td class="text-gray-600">${entry.fine}</td>
+                `;
+                returnedTable.appendChild(row);
+            });
+        }
+
+        form.addEventListener("submit", (e) => {
+            e.preventDefault();
+            const name = document.getElementById("name").value.trim();
+            const classSection = document.getElementById("classSection").value.trim();
+            const booksInput = document.getElementById("books").value.trim();
+
+            if (!name || !classSection || !booksInput) {
+                showNotification("All fields are required!", 'error');
+                return;
+            }
+
+            const books = booksInput.split(",").map(b => b.trim()).filter(b => b !== "");
+            if (books.length > 5) {
+                showNotification("Maximum of 5 books can be borrowed!", 'error');
+                return;
+            }
+
+            const existingRecord = borrowData.find(record => record.name.toLowerCase() === name.toLowerCase());
+            if (existingRecord) {
+                showNotification(`${name} already has borrowed books. Return them first.`, 'error');
+                return;
+            }
+
+            const now = new Date();
+            const newRecord = {
+                name,
+                classSection,
+                books,
+                date: now.toLocaleDateString(),
+                time: now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+                returnDate: calculateReturnDate(now)
+            };
+
+            borrowData.push(newRecord);
+            saveData();
+            renderBorrowTable();
+            form.reset();
+            showNotification(`Books borrowed successfully by ${name}`, 'success');
+        });
+
+        searchBox.addEventListener("input", () => {
+            const term = searchBox.value.toLowerCase();
+            const filtered = borrowData.filter(item =>
+                item.name.toLowerCase().includes(term) ||
+                item.classSection.toLowerCase().includes(term) ||
+                item.returnDate.toLowerCase().includes(term)
+            );
+            renderBorrowTable(filtered);
+        });
+
+        clearAllBtn.addEventListener("click", () => {
+            if (confirm("Are you sure you want to clear all records? This action cannot be undone.")) {
+                borrowData = [];
+                returnedData = [];
+                saveData();
+                document.querySelectorAll(".book-popup").forEach(p => p.remove());
+                renderBorrowTable();
+                renderReturnedTable();
+                showNotification("All records cleared successfully", 'success');
+            }
+        });
+
+        exportBtn.addEventListener("click", () => {
+            if (borrowData.length === 0 && returnedData.length === 0) {
+                showNotification("No data to export", 'error');
+                return;
+            }
+            
+            let csvContent = "Type,Name,Class/Section,Books,Count,Borrow Date,Borrow Time,Return Date,Return Time,Fine\n";
+            borrowData.forEach(record => {
+                csvContent += `"Borrowed","${record.name}","${record.classSection}","${record.books.join(', ')}",${record.books.length},"${record.date}","${record.time}","${record.returnDate}","N/A","N/A"\n`;
+            });
+            returnedData.forEach(record => {
+                csvContent += `"Returned","${record.name}","${record.classSection}","${record.books.join(', ')}",${record.books.length},"${record.date}","${record.time}","${record.returnDate}","${record.returnTime}","${record.fine}"\n`;
+            });
+            
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement("a");
+            link.setAttribute("href", url);
+            link.setAttribute("download", "library_records.csv");
+            link.style.visibility = 'hidden';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            
+            showNotification("Data exported successfully", 'success');
+        });
+
+        // Initialize
+        renderBorrowTable();
+        renderReturnedTable();
+    </script>
+</body>
+</html>

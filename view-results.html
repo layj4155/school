@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>View Published Results</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="bg-gray-50 font-sans">
+  <div class="container mx-auto p-6">
+    <div class="flex justify-between items-center mb-6">
+      <h1 class="text-2xl font-bold">View Published Results</h1>
+      <div class="space-x-2">
+        <a href="student-data.html" class="px-3 py-2 bg-blue-600 text-white rounded">Student Portal</a>
+        <a href="publish-marks.html" class="px-3 py-2 bg-yellow-600 text-white rounded">Publish Page</a>
+      </div>
+    </div>
+
+    <div class="bg-white p-4 rounded shadow mb-4">
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div>
+          <label class="block text-sm font-medium mb-1">Class</label>
+          <select id="classSelect" class="border px-3 py-2 rounded w-full"></select>
+        </div>
+        <div>
+          <label class="block text-sm font-medium mb-1">Student Name</label>
+          <input id="studentName" class="border px-3 py-2 rounded w-full" placeholder="Enter full or part of name">
+        </div>
+        <div class="flex items-end">
+          <button id="findBtn" class="px-4 py-2 bg-blue-600 text-white rounded">Find</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="resultWrap" class="bg-white p-4 rounded shadow hidden">
+      <h2 id="studentHeader" class="text-lg font-semibold mb-2"></h2>
+      <div id="resultsArea"></div>
+    </div>
+
+    <div id="message" class="text-sm text-gray-600"></div>
+  </div>
+
+  <script>
+    const classSelect = document.getElementById('classSelect');
+    const studentNameInput = document.getElementById('studentName');
+    const findBtn = document.getElementById('findBtn');
+    const resultWrap = document.getElementById('resultWrap');
+    const resultsArea = document.getElementById('resultsArea');
+    const studentHeader = document.getElementById('studentHeader');
+    const message = document.getElementById('message');
+
+    function loadClasses() {
+      const publishedData = JSON.parse(localStorage.getItem('publishedData') || 'null');
+      const publishedExam = JSON.parse(localStorage.getItem('publishedExamData') || 'null');
+      const publishedMarks = JSON.parse(localStorage.getItem('publishedMarks') || 'null');
+      const classes = new Set();
+      if (publishedData && publishedData.termMarks) Object.keys(publishedData.termMarks).forEach(c => classes.add(c));
+      if (publishedExam) Object.keys(publishedExam).forEach(c => classes.add(c));
+      if (publishedMarks) Object.keys(publishedMarks).forEach(c => classes.add(c));
+      if (classes.size === 0) {
+        classSelect.innerHTML = '<option value="">No published classes</option>';
+        message.textContent = 'No published data found. Ask admin to publish marks from the Publish page.';
+        return;
+      }
+      classSelect.innerHTML = '<option value="">Select Class</option>' + Array.from(classes).map(c=>`<option value="${c}">${c}</option>`).join('');
+    }
+
+    function findStudent() {
+      const className = classSelect.value;
+      const q = studentNameInput.value.trim().toLowerCase();
+      if (!className) { message.textContent = 'Select a class first.'; return; }
+      if (!q) { message.textContent = 'Enter a student name to search.'; return; }
+      message.textContent = '';
+
+      // Load published structures
+      const publishedData = JSON.parse(localStorage.getItem('publishedData') || 'null');
+      const publishedExam = JSON.parse(localStorage.getItem('publishedExamData') || 'null');
+      const publishedMarks = JSON.parse(localStorage.getItem('publishedMarks') || 'null');
+
+      // Try publishedData.termMarks first
+      let found = false;
+      let displayHtml = '';
+
+      if (publishedData && publishedData.termMarks && publishedData.termMarks[className]) {
+        // Look for matching student
+        const studentNames = Object.keys(publishedData.termMarks[className]);
+        const match = studentNames.find(n => n.toLowerCase().includes(q));
+        if (match) {
+          found = true;
+          studentHeader.textContent = `${match} — ${className}`;
+          const rec = publishedData.termMarks[className][match];
+          displayHtml = renderTermRecords(rec);
+        }
+      }
+
+      // If not found, try publishedExamData (exam1/exam2/exam3 per term)
+      if (!found && publishedExam && publishedExam[className]) {
+        // Try to find student in any term
+        const terms = Object.keys(publishedExam[className]);
+        const studentNames = new Set();
+        terms.forEach(t => Object.keys(publishedExam[className][t]||{}).forEach(s=>studentNames.add(s)));
+        const match = Array.from(studentNames).find(n => n.toLowerCase().includes(q));
+        if (match) {
+          found = true;
+          studentHeader.textContent = `${match} — ${className}`;
+          // Build rec from publishedExam: compute averages per term
+          const rec = { program:'Published', terms:{} };
+          terms.forEach(t => {
+            const svals = publishedExam[className][t][match];
+            if (svals) {
+              const a = (parseFloat(svals.exam1)||0);
+              const b = (parseFloat(svals.exam2)||0);
+              const c = (parseFloat(svals.exam3)||0);
+              const count = (svals.exam1 !== ''?1:0)+(svals.exam2 !== ''?1:0)+(svals.exam3 !== ''?1:0);
+              const avg = count?((a+b+c)/count).toFixed(1):'';
+              rec.terms[t] = { average: avg, grade:'', position:'', remarks:'' };
+            }
+          });
+          rec.yearTotal = { average: '', position:'', classAverage:'', grade:'', remarks:'' };
+          displayHtml = renderTermRecords(rec);
+        }
+      }
+
+      // If not found, try publishedMarks (midterm marks)
+      if (!found && publishedMarks && publishedMarks[className]) {
+        const midterms = ['midterm1','midterm2','midterm3'];
+        const studentNames = new Set();
+        midterms.forEach(m => Object.keys(publishedMarks[className][m]||{}).forEach(s=>studentNames.add(s)));
+        const match = Array.from(studentNames).find(n => n.toLowerCase().includes(q));
+        if (match) {
+          found = true;
+          studentHeader.textContent = `${match} — ${className}`;
+          // Build rec from midterms
+          const rec = { program:'Published (Midterms)', terms:{}, yearTotal:{} };
+          midterms.forEach((m, idx) => {
+            const val = publishedMarks[className][m][match];
+            rec.terms['Term '+(idx+1)] = { average: val || '', grade:'', position:'', remarks:'' };
+          });
+          displayHtml = renderTermRecords(rec);
+        }
+      }
+
+      if (!found) {
+        resultWrap.classList.add('hidden');
+        message.textContent = 'No published record found for that student. Make sure admin has published the marks.';
+        return;
+      }
+
+      resultsArea.innerHTML = displayHtml;
+      resultWrap.classList.remove('hidden');
+    }
+
+    function renderTermRecords(rec) {
+      let html = '<div class="space-y-4">';
+      for (const [term, data] of Object.entries(rec.terms||{})) {
+        html += `<div class="p-3 border rounded"><div class="font-semibold">${term}</div>`;
+        html += `<div class="grid grid-cols-2 gap-2 mt-2"><div>Average: <strong>${data.average || 'N/A'}</strong></div><div>Class Avg: <strong>${data.classAverage || 'N/A'}</strong></div><div>Position: <strong>${data.position || 'N/A'}</strong></div><div>Grade: <strong>${data.grade || 'N/A'}</strong></div></div>`;
+        html += `<div class="mt-2 text-sm">Remarks: ${data.remarks || ''}</div></div>`;
+      }
+      if (rec.yearTotal) {
+        html += `<div class="p-3 border rounded"><div class="font-semibold">Year Total</div><div class="mt-2">Average: <strong>${rec.yearTotal.average || 'N/A'}</strong> | Position: <strong>${rec.yearTotal.position || 'N/A'}</strong> | Grade: <strong>${rec.yearTotal.grade || 'N/A'}</strong></div><div class="mt-2 text-sm">Remarks: ${rec.yearTotal.remarks || ''}</div></div>`;
+      }
+      html += '</div>';
+      return html;
+    }
+
+    findBtn.addEventListener('click', findStudent);
+
+    document.addEventListener('DOMContentLoaded', loadClasses);
+  </script>
+</body>
+</html>

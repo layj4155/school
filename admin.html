@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Admin Dashboard for managing student life content at Kageyo TVET School">
+    <title>Kageyo TVET School | Admin Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+    <style>
+        .dashboard-sidebar {
+            background: #1D4ED8;
+            color: white;
+            width: 250px;
+            height: 100vh;
+            position: fixed;
+            padding: 2rem 1rem;
+            overflow-y: auto;
+        }
+        .dashboard-content {
+            margin-left: 250px;
+            padding: 2rem;
+        }
+        .nav-item {
+            padding: 0.75rem 1rem;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        .nav-item:hover {
+            background: #3B82F6;
+        }
+        .section {
+            display: none;
+        }
+        .section.active {
+            display: block;
+        }
+        .form-group {
+            margin-bottom: 1rem;
+        }
+        .student-list {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+<body class="bg-gray-100">
+    <!-- Sidebar Navigation -->
+    <nav class="dashboard-sidebar">
+        <h1 class="text-2xl font-bold mb-6">Admin Dashboard</h1>
+        <ul>
+            <li class="nav-item" data-section="clubs">Manage Clubs</li>
+            <li class="nav-item" data-section="events">Manage Events</li>
+            <li class="nav-item" data-section="club-members">Manage Club Members</li>
+            <!-- Add more sections as needed -->
+        </ul>
+    </nav>
+
+    <main class="dashboard-content">
+        <div class="container mx-auto px-4">
+            <h2 class="text-2xl font-bold text-blue-600 mb-4">Manage Student Life Content</h2>
+            
+            <!-- Clubs Section -->
+            <div id="clubs-section" class="section bg-white p-6 rounded-lg shadow active">
+                <h3 class="text-xl font-bold text-blue-600 mb-4">Add Club</h3>
+                <form id="club-form">
+                    <div class="form-group">
+                        <label for="club-name">Name</label>
+                        <input type="text" id="club-name" class="w-full p-2 border rounded-md" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="club-description">Description</label>
+                        <textarea id="club-description" class="w-full p-2 border rounded-md" rows="4"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="club-leader">Leader</label>
+                        <input type="text" id="club-leader" class="w-full p-2 border rounded-md">
+                    </div>
+                    <div class="form-group">
+                        <label for="club-members">Members Count (Auto-updated)</label>
+                        <input type="number" id="club-members" class="w-full p-2 border rounded-md" disabled>
+                    </div>
+                    <div class="form-group">
+                        <label for="club-image">Image URL</label>
+                        <input type="text" id="club-image" class="w-full p-2 border rounded-md">
+                    </div>
+                    <div class="form-group">
+                        <label for="club-category">Category</label>
+                        <select id="club-category" class="w-full p-2 border rounded-md">
+                            <option value="clubs">Clubs & Societies</option>
+                            <option value="sports">Sports</option>
+                            <option value="cultural">Cultural Events</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="bg-blue-600 text-white px-6 py-2 rounded-lg">Add Club</button>
+                </form>
+            </div>
+
+            <!-- Events Section -->
+            <div id="events-section" class="section bg-white p-6 rounded-lg shadow">
+                <h3 class="text-xl font-bold text-blue-600 mb-4">Add Event</h3>
+                <form id="event-form">
+                    <div class="form-group">
+                        <label for="event-title">Title</label>
+                        <input type="text" id="event-title" class="w-full p-2 border rounded-md" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="event-description">Description</label>
+                        <textarea id="event-description" class="w-full p-2 border rounded-md" rows="4"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="event-date">Date</label>
+                        <input type="date" id="event-date" class="w-full p-2 border rounded-md">
+                    </div>
+                    <div class="form-group">
+                        <label for="event-image">Image URL</label>
+                        <input type="text" id="event-image" class="w-full p-2 border rounded-md">
+                    </div>
+                    <div class="form-group">
+                        <label for="event-video">Video URL</label>
+                        <input type="text" id="event-video" class="w-full p-2 border rounded-md">
+                    </div>
+                    <button type="submit" class="bg-blue-600 text-white px-6 py-2 rounded-lg">Add Event</button>
+                </form>
+            </div>
+
+            <!-- Club Members Management Section -->
+            <div id="club-members-section" class="section bg-white p-6 rounded-lg shadow">
+                <h3 class="text-xl font-bold text-blue-600 mb-4">Manage Club Members</h3>
+                <div class="form-group">
+                    <label for="select-club">Select Club</label>
+                    <select id="select-club" class="w-full p-2 border rounded-md">
+                        <!-- Clubs populated dynamically -->
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="search-student">Search Student</label>
+                    <input type="text" id="search-student" class="w-full p-2 border rounded-md" placeholder="Search by name...">
+                </div>
+                <div class="student-list bg-gray-50 p-4 rounded-md mb-4">
+                    <h4 class="font-bold mb-2">Available Students</h4>
+                    <ul id="available-students" class="space-y-2">
+                        <!-- Students populated dynamically -->
+                    </ul>
+                </div>
+                <div class="student-list bg-gray-50 p-4 rounded-md">
+                    <h4 class="font-bold mb-2">Current Members</h4>
+                    <ul id="current-members" class="space-y-2">
+                        <!-- Members populated dynamically -->
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </main>
+    <script>
+        const API_BASE_URL = 'http://localhost:3000/api';
+
+        // Navigation
+        document.querySelectorAll('.nav-item').forEach(item => {
+            item.addEventListener('click', (e) => {
+                document.querySelectorAll('.section').forEach(sec => sec.classList.remove('active'));
+                document.getElementById(`${e.target.dataset.section}-section`).classList.add('active');
+                if (e.target.dataset.section === 'club-members') loadClubsForManagement();
+            });
+        });
+
+        // Load clubs for selection
+        async function loadClubsForManagement() {
+            const response = await fetch(`${API_BASE_URL}/clubs`);
+            const { clubs } = await response.json();
+            const select = document.getElementById('select-club');
+            select.innerHTML = '<option value="">Choose a club</option>';
+            clubs.forEach(club => {
+                const option = document.createElement('option');
+                option.value = club._id;
+                option.textContent = club.name;
+                select.appendChild(option);
+            });
+        }
+
+        // Club change event
+        document.getElementById('select-club').addEventListener('change', async (e) => {
+            const clubId = e.target.value;
+            if (clubId) {
+                loadCurrentMembers(clubId);
+            } else {
+                document.getElementById('current-members').innerHTML = '';
+            }
+        });
+
+        // Search students
+        document.getElementById('search-student').addEventListener('input', async (e) => {
+            const search = e.target.value;
+            const response = await fetch(`${API_BASE_URL}/students?search=${search}`);
+            const students = await response.json();
+            const list = document.getElementById('available-students');
+            list.innerHTML = '';
+            students.forEach(student => {
+                const li = document.createElement('li');
+                li.className = 'flex justify-between items-center p-2 bg-white border rounded-md';
+                li.innerHTML = `
+                    <span>${student.name} (${student.class})</span>
+                    <button class="bg-blue-600 text-white px-3 py-1 rounded text-sm" onclick="addToClub('${student._id}')">Add to Club</button>
+                `;
+                list.appendChild(li);
+            });
+        });
+
+        // Load current members
+        async function loadCurrentMembers(clubId) {
+            const response = await fetch(`${API_BASE_URL}/clubs/${clubId}`);
+            const club = await response.json();
+            const list = document.getElementById('current-members');
+            list.innerHTML = '';
+            club.members.forEach(member => {
+                const li = document.createElement('li');
+                li.className = 'flex justify-between items-center p-2 bg-white border rounded-md';
+                li.innerHTML = `
+                    <span>${member.name} (${member.class})</span>
+                    <button class="bg-red-600 text-white px-3 py-1 rounded text-sm" onclick="removeFromClub('${clubId}', '${member._id}')">Remove</button>
+                `;
+                list.appendChild(li);
+            });
+        }
+
+        // Add to club
+        async function addToClub(studentId) {
+            const clubId = document.getElementById('select-club').value;
+            if (!clubId) return alert('Select a club first');
+            await fetch(`${API_BASE_URL}/clubs/${clubId}/members`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ studentId })
+            });
+            loadCurrentMembers(clubId);
+        }
+
+        // Remove from club
+        async function removeFromClub(clubId, studentId) {
+            await fetch(`${API_BASE_URL}/clubs/${clubId}/members/${studentId}`, { method: 'DELETE' });
+            loadCurrentMembers(clubId);
+        }
+
+        // Club form submission (existing)
+        document.getElementById('club-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const clubData = {
+                name: document.getElementById('club-name').value,
+                description: document.getElementById('club-description').value,
+                leader: document.getElementById('club-leader').value,
+                membersCount: 0, // Starts at 0
+                image: document.getElementById('club-image').value,
+                category: document.getElementById('club-category').value,
+                members: []
+            };
+            await fetch(`${API_BASE_URL}/clubs`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(clubData)
+            });
+            alert('Club added successfully!');
+            e.target.reset();
+        });
+
+        // Event form submission (existing)
+        document.getElementById('event-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const eventData = {
+                title: document.getElementById('event-title').value,
+                description: document.getElementById('event-description').value,
+                date: document.getElementById('event-date').value,
+                image: document.getElementById('event-image').value,
+                videoURL: document.getElementById('event-video').value,
+                category: 'events'
+            };
+            await fetch(`${API_BASE_URL}/events`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(eventData)
+            });
+            alert('Event added successfully!');
+            e.target.reset();
+        });
+
+        // Initial load
+        loadClubsForManagement();
+    </script>
+</body>
+</html>

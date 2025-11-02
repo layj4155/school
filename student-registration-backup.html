@@ -1,0 +1,2170 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Student Registration - Rwanda School System</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="student-functions.js" defer></script>
+  <style>
+    /* Import Google Fonts */
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+    
+    :root {
+      --primary: #2563eb;
+      --primary-dark: #1d4ed8;
+      --secondary: #64748b;
+      --accent: #f59e0b;
+      --success: #10b981;
+      --danger: #ef4444;
+      --light: #f8fafc;
+      --dark: #1e293b;
+      --text-dark: #1e293b;
+      --text-light: #64748b;
+      --border: #e2e8f0;
+      --shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+      --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    }
+    
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: 'Inter', sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      color: var(--text-dark);
+      line-height: 1.6;
+      display: flex;
+      flex-direction: column;
+    }
+    
+    /* Password Modal */
+    .password-modal {
+      display: flex;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.7);
+      backdrop-filter: blur(5px);
+      z-index: 2000;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .password-content {
+      background: white;
+      padding: 2rem;
+      border-radius: 16px;
+      max-width: 400px;
+      width: 90%;
+      box-shadow: var(--shadow-lg);
+      text-align: center;
+    }
+    
+    .password-content h2 {
+      margin-bottom: 1rem;
+      color: var(--primary);
+    }
+    
+    .password-content p {
+      margin-bottom: 1.5rem;
+      color: var(--text-light);
+    }
+    
+    .password-input {
+      width: 100%;
+      padding: 0.8rem 1rem;
+      border: 2px solid var(--border);
+      border-radius: 8px;
+      font-size: 1rem;
+      margin-bottom: 1.5rem;
+      transition: all 0.3s ease;
+    }
+    
+    .password-input:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+    }
+    
+    .password-error {
+      color: var(--danger);
+      margin-bottom: 1rem;
+      display: none;
+    }
+    
+    /* Header Styles */
+    .header {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      box-shadow: var(--shadow-lg);
+      padding: 1rem 0;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    
+    .header-content {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 1rem;
+    }
+    
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+    
+    .logo-icon {
+      width: 40px;
+      height: 40px;
+      background: var(--primary);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: bold;
+    }
+    
+    .logo-text {
+      font-size: 1.5rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, var(--primary), #7c3aed);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    
+    .nav-links {
+      display: flex;
+      gap: 1.5rem;
+    }
+    
+    .nav-link {
+      text-decoration: none;
+      color: var(--text-dark);
+      font-weight: 500;
+      padding: 0.5rem 1rem;
+      border-radius: 8px;
+      transition: all 0.3s ease;
+    }
+    
+    .nav-link:hover {
+      background: var(--light);
+      color: var(--primary);
+    }
+    
+    .nav-link.active {
+      background: var(--primary);
+      color: white;
+    }
+    
+    .mobile-menu-btn {
+      display: none;
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      cursor: pointer;
+      color: var(--text-dark);
+    }
+    
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 1rem;
+      flex: 1;
+    }
+    
+    /* Page Header */
+    .page-header {
+      text-align: center;
+      margin-bottom: 2rem;
+      padding-top: 1rem;
+    }
+    
+    .page-header h1 {
+      font-size: 2.5rem;
+      font-weight: 700;
+      color: white;
+      margin-bottom: 0.5rem;
+      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+    
+    .page-header p {
+      font-size: 1.1rem;
+      color: white;
+      opacity: 0.9;
+    }
+    
+    /* Term Selector */
+    .term-selector {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+      align-items: center;
+      justify-content: center;
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      border-radius: 12px;
+      padding: 1rem;
+      box-shadow: var(--shadow-lg);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+    
+    .term-btn {
+      padding: 0.7rem 1.5rem;
+      border: 2px solid var(--border);
+      background: white;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-weight: 600;
+    }
+    
+    .term-btn.active {
+      background: var(--primary);
+      color: white;
+      border-color: var(--primary);
+    }
+    
+    /* Main Grid Layout */
+    .main-grid {
+      display: grid;
+      grid-template-columns: 1fr 2fr;
+      gap: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+    
+    @media (max-width: 968px) {
+      .main-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+    
+    /* Stats Section */
+    .stats-section {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+    
+    .stat-card {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      border-radius: 12px;
+      padding: 1.5rem;
+      box-shadow: var(--shadow-lg);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      transition: all 0.3s ease;
+    }
+    
+    .stat-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 15px 20px -5px rgba(0, 0, 0, 0.1), 0 8px 8px -5px rgba(0, 0, 0, 0.04);
+    }
+    
+    .stat-number {
+      font-size: 2.5rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+    }
+    
+    .new-stat .stat-number {
+      color: var(--primary);
+    }
+    
+    .returning-stat .stat-number {
+      color: var(--success);
+    }
+    
+    .stat-label {
+      font-size: 0.9rem;
+      color: var(--text-light);
+      font-weight: 500;
+    }
+    
+    .total-card {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      border-radius: 12px;
+      padding: 1.5rem;
+      text-align: center;
+      box-shadow: var(--shadow-lg);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+    
+    .total-number {
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--primary);
+      margin-bottom: 0.5rem;
+    }
+    
+    /* Form Section */
+    .form-section {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      border-radius: 16px;
+      padding: 1.5rem;
+      box-shadow: var(--shadow-lg);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+    
+    /* Tab Navigation */
+    .tab-nav {
+      display: flex;
+      background: var(--light);
+      border-radius: 10px;
+      padding: 0.5rem;
+      margin-bottom: 1.5rem;
+      gap: 0.5rem;
+    }
+    
+    .tab-btn {
+      flex: 1;
+      padding: 0.8rem 1.2rem;
+      border: none;
+      background: transparent;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      color: var(--text-light);
+    }
+    
+    .tab-btn.active {
+      background: white;
+      color: var(--primary);
+      box-shadow: var(--shadow);
+    }
+    
+    /* Forms */
+    .form {
+      display: none;
+    }
+    
+    .form.active {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+    
+    .form-group {
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .form-group.full-width {
+      grid-column: 1 / -1;
+    }
+    
+    label {
+      font-weight: 500;
+      margin-bottom: 0.5rem;
+      color: var(--text-dark);
+      font-size: 0.85rem;
+    }
+    
+    input, select {
+      padding: 0.7rem 0.9rem;
+      border: 2px solid var(--border);
+      border-radius: 8px;
+      font-size: 0.9rem;
+      transition: all 0.3s ease;
+      background: white;
+      font-family: 'Inter', sans-serif;
+    }
+    
+    input:focus, select:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+    }
+    
+    .requirements-group {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      background: var(--light);
+      padding: 1.2rem;
+      border-radius: 10px;
+      border: 2px solid var(--border);
+    }
+    
+    .requirement-item {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+    
+    .requirement-item label {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .requirement-item input {
+      width: 80px;
+    }
+    
+    .requirement-status {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-top: 0.25rem;
+    }
+    
+    .status-indicator {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+    }
+    
+    .status-complete {
+      background-color: var(--success);
+    }
+    
+    .status-incomplete {
+      background-color: var(--danger);
+    }
+    
+    .status-text {
+      font-size: 0.8rem;
+      color: var(--text-light);
+    }
+    
+    .btn {
+      padding: 0.7rem 1.5rem;
+      border: none;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-size: 0.9rem;
+      font-family: 'Inter', sans-serif;
+    }
+    
+    .btn-primary {
+      background: var(--primary);
+      color: white;
+    }
+    
+    .btn-primary:hover {
+      background: var(--primary-dark);
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-lg);
+    }
+    
+    .btn-secondary {
+      background: var(--secondary);
+      color: white;
+    }
+    
+    .btn-danger {
+      background: var(--danger);
+      color: white;
+    }
+    
+    .btn-success {
+      background: var(--success);
+      color: white;
+    }
+    
+    .form-actions {
+      grid-column: 1 / -1;
+      display: flex;
+      gap: 1rem;
+      justify-content: flex-end;
+      margin-top: 1rem;
+    }
+    
+    /* Table Section */
+    .table-section {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      border-radius: 16px;
+      padding: 1.5rem;
+      box-shadow: var(--shadow-lg);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+    
+    .search-container {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 1.2rem;
+    }
+    
+    .search-input {
+      flex: 1;
+      padding: 0.7rem 0.9rem;
+      border: 2px solid var(--border);
+      border-radius: 8px;
+      font-size: 0.9rem;
+      background: white;
+    }
+    
+    .table-container {
+      overflow-x: auto;
+      border-radius: 10px;
+      box-shadow: var(--shadow);
+    }
+    
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: white;
+    }
+    
+    th {
+      background: var(--primary);
+      color: white;
+      padding: 0.9rem;
+      text-align: left;
+      font-weight: 600;
+      font-size: 0.9rem;
+    }
+    
+    td {
+      padding: 0.9rem;
+      border-bottom: 1px solid var(--border);
+      font-size: 0.85rem;
+    }
+    
+    tr:hover {
+      background: var(--light);
+    }
+    
+    .badge {
+      padding: 0.2rem 0.6rem;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+    
+    .badge-new {
+      background: #dbeafe;
+      color: var(--primary);
+    }
+    
+    .badge-returning {
+      background: #d1fae5;
+      color: var(--success);
+    }
+    
+    .action-buttons {
+      display: flex;
+      gap: 0.5rem;
+    }
+    
+    .btn-sm {
+      padding: 0.4rem 0.8rem;
+      font-size: 0.75rem;
+    }
+    
+    /* Modal */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(5px);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .modal-content {
+      background: white;
+      padding: 1.5rem;
+      border-radius: 16px;
+      max-width: 450px;
+      width: 90%;
+      box-shadow: var(--shadow-lg);
+    }
+    
+    .modal-actions {
+      display: flex;
+      gap: 1rem;
+      justify-content: flex-end;
+      margin-top: 1.2rem;
+    }
+    
+    /* Class Statistics */
+    .class-stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+      gap: 0.6rem;
+      margin-top: 0.8rem;
+    }
+    
+    .class-stat-card {
+      background: white;
+      border-radius: 8px;
+      padding: 0.8rem;
+      box-shadow: var(--shadow);
+      text-align: center;
+      border-left: 4px solid var(--primary);
+    }
+    
+    .class-name {
+      font-weight: 600;
+      margin-bottom: 0.25rem;
+      color: var(--text-dark);
+      font-size: 0.8rem;
+    }
+    
+    .class-count {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--primary);
+    }
+    
+    /* Export Section */
+    .export-section {
+      display: flex;
+      justify-content: flex-end;
+      margin-top: 1.2rem;
+      gap: 1rem;
+    }
+    
+    /* Footer */
+    .footer {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      padding: 1.5rem 0;
+      margin-top: 2rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.2);
+    }
+    
+    .footer-content {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 1rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .footer-links {
+      display: flex;
+      gap: 1.5rem;
+    }
+    
+    .footer-link {
+      color: var(--text-light);
+      text-decoration: none;
+      transition: color 0.3s ease;
+    }
+    
+    .footer-link:hover {
+      color: var(--primary);
+    }
+    
+    /* Responsive Design */
+    @media (max-width: 768px) {
+      .header-content {
+        flex-direction: column;
+        gap: 1rem;
+      }
+      
+      .nav-links {
+        flex-direction: column;
+        width: 100%;
+        display: none;
+      }
+      
+      .nav-links.active {
+        display: flex;
+      }
+      
+      .mobile-menu-btn {
+        display: block;
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+      }
+      
+      .container {
+        padding: 0.8rem;
+      }
+      
+      .page-header h1 {
+        font-size: 1.8rem;
+      }
+      
+      .term-selector {
+        flex-direction: column;
+        align-items: stretch;
+      }
+      
+      .form.active {
+        grid-template-columns: 1fr;
+      }
+      
+      .requirements-group {
+        grid-template-columns: 1fr;
+      }
+      
+      .form-actions {
+        flex-direction: column;
+      }
+      
+      .action-buttons {
+        flex-direction: column;
+      }
+      
+      .class-stats {
+        grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+      }
+      
+      .export-section {
+        flex-direction: column;
+      }
+      
+      .footer-content {
+        flex-direction: column;
+        gap: 1rem;
+        text-align: center;
+      }
+      
+      .footer-links {
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+    }
+    
+    /* Animation */
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    
+    .fade-in {
+      animation: fadeIn 0.5s ease-out;
+    }
+  </style>
+</head>
+<body>
+  <!-- Password Modal -->
+  <div id="passwordModal" class="password-modal">
+    <div class="password-content">
+      <h2>Enter Password</h2>
+      <p>Please enter the password to access the Student Registration System</p>
+      <input type="password" id="passwordInput" class="password-input" placeholder="Enter password">
+      <div id="passwordError" class="password-error">Incorrect password. Please try again.</div>
+      <button id="submitPassword" class="btn btn-primary">Submit</button>
+    </div>
+  </div>
+  
+  <script>
+    // Password protection
+    document.addEventListener('DOMContentLoaded', function() {
+      const correctPassword = 'kageyo004';
+      const passwordModal = document.getElementById('passwordModal');
+      const passwordInput = document.getElementById('passwordInput');
+      const passwordError = document.getElementById('passwordError');
+      const submitPassword = document.getElementById('submitPassword');
+      const mainContent = document.getElementById('mainContent');
+      
+      // Check if already authenticated in this session
+      if (sessionStorage.getItem('authenticated') === 'true') {
+        passwordModal.style.display = 'none';
+        mainContent.style.display = 'block';
+      }
+      
+      submitPassword.addEventListener('click', checkPassword);
+      passwordInput.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+          checkPassword();
+        }
+      });
+      
+      function checkPassword() {
+        if (passwordInput.value === correctPassword) {
+          passwordModal.style.display = 'none';
+          mainContent.style.display = 'block';
+          sessionStorage.setItem('authenticated', 'true');
+        } else {
+          passwordError.style.display = 'block';
+          passwordInput.value = '';
+          passwordInput.focus();
+        }
+      }
+    });
+  </script>
+
+  <!-- Header -->
+  <header class="header">
+    <div class="header-content">
+      <div class="logo">
+        <div class="logo-icon">RS</div>
+        <div class="logo-text">Rwanda School</div>
+      </div>
+      
+      <button class="mobile-menu-btn">☰</button>
+      
+      <nav class="nav-links">
+        <a href="index.html" class="nav-link">Dashboard</a>
+        <a href="student-registration.html" class="nav-link active">Student Registration</a>
+        <a href="attendance.html" class="nav-link">Attendance</a>
+        <a href="grades.html" class="nav-link">Grades</a>
+        <a href="reports.html" class="nav-link">Reports</a>
+        <a href="settings.html" class="nav-link">Settings</a>
+      </nav>
+    </div>
+  </header>
+
+  <div class="container" id="mainContent" style="display: none;">
+    <!-- Page Header -->
+    <header class="page-header fade-in">
+      <h1>Student Registration</h1>
+      <p>Manage new and returning student registrations</p>
+    </header>
+
+    <!-- Term Selector -->
+    <div class="term-selector fade-in">
+      <span>Current Term:</span>
+      <div>
+        <button class="term-btn active" data-term="1">Term 1</button>
+        <button class="term-btn" data-term="2">Term 2</button>
+        <button class="term-btn" data-term="3">Term 3</button>
+      </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-grid">
+      <!-- Statistics Sidebar -->
+      <aside class="stats-section">
+        <div class="stat-card new-stat fade-in">
+          <div class="stat-number" id="newStudentCount">0</div>
+          <div class="stat-label">New Students</div>
+        </div>
+        <div class="stat-card returning-stat fade-in">
+          <div class="stat-number" id="returningStudentCount">0</div>
+          <div class="stat-label">Returning Students</div>
+        </div>
+        <div class="total-card fade-in">
+          <div class="total-number" id="totalStudentCount">0</div>
+          <div class="stat-label">Total Students Registered</div>
+        </div>
+        
+        <!-- Class Statistics -->
+        <div class="stat-card fade-in">
+          <h3 style="margin-bottom: 0.8rem;">Class Statistics</h3>
+          <div class="class-stats" id="classStats">
+            <!-- Class statistics will be populated here -->
+          </div>
+        </div>
+      </aside>
+
+      <!-- Form Section -->
+      <main class="form-section fade-in">
+        <!-- Tab Navigation -->
+        <div class="tab-nav">
+          <button class="tab-btn active" id="newTab">New Student</button>
+          <button class="tab-btn" id="returningTab">Returning Student</button>
+        </div>
+
+        <!-- New Student Form - Only for Term 1 -->
+        <form id="newForm" class="form active">
+          <div class="form-group">
+            <label for="newName">Full Name</label>
+            <input type="text" id="newName" placeholder="Enter full name" required>
+          </div>
+          <div class="form-group">
+            <label for="newClass">Class</label>
+            <select id="newClass" required>
+              <option value="">Select Class</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="newGender">Gender</label>
+            <select id="newGender" required>
+              <option value="">Select Gender</option>
+              <option>Male</option>
+              <option>Female</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="newDOB">Date of Birth</label>
+            <input type="date" id="newDOB" required>
+          </div>
+          <div class="form-group">
+            <label for="newGender">Gender</label>
+            <select id="newGender" required>
+              <option value="">Select Gender</option>
+              <option value="Male">Male</option>
+              <option value="Female">Female</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="province">Province</label>
+            <select id="province" required>
+              <option value="">Select Province</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="district">District</label>
+            <select id="district" required disabled>
+              <option value="">Select District</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="sector">Sector</label>
+            <select id="sector" required disabled>
+              <option value="">Select Sector</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="parent">Parent Name</label>
+            <input type="text" id="parent" placeholder="Enter parent name" required>
+          </div>
+          <div class="form-group">
+            <label for="contact">Parent Contact</label>
+            <input type="text" id="contact" placeholder="Enter contact number" required>
+          </div>
+          <div class="form-actions">
+            <button type="submit" class="btn btn-primary">Register Student</button>
+          </div>
+        </form>
+
+        <!-- Returning Student Form -->
+        <form id="returningForm" class="form">
+          <!-- Term 1: Previous Class + New Class -->
+          <div id="term1Fields" class="form-group full-width" style="display: none;">
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+              <div>
+                <label for="previousClass">Previous Class</label>
+                <select id="previousClass">
+                  <option value="">Select Previous Class</option>
+                </select>
+              </div>
+              <div>
+                <label for="returningClass">New Class</label>
+                <select id="returningClass" disabled>
+                  <option value="">Select New Class</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <!-- Terms 2 & 3: Simple Class Selection -->
+          <div id="term23Fields" class="form-group" style="display: none;">
+            <label for="simpleClass">Class</label>
+            <select id="simpleClass">
+              <option value="">Select Class</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="returningStudent">Student Name</label>
+            <select id="returningStudent" required>
+              <option value="">Select Student</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="returningGender">Gender</label>
+            <select id="returningGender" required>
+              <option value="">Select Gender</option>
+              <option value="Male">Male</option>
+              <option value="Female">Female</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+
+          <div class="form-group full-width">
+            <label>Requirements Brought</label>
+            <div class="requirements-group">
+              <div class="requirement-item">
+                <label for="toiletPaper">Toilet Paper <span id="toiletPaperRequired">4</span> required</label>
+                <input type="number" id="toiletPaper" min="0" max="4" value="0">
+                <div class="requirement-status">
+                  <div class="status-indicator status-incomplete" id="toiletPaperStatus"></div>
+                  <span class="status-text" id="toiletPaperStatusText">Incomplete (0/4)</span>
+                </div>
+              </div>
+              <div class="requirement-item">
+                <label for="vest">Vest <span id="vestRequired">3</span> required</label>
+                <input type="number" id="vest" min="0" max="3" value="0">
+                <div class="requirement-status">
+                  <div class="status-indicator status-incomplete" id="vestStatus"></div>
+                  <span class="status-text" id="vestStatusText">Incomplete (0/3)</span>
+                </div>
+              </div>
+              <div class="requirement-item">
+                <label for="socks">Socks <span id="socksRequired">4</span> required</label>
+                <input type="number" id="socks" min="0" max="4" value="0">
+                <div class="requirement-status">
+                  <div class="status-indicator status-incomplete" id="socksStatus"></div>
+                  <span class="status-text" id="socksStatusText">Incomplete (0/4)</span>
+                </div>
+              </div>
+              <div class="requirement-item">
+                <label for="ream">Ream <span id="reamRequired">1</span> required</label>
+                <input type="number" id="ream" min="0" max="1" value="0">
+                <div class="requirement-status">
+                  <div class="status-indicator status-incomplete" id="reamStatus"></div>
+                  <span class="status-text" id="reamStatusText">Incomplete (0/1)</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="form-actions">
+            <button type="submit" class="btn btn-primary">Register Student</button>
+          </div>
+        </form>
+      </main>
+    </div>
+
+    <!-- Reporting Section -->
+    <section class="report-section fade-in">
+      <h2>Student Reports</h2>
+      <div class="report-controls">
+        <div class="form-group">
+          <label for="reportType">Report Type</label>
+          <select id="reportType">
+            <option value="all">All Students</option>
+            <option value="new">New Students</option>
+            <option value="returning">Returning Students</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="reportClassFilter">Filter by Class</label>
+          <select id="reportClassFilter">
+            <option value="all">All Classes</option>
+            <!-- Options will be populated dynamically -->
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="reportGenderFilter">Filter by Gender</label>
+          <select id="reportGenderFilter">
+            <option value="all">All Genders</option>
+            <option value="Male">Male</option>
+            <option value="Female">Female</option>
+            <option value="Other">Other</option>
+          </select>
+        </div>
+        <button id="generateReportBtn" class="btn btn-primary">Generate Report</button>
+      </div>
+
+      <div class="table-container" style="margin-top: 1.5rem;">
+        <table id="reportTable">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Class</th>
+              <th>Gender</th>
+              <th>Type</th>
+              <th>Term</th>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- Report data will be populated here -->
+          </tbody>
+        </table>
+      </div>
+
+      <div class="export-section">
+        <button id="exportReportExcel" class="btn btn-success">Export to Excel</button>
+        <button id="exportReportPDF" class="btn btn-danger">Export to PDF</button>
+      </div>
+    </section>
+  </div>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="footer-content">
+      <div class="copyright">© 2023 Rwanda School System. All rights reserved.</div>
+      <div class="footer-links">
+        <a href="#" class="footer-link">Privacy Policy</a>
+        <a href="#" class="footer-link">Terms of Service</a>
+        <a href="#" class="footer-link">Contact Us</a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Delete Confirmation Modal -->
+  <div id="deleteModal" class="modal">
+    <div class="modal-content">
+      <h3>Confirm Deletion</h3>
+      <p>Are you sure you want to delete this student record? This action cannot be undone.</p>
+      <div class="modal-actions">
+        <button id="cancelDelete" class="btn btn-secondary">Cancel</button>
+        <button id="confirmDelete" class="btn btn-danger">Delete</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Password protection
+    const passwordModal = document.getElementById('passwordModal');
+    const passwordInput = document.getElementById('passwordInput');
+    const submitPassword = document.getElementById('submitPassword');
+    const passwordError = document.getElementById('passwordError');
+    const mainContent = document.getElementById('mainContent');
+    
+    const CORRECT_PASSWORD = 'kageyo003';
+    
+    // Check if user is already authenticated
+    if (localStorage.getItem('authenticated') === 'true') {
+      passwordModal.style.display = 'none';
+      mainContent.style.display = 'block';
+    }
+    
+    submitPassword.addEventListener('click', function() {
+      if (passwordInput.value === CORRECT_PASSWORD) {
+        // Password is correct
+        localStorage.setItem('authenticated', 'true');
+        passwordModal.style.display = 'none';
+        mainContent.style.display = 'block';
+      } else {
+        // Password is incorrect
+        passwordError.style.display = 'block';
+        passwordInput.value = '';
+        passwordInput.focus();
+      }
+    });
+    
+    passwordInput.addEventListener('keyup', function(e) {
+      if (e.key === 'Enter') {
+        submitPassword.click();
+      }
+    });
+
+    // Mobile menu toggle
+    const mobileMenuBtn = document.querySelector('.mobile-menu-btn');
+    const navLinks = document.querySelector('.nav-links');
+    
+    mobileMenuBtn.addEventListener('click', () => {
+      navLinks.classList.toggle('active');
+    });
+
+    // Rwanda administrative data
+    const rwanda = {
+      "Kigali City": {
+        "Nyarugenge": ["Gitega","Kanyinya","Kigali","Kimisagara","Mageragere","Muhima","Nyakabanda","Nyamirambo","Nyarugenge","Rwezamenyo"],
+        "Kicukiro": ["Gahanga","Gatenga","Gikondo","Kagarama","Kanombe","Kicukiro","Kigarama","Masaka","Niboye","Nyarugunga"],
+        "Gasabo": ["Bumbogo","Gatsata","Gikomero","Gisozi","Jabana","Jali","Kacyiru","Kimihurura","Kimironko","Kinyinya","Ndera","Nduba","Remera","Rusororo","Rutunga"]
+      },
+      "Southern Province": {
+        "Nyaruguru": ["Buruhukiro","Cyahinda","Kibeho","Kivu","Mata","Munini","Ngera","Ngoma","Nyabimata","Nyagisozi","Ruheru","Ruramba","Rusenge"],
+        "Huye": ["Gishamvu","Huye","Karama","Kigoma","Kinazi","Maraba","Mbazi","Mukura","Ngoma","Ruhashya","Rusatira","Rwaniro","Simbi","Tumba"],
+        "Nyamagabe": ["Buruhukiro","Cyanika","Gasaka","Gatare","Kaduha","Kamegeli","Kibirizi","Kibumbwe","Kitabi","Mbazi","Mugano","Musange","Musebeya","Mushubi","Nkomane","Tare","Uwinkingi"],
+        "Gisagara": ["Gishubi","Gisagara","Kibilizi","Kigembe","Mamba","Muganza","Mugombwa","Mukindo","Musamba","Musange","Nyanza","Nyaruhengeri","Save"],
+        "Nyanza": ["Busasamana","Busoro","Cyabakamyi","Kibilizi","Kigoma","Mukingo","Muyira","Ntyazo","Nyagisozi","Rwabicuma"],
+        "Muhanga": ["Cyeza","Kabacuzi","Kibangu","Kiyumba","Muhanga","Mushishiro","Nyabinoni","Nyamabuye","Nyarusange","Rongi","Rubengera","Shyogwe"],
+        "Ruhango": ["Bweramana","Byimana","Kabagali","Kinazi","Kinihira","Mbuye","Mwendo","Ntongwe","Ruhango"]
+      },
+      "Western Province": {
+        "Karongi": ["Bwishyura","Gashari","Gishyita","Gitesi","Mubuga","Murambi","Murundi","Mutuntu","Rubengera","Rugabano","Ruganda","Rwankuba","Twumba"],
+        "Rutsiro": ["Boneza","Gihango","Kigeyo","Kivumu","Manihira","Mukura","Murunda","Musasa","Mushonyi","Mushubati","Nyabirasi","Ruhango","Rusebeya"],
+        "Rubavu": ["Bugeshi","Busasamana","Cyanzarwe","Gisenyi","Kanama","Kanzenze","Mudende","Nyakiriba","Nyamyumba","Nyundo","Rubavu","Rugerero"],
+        "Nyabihu": ["Bigogwe","Jenda","Jomba","Kabatwa","Karago","Kintobo","Mukamira","Muringa","Rambura","Rugera","Rurembo","Shyira"],
+        "Ngororero": ["Bwira","Gatumba","Hindiro","Kabaya","Kageyo","Kavumu","Matyazo","Muhanda","Muhororo","Ndaro","Ngororero","Nyange","Sovu"],
+        "Rusizi": ["Bugarama","Butare","Bweyeye","Gikundamvura","Gashonga","Giheke","Gihundwe","Gitambi","Kamembe","Muganza","Mururu","Nkanka","Nkombo","Nkungu","Nyakabuye","Nyakarenzo","Nzahaha","Rwimbogo"]
+      },
+      "Northern Province": {
+        "Musanze": ["Busogo","Cyuve","Gacaca","Gashaki","Gataraga","Kimonyi","Kinigi","Muhoza","Muko","Musanze","Nkotsi","Nyange","Remera","Rwaza","Shingiro"],
+        "Burera": ["Bungwe","Butaro","Cyanika","Cyeru","Gahunga","Gatebe","Gitovu","Kagogo","Kinoni","Kinyababa","Kivuye","Nemba","Rugarama","Rugengabari","Ruhunde","Rusarabuye","Rwerere"],
+        "Gicumbi": ["Bukure","Bwisige","Byumba","Cyumba","Giti","Kageyo","Kaniga","Manyagiro","Miyove","Mukarange","Muko","Mutete","Nyamiyaga","Nyankenke","Rubaya","Rukomo","Rushaki","Rutare","Ruvune","Rwamiko","Shangasha"],
+        "Rulindo": ["Base","Burega","Bushoki","Buyoga","Cyinzuzi","Cyungo","Kinihira","Kisaro","Masoro","Mbogo","Murambi","Ngoma","Ntarabana","Rukozo","Rusiga","Shyorongi","Tumba"],
+        "Gakenke": ["Busengo","Coko","Cyabingo","Gakenke","Gashenyi","Janja","Kamubuga","Karambo","Kivuruga","Mataba","Minazi","Muhondo","Muyongwe","Muzo","Nemba","Ruli","Rusasa","Rushashi"]
+      },
+      "Eastern Province": {
+        "Nyagatare": ["Gatunda","Karama","Karangazi","Katabagemu","Kiyombe","Matimba","Mimuri","Mukama","Musheli","Nyagatare","Rukomo","Rwempasha","Rwimiyaga","Tabagwe"],
+        "Gatsibo": ["Gasange","Gatsibo","Gitoki","Kabarore","Kageyo","Kiramuruzi","Kiziguro","Muhura","Murambi","Ngarama","Nyagihanga","Rukomo","Rwimbogo"],
+        "Kayonza": ["Gahini","Kabare","Kabarondo","Mukarange","Murama","Murundi","Mwiri","Ndego","Nyamirama","Rukara","Ruramira","Rwinkwavu"],
+        "Kirehe": ["Gahara","Gatore","Kigarama","Kigina","Kirehe","Mahama","Mpanga","Musaza","Mushikiri","Nasho","Nyamugari","Nyange","Nyarubuye"],
+        "Ngoma": ["Gashanda","Jarama","Kazo","Kibu","Mugesera","Murama","Mutenderi","Remera","Rukira","Rukumberi","Rurenge","Sake","Zaza"],
+        "Rwamagana": ["Fumbwe","Gahengeri","Gishari","Karenge","Kigabiro","Muhazi","Munyaga","Munyiginya","Musha","Muyumbu","Mwulire","Nyakaliro","Nzige","Rubona"],
+        "Bugesera": ["Gashora","Juru","Kamabuye","Marembo","Mayange","Musenyi","Mwogo","Ngeruka","Ntarama","Nyamata","Nyarugenge","Rilima","Ruhuha","Rweru","Shyara"]
+      }
+    };
+
+    // Student lists by class
+    const studentLists = {
+      "S1A": [
+        "ABEREYIMANA James", "ABIMANA HIRWA Gany Blessing", "AHISHAKIYE MANZI Aime Miguel", 
+        "ASHIMWE Nate Brayan", "Benedicto King Samuel", "BUGINGO BEZA Keny", 
+        "GASHUMBA NDAYISHIMIYE KIM Kenedy", "IGENUKWISHATSE BYISHIMO Jean Maurice", 
+        "IGIRANEZA CYUSA Milton", "IHUMURE NSENGIYUMVA Heroine", "INEZA Queen Deborah", 
+        "IRABARUTA MUGISHA Credo", "IRAKOZE Belle Amie", "IRAKOZE Janviere", 
+        "IRAKOZE Yanis", "ISHIMWE UWASE Gabriella", "ISIMBI UWASE Joyeuse", 
+        "ITANGANEZA Parfait", "KAMIKAZI Patience", "MUNEZERO Enock", 
+        "MUNEZERO Priscilla", "MUTONIWASE Benitha", "MUVUNYI UWIMPUHWE Benie Hortance", 
+        "MWITENEZA Jean Pierre", "NDARUHUTSE Danny", "NGABONZIZA MUGISHA Boris", 
+        "NGANZO Born Bercee", "RORIRORA Gihozo Anella", "UWANYAGASANI Cedrick", 
+        "UWASE Benitha", "UWIDUHAYE Pascaline", "UWINEZA AKALIZA Martina", 
+        "UWIZEYIMANA Valentine", "YUBAHWE Anitha"
+      ],
+      "S1B": [
+        "ABAYISENGA Emmu Shalom", "AMANI NSHUTI Claver", "ARERWENEZA Laetitia", 
+        "BAGABE Dieudonne", "CYOMORO Nicky Prince", "GAGA Lioness", 
+        "IGANZE Olla Mireille", "IGIRIMBABAZI Pamella", "INEZA Aure Alexandrine", 
+        "INEZA Deborah", "INEZA KAMIKAZI TETA Promesse", "IRAGENA Gloria", 
+        "IRAGENA Laetitia", "IRAME MUCYO Angelo", "ISHEMA Rayan", 
+        "ISHIMWE NGABO Hertier", "ISHIMWE Olga", "ISINGIZWE Ange Afurika Maombe", 
+        "KAYITARE Caleb", "KEZA UMI Abdoulatomani", "KUNDA Beny Bienaime", 
+        "KWIZERA MUHOZA Prince", "MANZI Boaz", "MBABAZI Blessed", 
+        "MUNEZERO Gentil Hertier", "MUNEZERO Yvette", "MUTONIWASE Esther", 
+        "NDIKUMWENAYO Jeannette", "NIRAGIRE Aline", "NIYONZIMA Lucky", 
+        "RUDASINGWA", "SHAMI Ianis Vangelis", "UWASE GASARO Kelia", 
+        "UWASE Sendrine", "UWIZEYIMANA Chakilla", "UYIZERA Regis"
+      ],
+      "S2A": [
+        "BYISHIMO Remy", "BAHO AKARIZA Kevine", "DUKUZUMUREMYI Janvier", 
+        "GANZA AHADI TRESOR", "IHIRWE Benitha", "IKUNDABAYO Kevin", 
+        "IMFURAYASE Aimee Ange", "INEZA QUEEN LOVE", "INEZA Ryan Merci", 
+        "IRASUBIZA NANSI Nadia Lenatha", "ISHIMWE Brianna", "ISUMBINGABO HIRWA HERVE", 
+        "KALIZA UNEJEJE Ella Blassia", "KAREKEZI SHIMWA SYLIVIE", "KWIZE David", 
+        "KWIZERA Richard", "MANZI GANZA Fred", "MBABAZI DORCAS", 
+        "MUBIIRIGI Cyusa Prince", "MUCYO MUGWANEZA Magnifique", "MUSENGIMANA Marie Divine", 
+        "NGABO Prince", "NIYOMUKIZA STANISLAS", "NIZEYIMANA Etienne", 
+        "NYIRAHABAMUNGU Janviere", "SHEMA NZAYITURIKI Benoit", "TUYIZERE Solange", 
+        "UFITEYEZU SERGE", "UMUKUNDWA QUEEN VANESSA", "UWAMASHIMWE JEANNETTE", 
+        "UWASE Fabiola", "UWIMANA Fideline", "UWIMPUHWE JEROME", "UWIZEYIMANA Patrick"
+      ],
+      "S2B": [
+        "ABE MUGISHA Antoine", "ABIJURU Gift Kelly Joel", "AGASARO Liza Briante", 
+        "CYOMORO NIYONZIMA Iba Bright", "GIRUMUGISHA MASSIMO", "HERO KARENGERA Keutch", 
+        "HIRWA KAZE Danyllo", "IGIHOZO Kellia", "IGIKUNDIRO Fiston", 
+        "IRERA PROMISE", "IRIZA GWIZA Clenie", "ISHIMWE YVETTE", 
+        "ISHIMWE Belyse", "ISHIMWE NGABO Victory", "KABANDA RUTERANA He Calvin", 
+        "KAMALI IGIHOZO IRANZI Marie Mercie", "KEZA SANGWA DIVINE", 
+        "KWIBUKA GIFT CARTINE Arnal", "MARIYAMUNGU JUDITH", "MUTAGANDA Micky", 
+        "NDAMUKUNDA GISA CHANELLA", "NEZA LIZA Kenia", "NIKWIMANIGIZE Bonheur", 
+        "NIWEKARABO KELIA WIVINE", "RWEMA NTETE Arthur", "SEBAHIRE MUHINEZA Emmaus", 
+        "TURIKUMWE LOVE MORE", "TUYIZERE Mudathiru", "UMWARI GATETE Christa", 
+        "UWASE GIHOZO Chanella", "UWINSHUTI Evelyne"
+      ],
+      "S3A": [
+        "ABAYO Samuella", "BYIRINGIRO GWIZA SALOMON", "IGIHOZO EVA ALLEN QUEEN", 
+        "IGIZENEZA Benoit Gratus", "IHIRWE FLORA", "IHOZO Carine", 
+        "IKUZWE TETA LEATITIA", "INEZA Confiance Princesse", "INEZA PIERRA", 
+        "INEZA RUTAYISIRE Kellia", "ISHIMWE KEVIN PRINCE", "ISHIMWE NOELLA", 
+        "KAYITARE Brave", "MBIKESHIMANA SECONDINE", "MUGANWA MAURICE", 
+        "MUSHIME ISHEJA Natasha", "MUYISENGE Gisele", "NIWEMUGENI GENNIFER", 
+        "NIYIBIZI ESPERANCE", "NIYIGENA JEANNETTE", "NIYO IGIRANEZA Emmanuel", 
+        "NIYOGIKUNDIRO PASCALINE", "NIYOMUKIZA ANYSIA", "NIYO NGENZI DAVE FRIEND", 
+        "NKURUNZIZA INEZA Messi", "NSENGIMANA Benjamin", "NTIVUGURUZWA Samuel", 
+        "RUKUNDO Djabil", "SHAMI IRAKOZE ALLIANCE", "SHEMA HAGUMA Prince Gabin", 
+        "TETA MARIE CLAIRE", "TETERO Lucie", "UMUGANWA Hidaya Aisha", 
+        "UMUKUMBURWA MPETA FIDELINE", "UWOYIREMEYE Faida"
+      ],
+      "S3B": [
+        "AKIMANIZANYE AGNES", "ASHIMWE Aime Gloria", "DUSABIMANA NIYIGENA Aline", 
+        "GIHOZO IRIZA ENOLLA", "HAKIZUMWAMI Samuel", "HIRWA MANZI HAPPINESS", 
+        "IGIRANEZA ESTHER", "IHIRWE NSHUTI Ian Jadyne", "IKUZO ELLA", 
+        "IKUZWE ADUHIRE Louange", "INEMA SYLVIA HEAVEN", "INEZA NSHUTI HERVE", 
+        "INEZA Peace", "INGABIRE Ines", "IRAGENA CYIZA Belyse", 
+        "KATUSIME Jeanne d'Arc", "MIZERO Aliane", "MUGABEKAZI Parfaite", 
+        "MUHAWENIMANA Nadine", "MUNEZERO ROSINE", "MUSENGIMANA Ella Joy", 
+        "MUTESA NELICKY", "NGANZO Nalada", "NIRAGIRE MIGNONE", 
+        "NIYIGENA MUCYO MERCI MAXIME", "NIYONGIRA Rene", "NIYUBAHWE BIRORI Gloria", 
+        "NTWALI SHEMA Honore", "PENDA Oceanne Pamella", "TUYISHIMIRE KEVINE", 
+        "UMUBYEYI SENGA Benigne", "UMUHIRE Keza Odreille", "UMWARI FIONA", 
+        "UMWARI Natasha", "UWIZEYE IRASUBIZA ERNESTINE"
+      ],
+      "L3 SWD": [
+        "ABIZERIMANA Benitha", "AHISHAKIYE Janvier", "BYIRINGIRO Eric", 
+        "CYUBAHIRO Jackson", "CYUZUZO Isaac", "GIKUNDIRO Sandrine", 
+        "HABIMANA Hamis", "IBYIZA Speratha", "IGIHOZO Frorence", 
+        "INEZA MUGISHA Landry", "INEZA TETA Gloria", "IRABIZI Bowaze", 
+        "IRAGENA Sendrine", "IRASUBIZA Emille", "IZABAYO Yves", 
+        "KURUGISHURI Samson", "KWIZERA Gad", "MANISHIMWE Jean de Dieu", 
+        "MUGISHA Brian", "MUGISHA Isaac", "MUNEZERO Danny", 
+        "MUSHIMIYIMANA Marie Reine", "MUSHIMIYIMANA Sumaya", "MUSINGUZI Emmanuel", 
+        "NDUWAYEZU Theophile", "NIRAGIRE Daphine", "NISHIMIRWE ISUBIRIZIGIHE Dani", 
+        "NIWEMUGENI Liliane", "NIYOGUSHIMWA Ange Christian", "NIYONASENZE Beulla", 
+        "NIYONKURU Vradimir", "NYISHIMENTE Naome Nadine", "TUGIRINSHUTI Evariste", 
+        "TURINIMANA Augustin", "TUYISHIMIRE Solange", "UWUMUGISHA Pacifique", 
+        "UMUTOZO Eduige", "UWMARI Josiane", "UWAMAHORO Ange UWASE", 
+        "UWIDUHAYE Theodette", "UWIMBABAZI Lydie", "UWIMPUHWE Nadia", 
+        "UWINGENEYE Claire"
+      ],
+      "S4A": [
+        "ABERA Esther", "ABIJURU Josiane", "BYIRINGIRO Justine", 
+        "IGIZENEZA Divine", "INEZA Alliance Benie", "INGABIRE KAYIBANDA Germaine", 
+        "IRAGENA KAYIRANGWA Elysa", "IRAGENA Solange", "IRAKOZE Aime", 
+        "IRAKOZE Pascaline", "ISHIMWE Fabrice", "ISHIMWE TUYISENGE Emma", 
+        "ISHIMWE Velentine", "ITUZE GWIZA Sabrine", "KAMIKAZI Derlene", 
+        "KEZA EPA", "MASEZERANO Fabrice", "MBARUTSO IKUNDWE Bertin", 
+        "MINAKUZESA Amina", "MUCYO Ignace Omega", "MUGABE Robert", 
+        "MUKAHIRWA Julienne", "MUKIRE WINNY Nicole", "MUKUNDWA Faith", 
+        "MUNEZERO Clemence", "MUSHIMIYIMANA Angelique", "MUTAMBA Xenie", 
+        "NAMAHIRWE Ebenizelle", "NDAYIZEYE Angelique", "NIYOBYOSE Revelien", 
+        "NIYONAMBAZA Elina", "NYIHANZAMASO Yvette", "NYIRAMUGISHA Berthilde", 
+        "NYIRANSENGIYUMVA Aliance", "NZAYISENGA Vanessa", "SHIMIRWA Caline", 
+        "TUMUSHIME Vedaste", "TUYISHIMIRE Divine", "TWAGIRIMANA Riberee", 
+        "UMUGWANEZA Pascaline", "UWAMARIYA Enysia", "UWASE KABUGO Aline", 
+        "UWASE Nicole", "UWIMANA Odila"
+      ],
+      "S4B": [
+        "AKIMANA Cecile", "AMIZERO Nadine", "ASHIMIMANA Clementine", 
+        "BAHATI Cleb", "GAHONGAYIRE Pauline", "GIKUNDIRO TUMUKUNDE Emelyne", 
+        "HIRWA Bertin", "HIRWA Fabrice", "HUMURIZIBYOSE Ange", 
+        "IGIRANEZA David", "IGIRIMBABAZI Emelyne", "INEZA Joy", 
+        "INEZA Veronique", "IRADUKUNDA Immaculee", "IRADUKUNDA Rahab", 
+        "IRAKOZE Marlene", "IRANZI Aime", "MUHAWENIMANA Noella", 
+        "MUKESHIMANA Jeannette", "MUNYANA Kellen", "MUSHIMIYIMANA Henriette", 
+        "MUTONI Queen", "NIYONIZEYE Jean d'Amour", "NIZIGIYIMANA Banjamin", 
+        "NSHIMIYUMUKIZA Liliane", "TUMUKUNDE Kevine", "TURATSINZE Emmanuel", 
+        "TUYAMBAZE Beatha", "TUYISHIMIRE Marie Grace", "UMUGWANEZA Beyonce", 
+        "UMUGWANEZA Scovia", "UMUKUNDWA Kelly", "UMUTONI Pascaline", 
+        "UMUTONIWASE Blandine", "UWAMAHORO Zawadi", "UWASE Jeannine", 
+        "UWASE SANGWA Kevine", "UWAYEZU Fiacrine", "UWAYO Ester", 
+        "UWIMANA Alice", "UWITUZE Melisa", "UWIZEYIMANA Odette", 
+        "UWIZEYIMANA Sarah"
+      ],
+      "L4 SOD": [
+        "BIRORI Honorine", "CYUZUZO Emile", "DUSABE Anne Peline", 
+        "GIKUNDIRO Shalom", "GISUBIZO HIRWA Bonheur", "GISUBIZO Jean Claude", 
+        "IBANENATWE Gisele", "INEZA Alida", "IRADUKUNDA Josiane", 
+        "IRAKOZE Hyacinthe", "IRANKUNDA Pacifique", "IRANZI Naome", 
+        "IRUMVA HIRWA Arsene", "ISHEMA Christian", "ISHIMWE Jeanne Gentille", 
+        "ISIMBI Golden", "IZABAYO Emeritha", "KWIZERA Derick", 
+        "MUGISHA Aime Kevin", "MUGISHA Arnold", "MUNEZA Hillo Blandeco", 
+        "MUPENZI Cedrick", "NDAHIDWA Arnould", "NDATIMANA Dodoce", 
+        "NDIZIHIWE Alain Delys", "NIRERE Evangeline", "NISHIMWE Olive", 
+        "NIYO Esther Kevine", "NSHIMIYIMANA Dominique", "NTAGARAMA Teta Cynthia", 
+        "NYIRAGUHIRWA Kevine", "NYIRAMANA Jeanne", "SHYAKA Clever Prince", 
+        "TONY RAY Hilde", "TURINAYO AMANI Basil", "UMWIZERWA Sandrine", 
+        "USANASE Benitha", "UWASE Belyse", "UWASE Gloria", "WIBABARA Janici"
+      ],
+      "S5A": [
+        "AHISHAKIYE Annualithe", "BYUKUSENGE Adeline", "GIKUNDIRO Kessia", 
+        "HAVUGIMANA Girbert", "IGIRANEZA Dorcas", "INGABIRE Sifa", 
+        "IRADUKUNDA Confiance", "IRAGANJE Thanks", "IRAKOZE Dorcas", 
+        "IYAMUMPAYE Julienne", "KANGUME Ines", "MUGANWA Fulgence", 
+        "MUKAHIRWA Benitha", "MUKIZA Leonce", "MUSANGANYA Elyse", 
+        "MUTONIWASE Delphine", "NDAYISHIMIYE Lambert", "NIYIBIZI Samuel", 
+        "NIYIDUHA Carine", "NIYINGABIRA Evelyne", "TETA REPONSE Meghan", 
+        "UNEZEREWE Ange Sharom", "UWASE BWANAKWELI Scovia", "UWASE Pauline", 
+        "UWITUZE Sandrine", "UWURUKUNDO Rosine", "ZIGIRIMENA Darlene"
+      ],
+      "S5B": [
+        "CYUZUZO Angel", "CYUZUZO Ange Benigne", "DUSHIMIMANA Jehovajureh", 
+        "DUSHIMIYIMANA Rosine", "DUSINGIZIMANA Queen", "IRADUHAYE Bless", 
+        "ISHIMO AKARIZA Ange Sabrine", "ISHIMWE Fabiola Aime", "ISHIMWE Cynthia", 
+        "ISHIMWE Clarisse", "ISHIMWE Frank", "ISHIMWE MPANO Honoline", 
+        "IYONASENZE Bonheur", "MANIRATANGA Elie", "MANIRIHO Jean Paul", 
+        "NAMUKUNDIYICYO Pascaline", "NIYONSHUTI Bruno", "NIYUBAHWE Giselle", 
+        "NTWARI NZABARINDA Guillaume", "NYIRABAGENI Leonille", "TUYIKUNDE Marie Ange", 
+        "UMWARIWASE Stella Divine", "UWAMAHORO HIRWA Berthe", "UWAMURERA Anitha", 
+        "UWIDUHAYE Belise", "UWIHANGANYE Ezechiel"
+      ],
+      "S6A": [
+        "BENIHIRWE DATIVE", "DUSABIRANE DORCAS", "IFASHUWACU KEVINE", 
+        "IMFURANASE AIME PATRICK", "INGABIRE DIVINE", "IRAKARAMA NATALIE", 
+        "KABATESI PHIONAH", "MUHONGERWA DIANE", "MUKAMABANO Agnes", 
+        "MUKAMUGABO LILIANE", "MUKAMUGISHA DEVOTHE", "MUKARUKUNDO CLARISSE", 
+        "MUKESHIMANA MICHELINE", "MUNEZERO DENYSE", "MUREKAZE GAUDENCE", 
+        "MUSHIMIYIMANA CLAUDINE", "MUTEZIMANA ANGELINA", "MUTUYIMANA ANITHA", 
+        "NISHIMWE UWIJURU ESTHER", "NIYIKORA DELIPHINE", "NIYITANGINGABIRE LAURENCE", 
+        "NIYOMUTABAZI ISMAEL", "NIYONGIRA INNOCENT", "NIYONSENGA CLARISSE", 
+        "PRINCE Anathole Nobel", "SANGWA EDEN SHALOM", "TUMUSIFU EVANGELINE", 
+        "TUYISHIME Eliane", "TUYIZERE Marie Ange", "UMUHUZA HELENE", 
+        "UMURISA HOGOZA Benize", "UMUTONI Alice", "UMUTONIWASE STEPHANIE", 
+        "UMUTONIWASE enatha", "UWABEZA Charlotte", "UWAMAHORO BEATHA", 
+        "UWAMBAJIMANA DIANE", "UWINEZA JOSIANE", "UWINEZA Henriette", 
+        "UWIRAGIYE Joselyne", "UWUMUGISHA Consolee"
+      ],
+      "S6B": [
+        "AHIMBAZWE CONSTANT", "AKURUKUNDO Adeline", "DUSHIMIMANA Albine", 
+        "DUSINGIZIMANA Monica", "DUSINGIZIMANA Faustine", "GASARO Lucky", 
+        "IRATUZI PRINCE", "ISHIMWE Clementine", "IYAMUDUHAYE FORTUNEE", 
+        "KAYESU HOPE", "KAYESU FLORENCE", "KIREZI ANGEL", 
+        "MUGANWA JOYCE", "MUGENIWAYEZU HENRIETTE", "MUHAWIMANA Aline", 
+        "MUHORAKEYE ALLIANCE", "MUKANDAYISHIMIYE Sylivie", "MUTIMAWURUGO ESTHER", 
+        "MUTONIWASE Bella", "NDACYAYISENGA ANITHA", "NDAYISHIMIYE SAMUEL", 
+        "NIKUZE Jean Pierre", "NIRERE LOUISE", "NIYINDEMERA MUTABARUKA Eunice Helena", 
+        "NIYINGENERA JOYEUSE", "NIYOKWIZERWA LILIANE", "NIYONAGIZE AZELE", 
+        "NYAMPINGA PROVIDENCE", "NYIRAKANYANA Sandrine", "NYIRANIZEYIMANA Clesence", 
+        "NYIRIMBABAZI Olive", "TUYISENGE SANDRINE", "UMURORA JOSIANE", 
+        "UWAYISENGA ESPERANCE", "UWERA Diane", "UWIDUHAYE CHARITE", 
+        "UWINEZA Jeanne d'Arc", "UWINGABIRE Albertine", "UWIZESERANO SANDRINE", 
+        "UWONKUNDA Henriette", "YEBARE PHIONAH"
+      ]
+    };
+
+    // DOM Elements
+    const newTab = document.getElementById("newTab");
+    const returningTab = document.getElementById("returningTab");
+    const newForm = document.getElementById("newForm");
+    const returningForm = document.getElementById("returningForm");
+    const provinceSelect = document.getElementById("province");
+    const districtSelect = document.getElementById("district");
+    const sectorSelect = document.getElementById("sector");
+    const previousClassSelect = document.getElementById("previousClass");
+    const returningStudentSelect = document.getElementById("returningStudent");
+    const newClassSelect = document.getElementById("newClass");
+    const returningClassSelect = document.getElementById("returningClass");
+    const simpleClassSelect = document.getElementById("simpleClass");
+    const term1Fields = document.getElementById("term1Fields");
+    const term23Fields = document.getElementById("term23Fields");
+    const searchInput = document.getElementById("searchInput");
+    const searchBtn = document.getElementById("searchBtn");
+    const studentTable = document.getElementById("studentTable");
+    const deleteModal = document.getElementById("deleteModal");
+    const cancelDelete = document.getElementById("cancelDelete");
+    const confirmDelete = document.getElementById("confirmDelete");
+    const newStudentCount = document.getElementById("newStudentCount");
+    const returningStudentCount = document.getElementById("returningStudentCount");
+    const totalStudentCount = document.getElementById("totalStudentCount");
+    const classStats = document.getElementById("classStats");
+    const termBtns = document.querySelectorAll('.term-btn');
+    const exportRequirementsBtn = document.getElementById('exportRequirements');
+    const exportAllBtn = document.getElementById('exportAll');
+    
+    // Requirement input elements
+    const toiletPaperInput = document.getElementById('toiletPaper');
+    const vestInput = document.getElementById('vest');
+    const socksInput = document.getElementById('socks');
+    const reamInput = document.getElementById('ream');
+
+    // State
+    let students = JSON.parse(localStorage.getItem("students") || "[]");
+    let studentToDelete = null;
+    let currentFilter = '';
+    let currentTerm = 1;
+
+    // Initialize province dropdown
+    Object.keys(rwanda).forEach(province => {
+      const option = document.createElement("option");
+      option.value = province;
+      option.textContent = province;
+      provinceSelect.appendChild(option);
+    });
+
+    // Initialize class dropdowns
+    Object.keys(studentLists).forEach(className => {
+      // For new student form
+      const newOption = document.createElement("option");
+      newOption.value = className;
+      newOption.textContent = className;
+      newClassSelect.appendChild(newOption);
+      
+      // For returning student form (previous class - Term 1)
+      const prevOption = document.createElement("option");
+      prevOption.value = className;
+      prevOption.textContent = className;
+      previousClassSelect.appendChild(prevOption);
+      
+      // For simple class selection (Terms 2 & 3)
+      const simpleOption = document.createElement("option");
+      simpleOption.value = className;
+      simpleOption.textContent = className;
+      simpleClassSelect.appendChild(simpleOption);
+    });
+
+    // Event Listeners
+    provinceSelect.addEventListener("change", function() {
+      districtSelect.innerHTML = '<option value="">Select District</option>';
+      sectorSelect.innerHTML = '<option value="">Select Sector</option>';
+      districtSelect.disabled = !this.value;
+      sectorSelect.disabled = true;
+      
+      if (this.value) {
+        Object.keys(rwanda[this.value]).forEach(district => {
+          const option = document.createElement("option");
+          option.value = district;
+          option.textContent = district;
+          districtSelect.appendChild(option);
+        });
+      }
+    });
+
+    districtSelect.addEventListener("change", function() {
+      sectorSelect.innerHTML = '<option value="">Select Sector</option>';
+      sectorSelect.disabled = !this.value;
+      
+      if (this.value && provinceSelect.value) {
+        rwanda[provinceSelect.value][this.value].forEach(sector => {
+          const option = document.createElement("option");
+          option.value = sector;
+          option.textContent = sector;
+          sectorSelect.appendChild(option);
+        });
+      }
+    });
+
+    previousClassSelect.addEventListener("change", function() {
+      returningClassSelect.innerHTML = '<option value="">Select New Class</option>';
+      returningClassSelect.disabled = !this.value;
+      
+      if (this.value) {
+        // Populate student dropdown based on previous class
+        returningStudentSelect.innerHTML = '<option value="">Select Student</option>';
+        if (studentLists[this.value]) {
+          studentLists[this.value].forEach(studentName => {
+            const option = document.createElement("option");
+            option.value = studentName;
+            option.textContent = studentName;
+            returningStudentSelect.appendChild(option);
+          });
+        }
+        
+        // Populate new class options based on progression rules
+        const classProgression = {
+          "S1A": ["S2A", "S2B"], "S1B": ["S2A", "S2B"],
+          "S2A": ["S3A", "S3B"], "S2B": ["S3A", "S3B"],
+          "S3A": ["S4A", "S4B"], "S3B": ["S4A", "S4B"],
+          "S4A": ["S5A", "S5B"], "S4B": ["S5A", "S5B"],
+          "S5A": ["S6A", "S6B"], "S5B": ["S6A", "S6B"],
+          "S6A": ["Graduated"], "S6B": ["Graduated"],
+          "L3 SWD": ["L4 SOD"], "L4 SOD": ["Graduated"]
+        };
+        
+        if (classProgression[this.value]) {
+          classProgression[this.value].forEach(nextClass => {
+            const option = document.createElement("option");
+            option.value = nextClass;
+            option.textContent = nextClass;
+            returningClassSelect.appendChild(option);
+          });
+        }
+      }
+    });
+
+    // Update requirement counts and status in real-time
+    toiletPaperInput.addEventListener('input', updateRequirementStatus);
+    vestInput.addEventListener('input', updateRequirementStatus);
+    socksInput.addEventListener('input', updateRequirementStatus);
+    reamInput.addEventListener('input', updateRequirementStatus);
+
+    function updateRequirementStatus() {
+      const toiletPaperValue = parseInt(toiletPaperInput.value) || 0;
+      const vestValue = parseInt(vestInput.value) || 0;
+      const socksValue = parseInt(socksInput.value) || 0;
+      const reamValue = parseInt(reamInput.value) || 0;
+      
+      // Update toilet paper status
+      const toiletPaperStatus = document.getElementById('toiletPaperStatus');
+      const toiletPaperStatusText = document.getElementById('toiletPaperStatusText');
+      if (toiletPaperValue >= 4) {
+        toiletPaperStatus.className = 'status-indicator status-complete';
+        toiletPaperStatusText.textContent = 'Complete (4/4)';
+      } else {
+        toiletPaperStatus.className = 'status-indicator status-incomplete';
+        toiletPaperStatusText.textContent = `Incomplete (${toiletPaperValue}/4)`;
+      }
+      
+      // Update vest status
+      const vestStatus = document.getElementById('vestStatus');
+      const vestStatusText = document.getElementById('vestStatusText');
+      if (vestValue >= 3) {
+        vestStatus.className = 'status-indicator status-complete';
+        vestStatusText.textContent = 'Complete (3/3)';
+      } else {
+        vestStatus.className = 'status-indicator status-incomplete';
+        vestStatusText.textContent = `Incomplete (${vestValue}/3)`;
+      }
+      
+      // Update socks status
+      const socksStatus = document.getElementById('socksStatus');
+      const socksStatusText = document.getElementById('socksStatusText');
+      if (socksValue >= 4) {
+        socksStatus.className = 'status-indicator status-complete';
+        socksStatusText.textContent = 'Complete (4/4)';
+      } else {
+        socksStatus.className = 'status-indicator status-incomplete';
+        socksStatusText.textContent = `Incomplete (${socksValue}/4)`;
+      }
+      
+      // Update ream status
+      const reamStatus = document.getElementById('reamStatus');
+      const reamStatusText = document.getElementById('reamStatusText');
+      if (reamValue >= 1) {
+        reamStatus.className = 'status-indicator status-complete';
+        reamStatusText.textContent = 'Complete (1/1)';
+      } else {
+        reamStatus.className = 'status-indicator status-incomplete';
+        reamStatusText.textContent = `Incomplete (${reamValue}/1)`;
+      }
+    }
+
+    // Term switching
+    termBtns.forEach(btn => {
+      btn.addEventListener('click', function() {
+        termBtns.forEach(b => b.classList.remove('active'));
+        this.classList.add('active');
+        currentTerm = parseInt(this.getAttribute('data-term'));
+        
+        // Show/hide new student form based on term
+        if (currentTerm === 1) {
+          newTab.style.display = 'block';
+          if (newTab.classList.contains('active')) {
+            newForm.style.display = 'grid';
+            returningForm.style.display = 'none';
+          }
+        } else {
+          newTab.style.display = 'none';
+          if (newTab.classList.contains('active')) {
+            switchTab('returning');
+          }
+        }
+        
+        // Update returning student form based on term
+        updateReturningFormForTerm();
+        
+        renderTable();
+        updateStatistics();
+      });
+    });
+
+    function updateReturningFormForTerm() {
+      if (currentTerm === 1) {
+        term1Fields.style.display = 'block';
+        term23Fields.style.display = 'none';
+        // Populate student dropdown with all students for Term 1
+        returningStudentSelect.innerHTML = '<option value="">Select Student</option>';
+        Object.keys(studentLists).forEach(className => {
+          if (studentLists[className]) {
+            studentLists[className].forEach(studentName => {
+              const option = document.createElement("option");
+              option.value = studentName;
+              option.textContent = studentName;
+              returningStudentSelect.appendChild(option);
+            });
+          }
+        });
+      } else {
+        term1Fields.style.display = 'none';
+        term23Fields.style.display = 'block';
+        // Populate student dropdown with students registered in previous terms
+        returningStudentSelect.innerHTML = '<option value="">Select Student</option>';
+        const previousTermStudents = students.filter(s => s.term === (currentTerm - 1));
+        previousTermStudents.forEach(student => {
+          const option = document.createElement("option");
+          option.value = student.name;
+          option.textContent = student.name;
+          returningStudentSelect.appendChild(option);
+        });
+      }
+    }
+
+    // Tab switching
+    newTab.addEventListener("click", () => switchTab("new"));
+    returningTab.addEventListener("click", () => switchTab("returning"));
+
+    function switchTab(tab) {
+      newTab.classList.toggle("active", tab === "new");
+      returningTab.classList.toggle("active", tab === "returning");
+      newForm.style.display = tab === "new" ? "grid" : "none";
+      returningForm.style.display = tab === "returning" ? "block" : "none";
+    }
+
+    // Form submissions
+    newForm.addEventListener("submit", handleNewStudent);
+    returningForm.addEventListener("submit", handleReturningStudent);
+
+    function handleNewStudent(e) {
+      e.preventDefault();
+      
+      // Only allow new students in Term 1
+      if (currentTerm !== 1) {
+        alert('New students can only be registered in Term 1');
+        return;
+      }
+      
+      const studentData = {
+        id: Date.now().toString(),
+        type: "New",
+        name: document.getElementById("newName").value,
+        class: document.getElementById("newClass").value,
+        gender: document.getElementById("newGender").value,
+        dob: document.getElementById("newDOB").value,
+        province: document.getElementById("province").value,
+        district: document.getElementById("district").value,
+        sector: document.getElementById("sector").value,
+        parent: document.getElementById("parent").value,
+        contact: document.getElementById("contact").value,
+        term: currentTerm,
+        requirements: "N/A",
+        requirementsStatus: "N/A"
+      };
+      
+      students.push(studentData);
+      saveAndRender();
+      newForm.reset();
+      resetLocationDropdowns();
+    }
+
+    function handleReturningStudent(e) {
+      e.preventDefault();
+      
+      const requirements = {
+        toiletPaper: parseInt(toiletPaperInput.value) || 0,
+        vest: parseInt(vestInput.value) || 0,
+        socks: parseInt(socksInput.value) || 0,
+        ream: parseInt(reamInput.value) || 0
+      };
+      
+      const requirementsText = Object.entries(requirements)
+        .filter(([_, count]) => count > 0)
+        .map(([item, count]) => `${count} ${item}`)
+        .join(', ') || 'None';
+      
+      // Determine if all requirements are met
+      const allRequirementsMet = 
+        requirements.toiletPaper >= 4 &&
+        requirements.vest >= 3 &&
+        requirements.socks >= 4 &&
+        requirements.ream >= 1;
+      
+      const requirementsStatus = allRequirementsMet ? "Complete" : "Incomplete";
+      
+      let studentClass = '';
+      let previousClass = '';
+      
+      if (currentTerm === 1) {
+        studentClass = document.getElementById("returningClass").value;
+        previousClass = document.getElementById("previousClass").value;
+      } else {
+        studentClass = document.getElementById("simpleClass").value;
+        // For terms 2 & 3, find the student's previous class from their Term 1 registration
+        const studentName = document.getElementById("returningStudent").value;
+        const previousRegistration = students.find(s => s.name === studentName && s.term === (currentTerm - 1));
+        previousClass = previousRegistration ? previousRegistration.class : 'Unknown';
+      }
+      
+      const studentData = {
+        id: Date.now().toString(),
+        type: "Returning",
+        name: document.getElementById("returningStudent").value,
+        class: studentClass,
+        previousClass: previousClass,
+        requirements: requirementsText,
+        requirementsDetails: requirements,
+        requirementsStatus: requirementsStatus,
+        term: currentTerm
+      };
+      
+      students.push(studentData);
+      saveAndRender();
+      returningForm.reset();
+      resetReturningDropdowns();
+      resetRequirements();
+      updateReturningFormForTerm();
+    }
+
+    function resetLocationDropdowns() {
+      provinceSelect.selectedIndex = 0;
+      districtSelect.innerHTML = '<option value="">Select District</option>';
+      sectorSelect.innerHTML = '<option value="">Select Sector</option>';
+      districtSelect.disabled = true;
+      sectorSelect.disabled = true;
+    }
+
+    function resetReturningDropdowns() {
+      previousClassSelect.selectedIndex = 0;
+      returningStudentSelect.innerHTML = '<option value="">Select Student</option>';
+      returningClassSelect.innerHTML = '<option value="">Select New Class</option>';
+      returningClassSelect.disabled = true;
+      simpleClassSelect.selectedIndex = 0;
+    }
+
+    function resetRequirements() {
+      toiletPaperInput.value = 0;
+      vestInput.value = 0;
+      socksInput.value = 0;
+      reamInput.value = 0;
+      updateRequirementStatus();
+    }
+
+    // Search functionality
+    searchBtn.addEventListener("click", performSearch);
+    searchInput.addEventListener("keyup", (e) => {
+      if (e.key === "Enter") performSearch();
+    });
+
+    function performSearch() {
+      currentFilter = searchInput.value.trim().toLowerCase();
+      renderTable();
+    }
+
+    // Delete functionality
+    function setupDeleteListener() {
+      document.querySelectorAll('.btn-delete').forEach(btn => {
+        btn.addEventListener('click', function() {
+          studentToDelete = this.getAttribute('data-id');
+          deleteModal.style.display = 'flex';
+        });
+      });
+    }
+
+    cancelDelete.addEventListener("click", () => {
+      deleteModal.style.display = 'none';
+      studentToDelete = null;
+    });
+
+    confirmDelete.addEventListener("click", () => {
+      if (studentToDelete) {
+        students = students.filter(s => s.id !== studentToDelete);
+        saveAndRender();
+        deleteModal.style.display = 'none';
+        studentToDelete = null;
+      }
+    });
+
+    // Close modal when clicking outside
+    window.addEventListener("click", (e) => {
+      if (e.target === deleteModal) {
+        deleteModal.style.display = 'none';
+        studentToDelete = null;
+      }
+    });
+
+    // Export functionality
+    exportRequirementsBtn.addEventListener('click', exportRequirementsReport);
+    exportAllBtn.addEventListener('click', exportAllStudents);
+
+    function exportRequirementsReport() {
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF();
+      
+      // Title
+      doc.setFontSize(18);
+      doc.text('Student Requirements Report - Term ' + currentTerm, 14, 22);
+      
+      // Date
+      doc.setFontSize(10);
+      doc.text('Generated on: ' + new Date().toLocaleDateString(), 14, 30);
+      
+      // Filter students for current term
+      const termStudents = students.filter(s => s.term === currentTerm);
+      
+      // Students with requirements
+      const withRequirements = termStudents.filter(s => 
+        s.type === 'Returning' && s.requirements !== 'None'
+      );
+      
+      // Students without requirements
+      const withoutRequirements = termStudents.filter(s => 
+        s.type === 'Returning' && s.requirements === 'None'
+      );
+      
+      let yPosition = 45;
+      
+      // Summary
+      doc.setFontSize(12);
+      doc.text('Summary', 14, yPosition);
+      yPosition += 10;
+      
+      doc.setFontSize(10);
+      doc.text(`Total Returning Students: ${termStudents.filter(s => s.type === 'Returning').length}`, 14, yPosition);
+      yPosition += 7;
+      doc.text(`Students with Requirements: ${withRequirements.length}`, 14, yPosition);
+      yPosition += 7;
+      doc.text(`Students without Requirements: ${withoutRequirements.length}`, 14, yPosition);
+      yPosition += 15;
+      
+      // Students with requirements
+      if (withRequirements.length > 0) {
+        doc.setFontSize(12);
+        doc.text('Students with Requirements', 14, yPosition);
+        yPosition += 10;
+        
+        const tableData = withRequirements.map(student => [
+          student.name,
+          student.class,
+          student.requirements,
+          student.requirementsStatus
+        ]);
+        
+        doc.autoTable({
+          startY: yPosition,
+          head: [['Name', 'Class', 'Requirements', 'Status']],
+          body: tableData,
+          theme: 'grid',
+          headStyles: { fillColor: [37, 99, 235] }
+        });
+        
+        yPosition = doc.lastAutoTable.finalY + 10;
+      }
+      
+      // Students without requirements
+      if (withoutRequirements.length > 0) {
+        doc.setFontSize(12);
+        doc.text('Students without Requirements', 14, yPosition);
+        yPosition += 10;
+        
+        const tableData = withoutRequirements.map(student => [
+          student.name,
+          student.class,
+          student.requirements
+        ]);
+        
+        doc.autoTable({
+          startY: yPosition,
+          head: [['Name', 'Class', 'Requirements']],
+          body: tableData,
+          theme: 'grid',
+          headStyles: { fillColor: [239, 68, 68] }
+        });
+      }
+      
+      doc.save(`student_requirements_term_${currentTerm}.pdf`);
+    }
+
+    function exportAllStudents() {
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF();
+      
+      // Title
+      doc.setFontSize(18);
+      doc.text('All Students Report - Term ' + currentTerm, 14, 22);
+      
+      // Date
+      doc.setFontSize(10);
+      doc.text('Generated on: ' + new Date().toLocaleDateString(), 14, 30);
+      
+      // Filter students for current term
+      const termStudents = students.filter(s => s.term === currentTerm);
+      
+      // Summary
+      doc.setFontSize(12);
+      doc.text(`Total Students: ${termStudents.length}`, 14, 45);
+      doc.text(`New Students: ${termStudents.filter(s => s.type === 'New').length}`, 14, 55);
+      doc.text(`Returning Students: ${termStudents.filter(s => s.type === 'Returning').length}`, 14, 65);
+      
+      // Student table
+      const tableData = termStudents.map(student => [
+        student.name,
+        student.class,
+        student.type,
+        student.requirements,
+        student.requirementsStatus || 'N/A'
+      ]);
+      
+      doc.autoTable({
+        startY: 75,
+        head: [['Name', 'Class', 'Type', 'Requirements', 'Status']],
+        body: tableData,
+        theme: 'grid',
+        headStyles: { fillColor: [37, 99, 235] }
+      });
+      
+      doc.save(`all_students_term_${currentTerm}.pdf`);
+    }
+
+    // Render functions
+    function renderTable() {
+      const tbody = studentTable.querySelector('tbody');
+      tbody.innerHTML = '';
+
+      let filteredStudents = students.filter(s => s.term === currentTerm);
+      if (currentFilter) {
+        filteredStudents = filteredStudents.filter(student =>
+          student.name.toLowerCase().includes(currentFilter) ||
+          student.class.toLowerCase().includes(currentFilter)
+        );
+      }
+
+      if (filteredStudents.length === 0) {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `<td colspan="7" style="text-align: center; color: var(--text-light);">No students found for Term ${currentTerm}</td>`;
+        tbody.appendChild(tr);
+        return;
+      }
+
+      filteredStudents.forEach(student => {
+        const tr = document.createElement('tr');
+        
+        // Determine status badge
+        let statusBadge = '';
+        if (student.type === 'New') {
+          statusBadge = '<span class="badge badge-new">N/A</span>';
+        } else {
+          if (student.requirementsStatus === 'Complete') {
+            statusBadge = '<span class="badge badge-returning" style="background-color: #d1fae5; color: #10b981;">Complete</span>';
+          } else {
+            statusBadge = '<span class="badge badge-returning" style="background-color: #fef2f2; color: #ef4444;">Incomplete</span>';
+          }
+        }
+        
+        tr.innerHTML = `
+          <td>${student.name}</td>
+          <td>${student.class}</td>
+          <td><span class="badge ${student.type === 'New' ? 'badge-new' : 'badge-returning'}">${student.type}</span></td>
+          <td>${student.requirements}</td>
+          <td>Term ${student.term}</td>
+          <td>${statusBadge}</td>
+          <td class="action-buttons">
+            <button class="btn btn-primary btn-sm btn-edit" data-id="${student.id}">Edit</button>
+            <button class="btn btn-danger btn-sm btn-delete" data-id="${student.id}">Delete</button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+
+      setupDeleteListener();
+      setupEditListeners();
+    }
+
+    function setupEditListeners() {
+      document.querySelectorAll('.btn-edit').forEach(btn => {
+        btn.addEventListener('click', function() {
+          const studentId = this.getAttribute('data-id');
+          const student = students.find(s => s.id === studentId);
+          
+          // Switch to the appropriate term first
+          termBtns.forEach(b => b.classList.remove('active'));
+          document.querySelector(`.term-btn[data-term="${student.term}"]`).classList.add('active');
+          currentTerm = student.term;
+          updateReturningFormForTerm();
+          
+          if (student.type === 'New') {
+            switchTab('new');
+            document.getElementById('newName').value = student.name;
+            document.getElementById('newClass').value = student.class;
+            document.getElementById('newGender').value = student.gender;
+            document.getElementById('newDOB').value = student.dob;
+            document.getElementById('province').value = student.province;
+            
+            // Trigger province change to populate districts
+            provinceSelect.dispatchEvent(new Event('change'));
+            setTimeout(() => {
+              document.getElementById('district').value = student.district;
+              // Trigger district change to populate sectors
+              districtSelect.dispatchEvent(new Event('change'));
+              setTimeout(() => {
+                document.getElementById('sector').value = student.sector;
+                document.getElementById('parent').value = student.parent;
+                document.getElementById('contact').value = student.contact;
+              }, 100);
+            }, 100);
+          } else {
+            switchTab('returning');
+            if (student.term === 1) {
+              document.getElementById('previousClass').value = student.previousClass;
+              previousClassSelect.dispatchEvent(new Event('change'));
+              
+              setTimeout(() => {
+                document.getElementById('returningStudent').value = student.name;
+                document.getElementById('returningClass').value = student.class;
+              }, 100);
+            } else {
+              document.getElementById('simpleClass').value = student.class;
+              document.getElementById('returningStudent').value = student.name;
+            }
+            
+            // Set requirement values
+            if (student.requirementsDetails) {
+              toiletPaperInput.value = student.requirementsDetails.toiletPaper || 0;
+              vestInput.value = student.requirementsDetails.vest || 0;
+              socksInput.value = student.requirementsDetails.socks || 0;
+              reamInput.value = student.requirementsDetails.ream || 0;
+              updateRequirementStatus();
+            }
+          }
+          
+          // Remove the student being edited
+          students = students.filter(s => s.id !== studentId);
+          saveAndRender();
+        });
+      });
+    }
+
+    function updateStatistics() {
+      const termStudents = students.filter(s => s.term === currentTerm);
+      const newStudents = termStudents.filter(s => s.type === "New").length;
+      const returningStudents = termStudents.filter(s => s.type === "Returning").length;
+      const totalStudents = termStudents.length;
+      
+      newStudentCount.textContent = newStudents;
+      returningStudentCount.textContent = returningStudents;
+      totalStudentCount.textContent = totalStudents;
+      
+      // Update class statistics
+      updateClassStatistics(termStudents);
+    }
+
+    function updateClassStatistics(termStudents) {
+      classStats.innerHTML = '';
+      
+      // Count students by class
+      const classCounts = {};
+      Object.keys(studentLists).forEach(className => {
+        classCounts[className] = 0;
+      });
+      
+      termStudents.forEach(student => {
+        if (classCounts[student.class] !== undefined) {
+          classCounts[student.class]++;
+        }
+      });
+      
+      // Create class stat cards
+      Object.keys(classCounts).sort().forEach(className => {
+        const card = document.createElement('div');
+        card.className = 'class-stat-card';
+        card.innerHTML = `
+          <div class="class-name">${className}</div>
+          <div class="class-count">${classCounts[className]}</div>
+        `;
+        classStats.appendChild(card);
+      });
+    }
+
+    function saveAndRender() {
+      localStorage.setItem("students", JSON.stringify(students));
+      renderTable();
+      updateStatistics();
+    }
+
+    // Initialize
+    function initialize() {
+      // Ensure all existing students have IDs
+      let needsUpdate = false;
+      students.forEach(student => {
+        if (!student.id) {
+          student.id = Date.now().toString() + Math.random().toString(36).substr(2, 9);
+          needsUpdate = true;
+        }
+        // Ensure all students have a term property
+        if (!student.term) {
+          student.term = 1;
+          needsUpdate = true;
+        }
+      });
+      
+      if (needsUpdate) {
+        localStorage.setItem("students", JSON.stringify(students));
+      }
+      
+      updateReturningFormForTerm();
+      renderTable();
+      updateStatistics();
+      updateRequirementStatus();
+    }
+
+    // Start the application
+    initialize();
+  </script>
+</body>
+</html>

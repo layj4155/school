@@ -1,0 +1,3392 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kageyo TVET - Complete Admin Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #3b82f6;
+            --secondary: #1e40af;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --dark: #1f2937;
+            --light: #f9fafb;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f3f4f6;
+            color: #374151;
+            transition: all 0.3s ease;
+        }
+        
+        body.dark-mode {
+            background-color: #111827;
+            color: #f9fafb;
+        }
+        
+        .card {
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05), 0 1px 3px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            background: white;
+        }
+        
+        .dark-mode .card {
+            background: #1f2937;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2), 0 1px 3px rgba(0, 0, 0, 0.3);
+        }
+        
+        .nav-card {
+            transition: all 0.3s ease;
+        }
+        
+        .nav-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+        
+        .dark-mode .nav-card:hover {
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+        }
+        
+        .tab-button {
+            padding: 10px 20px;
+            border-radius: 8px 8px 0 0;
+            background-color: #f3f4f6;
+            border: 1px solid #e5e7eb;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .dark-mode .tab-button {
+            background-color: #374151;
+            border-color: #4b5563;
+            color: #f9fafb;
+        }
+        
+        .tab-button.active {
+            background-color: #3b82f6;
+            color: white;
+            border-color: #3b82f6;
+        }
+        
+        .marks-table, .discipline-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .marks-table th, .marks-table td, 
+        .discipline-table th, .discipline-table td {
+            border: 1px solid #e5e7eb;
+            padding: 10px 12px;
+            text-align: left;
+        }
+        
+        .dark-mode .marks-table th, .dark-mode .marks-table td,
+        .dark-mode .discipline-table th, .dark-mode .discipline-table td {
+            border-color: #4b5563;
+        }
+        
+        .marks-table th, .discipline-table th {
+            background-color: #f9fafb;
+            font-weight: 600;
+        }
+        
+        .dark-mode .marks-table th, .dark-mode .discipline-table th {
+            background-color: #374151;
+        }
+        
+        .marks-table input, .discipline-table input, .discipline-table select {
+            width: 100%;
+            padding: 6px 8px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            transition: all 0.2s ease;
+        }
+        
+        .dark-mode .marks-table input, 
+        .dark-mode .discipline-table input,
+        .dark-mode .discipline-table select {
+            background-color: #374151;
+            border-color: #4b5563;
+            color: #f9fafb;
+        }
+        
+        .marks-table input:focus, 
+        .discipline-table input:focus,
+        .discipline-table select:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+        }
+        
+        .toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 12px 20px;
+            border-radius: 8px;
+            color: white;
+            z-index: 1000;
+            opacity: 0;
+            transform: translateY(-20px);
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .toast.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .toast.success { background-color: #10b981; }
+        .toast.error { background-color: #ef4444; }
+        .toast.warning { background-color: #f59e0b; }
+        .toast.info { background-color: #3b82f6; }
+        
+        .progress-bar {
+            height: 8px;
+            background-color: #e5e7eb;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        
+        .dark-mode .progress-bar {
+            background-color: #4b5563;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            border-radius: 4px;
+            transition: width 0.5s ease;
+        }
+        
+        .animate-pulse {
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+        
+        .marquee {
+            display: inline-block;
+            animation: marquee 20s linear infinite;
+        }
+        
+        @keyframes marquee {
+            0% { transform: translateX(100%); }
+            100% { transform: translateX(-100%); }
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.5s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+        
+        .modal.open {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .modal-content {
+            background: white;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 1200px;
+            max-height: 90vh;
+            overflow-y: auto;
+            transform: scale(0.9);
+            transition: transform 0.3s ease;
+            box-shadow: 0 20px 25px rgba(0, 0, 0, 0.1);
+        }
+        
+        .dark-mode .modal-content {
+            background: #1f2937;
+        }
+        
+        .modal.open .modal-content {
+            transform: scale(1);
+        }
+        
+        .btn {
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .btn-primary {
+            background-color: #3b82f6;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background-color: #2563eb;
+        }
+        
+        .btn-success {
+            background-color: #10b981;
+            color: white;
+        }
+        
+        .btn-success:hover {
+            background-color: #059669;
+        }
+        
+        .btn-danger {
+            background-color: #ef4444;
+            color: white;
+        }
+        
+        .btn-danger:hover {
+            background-color: #dc2626;
+        }
+        
+        .btn-warning {
+            background-color: #f59e0b;
+            color: white;
+        }
+        
+        .btn-warning:hover {
+            background-color: #d97706;
+        }
+        
+        .btn-secondary {
+            background-color: #6b7280;
+            color: white;
+        }
+        
+        .btn-secondary:hover {
+            background-color: #4b5563;
+        }
+        
+        .stat-card {
+            padding: 20px;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .stat-card.blue {
+            background: linear-gradient(135deg, #3b82f6, #1e40af);
+            color: white;
+        }
+        
+        .stat-card.green {
+            background: linear-gradient(135deg, #10b981, #047857);
+            color: white;
+        }
+        
+        .stat-card.yellow {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            color: white;
+        }
+        
+        .stat-card.purple {
+            background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+            color: white;
+        }
+        
+        .nav-tabs {
+            display: flex;
+            border-bottom: 1px solid #e5e7eb;
+            margin-bottom: 1rem;
+        }
+        
+        .dark-mode .nav-tabs {
+            border-color: #4b5563;
+        }
+        
+        .nav-tab {
+            padding: 12px 24px;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            transition: all 0.2s ease;
+        }
+        
+        .nav-tab.active {
+            border-bottom-color: #3b82f6;
+            color: #3b82f6;
+            font-weight: 600;
+        }
+        
+        .dark-mode .nav-tab.active {
+            color: #60a5fa;
+            border-bottom-color: #60a5fa;
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .action-btn {
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 0.875rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: none;
+            display: inline-flex;
+            align-items: center;
+            margin-right: 5px;
+        }
+        
+        .action-btn.edit {
+            background-color: #3b82f6;
+            color: white;
+        }
+        
+        .action-btn.edit:hover {
+            background-color: #2563eb;
+        }
+        
+        .action-btn.delete {
+            background-color: #ef4444;
+            color: white;
+        }
+        
+        .action-btn.delete:hover {
+            background-color: #dc2626;
+        }
+        
+        .action-btn.view {
+            background-color: #10b981;
+            color: white;
+        }
+        
+        .action-btn.view:hover {
+            background-color: #059669;
+        }
+        
+        .badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+        
+        .badge.success {
+            background-color: #d1fae5;
+            color: #065f46;
+        }
+        
+        .dark-mode .badge.success {
+            background-color: #065f46;
+            color: #d1fae5;
+        }
+        
+        .badge.warning {
+            background-color: #fef3c7;
+            color: #92400e;
+        }
+        
+        .dark-mode .badge.warning {
+            background-color: #92400e;
+            color: #fef3c7;
+        }
+        
+        .badge.danger {
+            background-color: #fee2e2;
+            color: #991b1b;
+        }
+        
+        .dark-mode .badge.danger {
+            background-color: #991b1b;
+            color: #fee2e2;
+        }
+        
+        .exam-tabs {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .exam-tab {
+            padding: 10px 20px;
+            border-radius: 8px;
+            background-color: #f3f4f6;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .dark-mode .exam-tab {
+            background-color: #374151;
+            color: #f9fafb;
+        }
+        
+        .exam-tab.active {
+            background-color: #3b82f6;
+            color: white;
+        }
+        
+        .class-tabs {
+            display: flex;
+            overflow-x: auto;
+            gap: 5px;
+            margin-bottom: 20px;
+            padding-bottom: 5px;
+        }
+        
+        .class-tab {
+            padding: 8px 16px;
+            border-radius: 6px;
+            background-color: #f3f4f6;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: all 0.2s ease;
+        }
+        
+        .dark-mode .class-tab {
+            background-color: #374151;
+            color: #f9fafb;
+        }
+        
+        .class-tab.active {
+            background-color: #3b82f6;
+            color: white;
+        }
+        
+        .mark-input {
+            width: 70px;
+            padding: 6px 8px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            text-align: center;
+            transition: all 0.2s ease;
+        }
+        
+        .dark-mode .mark-input {
+            background-color: #374151;
+            border-color: #4b5563;
+            color: #f9fafb;
+        }
+        
+        .mark-input:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+        }
+        
+        .mark-input.error {
+            border-color: #ef4444;
+            background-color: #fef2f2;
+        }
+        
+        .dark-mode .mark-input.error {
+            background-color: #7f1d1d;
+            border-color: #dc2626;
+        }
+        
+        .bulk-actions {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .bulk-input {
+            width: 100px;
+            padding: 8px 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            text-align: center;
+        }
+        
+        .dark-mode .bulk-input {
+            background-color: #374151;
+            border-color: #4b5563;
+            color: #f9fafb;
+        }
+        
+        .student-row:hover {
+            background-color: #f9fafb;
+        }
+        
+        .dark-mode .student-row:hover {
+            background-color: #374151;
+        }
+        
+        .dynamic-content {
+            max-height: 400px;
+            overflow-y: auto;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .dark-mode .dynamic-content {
+            border-color: #4b5563;
+            background-color: #1f2937;
+        }
+        
+        .download-section {
+            background-color: #f9fafb;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 20px;
+        }
+        
+        .dark-mode .download-section {
+            background-color: #374151;
+        }
+        
+        .download-options {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 10px;
+            margin-top: 10px;
+        }
+        
+        .download-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 10px;
+            border-radius: 6px;
+            background-color: #3b82f6;
+            color: white;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-align: center;
+        }
+        
+        .download-btn:hover {
+            background-color: #2563eb;
+        }
+        
+        .download-btn i {
+            margin-right: 8px;
+        }
+        
+        .term-selector {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .term-btn {
+            padding: 8px 16px;
+            border-radius: 6px;
+            background-color: #f3f4f6;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .dark-mode .term-btn {
+            background-color: #374151;
+            color: #f9fafb;
+        }
+        
+        .term-btn.active {
+            background-color: #3b82f6;
+            color: white;
+        }
+        
+        .add-term-btn {
+            padding: 8px 16px;
+            border-radius: 6px;
+            background-color: #10b981;
+            color: white;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+        }
+        
+        .add-term-btn:hover {
+            background-color: #059669;
+        }
+        
+        .year-total-section {
+            background-color: #f0f9ff;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 20px;
+        }
+        
+        .dark-mode .year-total-section {
+            background-color: #1e3a8a;
+        }
+        
+        .year-total-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 12px 20px;
+            border-radius: 8px;
+            background-color: #10b981;
+            color: white;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-weight: 600;
+            margin-top: 10px;
+        }
+        
+        .year-total-btn:hover {
+            background-color: #059669;
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Login Modal -->
+    <div id="loginModal" class="modal open">
+        <div class="modal-content p-8 w-full max-w-md">
+            <div class="text-center mb-6">
+                <h2 class="text-2xl font-bold text-blue-700">Admin Login</h2>
+                <p class="text-gray-600 mt-2">Enter your credentials to access the dashboard</p>
+            </div>
+            <form id="loginForm">
+                <div class="mb-4">
+                    <label class="block text-gray-700 text-sm font-bold mb-2" for="username">Username</label>
+                    <input class="shadow appearance-none border rounded w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500" 
+                           id="username" type="text" placeholder="Username" required>
+                </div>
+                <div class="mb-6">
+                    <label class="block text-gray-700 text-sm font-bold mb-2" for="password">Password</label>
+                    <input class="shadow appearance-none border rounded w-full py-3 px-4 text-gray-700 mb-3 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500" 
+                           id="password" type="password" placeholder="Password" required>
+                </div>
+                <div class="flex items-center justify-between">
+                    <button class="btn btn-primary w-full" type="submit">
+                        Sign In
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Main Content Area -->
+    <div class="min-h-screen flex flex-col">
+        <!-- Header -->
+        <header class="bg-white shadow-sm transition-colors duration-300 dark:bg-gray-800">
+            <div class="bg-blue-600 text-white py-2">
+                <div class="container mx-auto px-4 flex justify-between items-center">
+                    <div class="flex items-center space-x-4">
+                        <div class="flex items-center space-x-3">
+                            <div class="w-10 h-10 bg-white rounded-full flex items-center justify-center text-blue-600 font-bold">
+                                KT
+                            </div>
+                            <span class="font-bold">KAGEYO TVET</span>
+                        </div>
+                        <a href="#" class="hover:underline text-sm"><i class="fab fa-whatsapp mr-2"></i>Join WhatsApp Group</a>
+                        <div id="announcementTicker" class="overflow-hidden whitespace-nowrap w-64">
+                            <span class="marquee">📢 Welcome to Kageyo TVET School Admin Dashboard - Manage marks, view analytics, and track student performance</span>
+                        </div>
+                    </div>
+                    <div class="flex items-center space-x-4">
+                        <select id="header-language-selector" class="p-1 rounded bg-white text-blue-600 text-sm">
+                            <option value="en">English</option>
+                            <option value="rw">Kinyarwanda</option>
+                            <option value="fr">Français</option>
+                        </select>
+                        <button id="darkModeToggle" class="p-1 rounded bg-white text-blue-600">
+                            <i class="fas fa-moon"></i>
+                        </button>
+                        <div id="currentDateTime" class="text-sm"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="container mx-auto px-4 py-4">
+                <nav class="flex items-center justify-between">
+                    <div class="flex items-center space-x-4">
+                        <div>
+                            <h1 class="text-xl font-bold text-blue-600 dark:text-blue-400">KAGEYO TVET SCHOOL</h1>
+                            <div class="text-sm text-gray-500 dark:text-gray-400">Work - Courage - Solidarity</div>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center space-x-6">
+                        <div class="relative">
+                            <input type="text" id="globalSearch" placeholder="Search students, classes..." class="px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                            <div id="searchResults" class="absolute top-full left-0 w-full bg-white shadow-lg rounded-lg mt-1 hidden z-10 max-h-60 overflow-y-auto dark:bg-gray-700 dark:text-white"></div>
+                        </div>
+                        <button id="logoutBtn" class="btn btn-danger">Logout</button>
+                    </div>
+                </nav>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="container mx-auto px-4 py-6 flex-1">
+            <!-- Navigation Tabs -->
+            <div class="card p-4 mb-6">
+                <div class="nav-tabs">
+                    <div class="nav-tab active" data-tab="dashboard">Dashboard</div>
+                    <div class="nav-tab" data-tab="student-management">Student Management</div>
+                    <div class="nav-tab" data-tab="midterm-management">Midterm Management</div>
+                    <div class="nav-tab" data-tab="exam-management">Exam Management</div>
+                    <div class="nav-tab" data-tab="discipline-management">Discipline Management</div>
+                    <div class="nav-tab" data-tab="results-management">Results Management</div>
+                </div>
+            </div>
+
+            <!-- Dashboard Tab Content -->
+            <div id="dashboard" class="tab-content active">
+                <!-- Quick Stats Section -->
+                <section class="mb-8 fade-in">
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                        <div class="stat-card blue">
+                            <div class="flex justify-between items-center">
+                                <div>
+                                    <div class="text-2xl font-bold" id="totalStudents">0</div>
+                                    <div class="text-blue-100">Total Students</div>
+                                </div>
+                                <i class="fas fa-users text-3xl opacity-80"></i>
+                            </div>
+                            <div class="mt-4">
+                                <div class="flex justify-between text-sm mb-1">
+                                    <span>Enrollment Progress</span>
+                                    <span id="enrollmentPercent">0%</span>
+                                </div>
+                                <div class="progress-bar">
+                                    <div class="progress-fill bg-blue-300" id="enrollmentProgress" style="width: 0%"></div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="stat-card green">
+                            <div class="flex justify-between items-center">
+                                <div>
+                                    <div class="text-2xl font-bold" id="classesCount">0</div>
+                                    <div class="text-green-100">Classes</div>
+                                </div>
+                                <i class="fas fa-chalkboard-teacher text-3xl opacity-80"></i>
+                            </div>
+                            <div class="mt-4">
+                                <div class="flex justify-between text-sm mb-1">
+                                    <span>Active Classes</span>
+                                    <span id="activeClassesPercent">0%</span>
+                                </div>
+                                <div class="progress-bar">
+                                    <div class="progress-fill bg-green-300" id="activeClassesProgress" style="width: 0%"></div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="stat-card yellow">
+                            <div class="flex justify-between items-center">
+                                <div>
+                                    <div class="text-2xl font-bold" id="midtermEntered">0</div>
+                                    <div class="text-yellow-100">Mid-Term Entered</div>
+                                </div>
+                                <i class="fas fa-clipboard-check text-3xl opacity-80"></i>
+                            </div>
+                            <div class="mt-4">
+                                <div class="flex justify-between text-sm mb-1">
+                                    <span>Completion</span>
+                                    <span id="midtermPercent">0%</span>
+                                </div>
+                                <div class="progress-bar">
+                                    <div class="progress-fill bg-yellow-300" id="midtermProgress" style="width: 0%"></div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="stat-card purple">
+                            <div class="flex justify-between items-center">
+                                <div>
+                                    <div class="text-2xl font-bold" id="examsEntered">0</div>
+                                    <div class="text-purple-100">Exams Entered</div>
+                                </div>
+                                <i class="fas fa-file-alt text-3xl opacity-80"></i>
+                            </div>
+                            <div class="mt-4">
+                                <div class="flex justify-between text-sm mb-1">
+                                    <span>Completion</span>
+                                    <span id="examsPercent">0%</span>
+                                </div>
+                                <div class="progress-bar">
+                                    <div class="progress-fill bg-purple-300" id="examsProgress" style="width: 0%"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <!-- Left Column -->
+                    <div class="lg:col-span-2 space-y-6">
+                        <!-- Navigation Cards -->
+                        <section class="card p-6 fade-in">
+                            <div class="flex items-start justify-between mb-6">
+                                <div>
+                                    <h2 class="text-xl font-bold text-blue-700 dark:text-blue-400">Marks Management</h2>
+                                    <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">Choose where to update marks. Navigate to specific assessment pages for detailed management.</p>
+                                </div>
+                                <div class="text-right text-sm text-gray-500 dark:text-gray-400">
+                                    Academic Year: <strong>2025 - 2026</strong>
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <!-- Midterm 1 Marks Card -->
+                                <div class="nav-card bg-white dark:bg-gray-800 border border-blue-200 dark:border-blue-800 rounded-xl p-6 text-center">
+                                    <div class="w-16 h-16 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center mx-auto mb-4">
+                                        <i class="fas fa-clipboard-check text-blue-600 dark:text-blue-400 text-2xl"></i>
+                                    </div>
+                                    <h3 class="text-lg font-semibold text-blue-700 dark:text-blue-400 mb-2">Midterm 1 Marks</h3>
+                                    <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">Enter and manage first midterm assessment marks</p>
+                                    <button class="btn btn-primary w-full" onclick="openMidtermModal(1)">
+                                        Manage Midterm 1
+                                    </button>
+                                </div>
+
+                                <!-- Midterm 2 Marks Card -->
+                                <div class="nav-card bg-white dark:bg-gray-800 border border-green-200 dark:border-green-800 rounded-xl p-6 text-center">
+                                    <div class="w-16 h-16 bg-green-100 dark:bg-green-900 rounded-full flex items-center justify-center mx-auto mb-4">
+                                        <i class="fas fa-clipboard-check text-green-600 dark:text-green-400 text-2xl"></i>
+                                    </div>
+                                    <h3 class="text-lg font-semibold text-green-700 dark:text-green-400 mb-2">Midterm 2 Marks</h3>
+                                    <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">Enter and manage second midterm assessment marks</p>
+                                    <button class="btn btn-success w-full" onclick="openMidtermModal(2)">
+                                        Manage Midterm 2
+                                    </button>
+                                </div>
+
+                                <!-- Midterm 3 Marks Card -->
+                                <div class="nav-card bg-white dark:bg-gray-800 border border-yellow-200 dark:border-yellow-800 rounded-xl p-6 text-center">
+                                    <div class="w-16 h-16 bg-yellow-100 dark:bg-yellow-900 rounded-full flex items-center justify-center mx-auto mb-4">
+                                        <i class="fas fa-clipboard-check text-yellow-600 dark:text-yellow-400 text-2xl"></i>
+                                    </div>
+                                    <h3 class="text-lg font-semibold text-yellow-700 dark:text-yellow-400 mb-2">Midterm 3 Marks</h3>
+                                    <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">Enter and manage third midterm assessment marks</p>
+                                    <button class="btn btn-warning w-full" onclick="openMidtermModal(3)">
+                                        Manage Midterm 3
+                                    </button>
+                                </div>
+
+                                <!-- Exam Management Card -->
+                                <div class="nav-card bg-white dark:bg-gray-800 border border-red-200 dark:border-red-800 rounded-xl p-6 text-center">
+                                    <div class="w-16 h-16 bg-red-100 dark:bg-red-900 rounded-full flex items-center justify-center mx-auto mb-4">
+                                        <i class="fas fa-file-alt text-red-600 dark:text-red-400 text-2xl"></i>
+                                    </div>
+                                    <h3 class="text-lg font-semibold text-red-700 dark:text-red-400 mb-2">Exam Management</h3>
+                                    <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">Manage all term exams and final results</p>
+                                    <button class="btn btn-danger w-full" onclick="openExamManagement()">
+                                        Manage Exams
+                                    </button>
+                                </div>
+                            </div>
+                        </section>
+
+                        <!-- Analytics Section -->
+                        <section class="card p-6 fade-in">
+                            <h2 class="text-lg font-semibold text-gray-800 dark:text-white mb-4">Performance Analytics</h2>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div>
+                                    <canvas id="classPerformanceChart" width="400" height="300"></canvas>
+                                </div>
+                                <div>
+                                    <canvas id="passFailChart" width="400" height="300"></canvas>
+                                </div>
+                            </div>
+                            <div class="mt-6">
+                                <canvas id="marksDistributionChart" width="400" height="300"></canvas>
+                            </div>
+                        </section>
+                    </div>
+
+                    <!-- Right Column -->
+                    <div class="space-y-6">
+                        <!-- Quick Actions -->
+                        <section class="card p-6 fade-in">
+                            <h2 class="text-lg font-semibold text-gray-800 dark:text-white mb-4">Quick Actions</h2>
+                            <div class="space-y-3">
+                                    <button id="exportResultsBtn" class="btn btn-primary w-full justify-start">
+                                        <i class="fas fa-file-export mr-2"></i>
+                                        Export Results
+                                    </button>
+                                    <button id="openPublishPageBtn" class="btn btn-primary w-full justify-start mt-2" onclick="window.location.href='publish-marks.html'">
+                                        <i class="fas fa-upload mr-2"></i>
+                                        Open Publish Page
+                                    </button>
+                                <button id="sendNoticeBtn" class="btn btn-success w-full justify-start">
+                                    <i class="fas fa-bullhorn mr-2"></i>
+                                    Send Notice
+                                </button>
+                                <button id="addStudentBtn" class="btn btn-warning w-full justify-start">
+                                    <i class="fas fa-user-plus mr-2"></i>
+                                    Add Student
+                                </button>
+                                <button id="activityLogBtn" class="btn btn-secondary w-full justify-start">
+                                    <i class="fas fa-history mr-2"></i>
+                                    View Activity Log
+                                </button>
+                            </div>
+                        </section>
+
+                        <!-- Recent Activity -->
+                        <section class="card p-6 fade-in">
+                            <h2 class="text-lg font-semibold text-gray-800 dark:text-white mb-4">Recent Activity</h2>
+                            <div id="recentActivity" class="space-y-4 max-h-80 overflow-y-auto">
+                                <!-- Activity will be populated by JavaScript -->
+                            </div>
+                        </section>
+
+                        <!-- Dynamic Content Section -->
+                        <section class="card p-6 fade-in">
+                            <h2 class="text-lg font-semibold text-gray-800 dark:text-white mb-4">Quick Updates</h2>
+                            <div class="dynamic-content" id="dynamicContent">
+                                <!-- Dynamic content will be populated by JavaScript -->
+                            </div>
+                            <button class="btn btn-primary w-full mt-2" id="refreshContent">
+                                <i class="fas fa-sync-alt mr-2"></i> Refresh Content
+                    </div>
+                </div>
+
+                <!-- Publish and Rewrite buttons -->
+                <div class="publish-bar p-4 mt-4 card">
+                    <div class="flex items-center justify-between">
+                        <div class="text-sm text-gray-700 dark:text-gray-300">
+                            <strong>Note:</strong> Marks are auto-published in real-time. Use the button below for manual bulk publishing if needed.
+                        </div>
+                        <div class="space-x-2">
+                            <button id="rewriteBtn" class="btn btn-danger">Rewrite Results</button>
+                            <button id="publishAllBtn" class="btn btn-primary">Publish All Results</button>
+                        </div>
+                    </div>
+                    <div id="message" class="text-green-600 text-sm font-medium mt-2 hidden"></div>
+                </div>
+            </div>
+
+            <!-- Student Management Tab Content -->
+            <div id="student-management" class="tab-content">
+                <div class="card p-6">
+                    <div class="flex justify-between items-center mb-6">
+                        <h2 class="text-xl font-bold text-blue-700 dark:text-blue-400">Student Management</h2>
+                        <button class="btn btn-primary" onclick="openAddStudentModal()">
+                            <i class="fas fa-user-plus mr-2"></i> Add Student
+                        </button>
+                    </div>
+                    
+                    <div class="overflow-x-auto">
+                        <table class="marks-table">
+                            <thead>
+                                <tr>
+                                    <th>Student ID</th>
+                                    <th>Full Name</th>
+                                    <th>Class</th>
+                                    <th>Gender</th>
+                                    <th>Date of Birth</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="studentTableBody">
+                                <!-- Student rows will be populated by JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Midterm Management Tab Content -->
+            <div id="midterm-management" class="tab-content">
+                <div class="card p-6">
+                    <h2 class="text-xl font-bold text-blue-700 dark:text-blue-400 mb-6">Midterm Management</h2>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+                        <div class="nav-card bg-white dark:bg-gray-800 border border-blue-200 dark:border-blue-800 rounded-xl p-6 text-center">
+                            <div class="w-16 h-16 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center mx-auto mb-4">
+                                <i class="fas fa-clipboard-check text-blue-600 dark:text-blue-400 text-2xl"></i>
+                            </div>
+                            <h3 class="text-lg font-semibold text-blue-700 dark:text-blue-400 mb-2">Midterm 1</h3>
+                            <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">Manage first midterm assessment marks</p>
+                            <button class="btn btn-primary w-full" onclick="openMidtermModal(1)">
+                                Manage Midterm 1
+                            </button>
+                        </div>
+
+                        <div class="nav-card bg-white dark:bg-gray-800 border border-green-200 dark:border-green-800 rounded-xl p-6 text-center">
+                            <div class="w-16 h-16 bg-green-100 dark:bg-green-900 rounded-full flex items-center justify-center mx-auto mb-4">
+                                <i class="fas fa-clipboard-check text-green-600 dark:text-green-400 text-2xl"></i>
+                            </div>
+                            <h3 class="text-lg font-semibold text-green-700 dark:text-green-400 mb-2">Midterm 2</h3>
+                            <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">Manage second midterm assessment marks</p>
+                            <button class="btn btn-success w-full" onclick="openMidtermModal(2)">
+                                Manage Midterm 2
+                            </button>
+                        </div>
+
+                        <div class="nav-card bg-white dark:bg-gray-800 border border-yellow-200 dark:border-yellow-800 rounded-xl p-6 text-center">
+                            <div class="w-16 h-16 bg-yellow-100 dark:bg-yellow-900 rounded-full flex items-center justify-center mx-auto mb-4">
+                                <i class="fas fa-clipboard-check text-yellow-600 dark:text-yellow-400 text-2xl"></i>
+                            </div>
+                            <h3 class="text-lg font-semibold text-yellow-700 dark:text-yellow-400 mb-2">Midterm 3</h3>
+                            <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">Manage third midterm assessment marks</p>
+                            <button class="btn btn-warning w-full" onclick="openMidtermModal(3)">
+                                Manage Midterm 3
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-blue-50 dark:bg-blue-900 p-4 rounded-lg">
+                        <h3 class="font-semibold text-blue-800 dark:text-blue-200 mb-2">Midterm Progress Overview</h3>
+                        <div class="space-y-3">
+                            <div>
+                                <div class="flex justify-between text-sm mb-1">
+                                    <span>Midterm 1 Completion</span>
+                                    <span id="midterm1Percent">0%</span>
+                                </div>
+                                <div class="progress-bar">
+                                    <div class="progress-fill bg-blue-300" id="midterm1Progress" style="width: 0%"></div>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="flex justify-between text-sm mb-1">
+                                    <span>Midterm 2 Completion</span>
+                                    <span id="midterm2Percent">0%</span>
+                                </div>
+                                <div class="progress-bar">
+                                    <div class="progress-fill bg-green-300" id="midterm2Progress" style="width: 0%"></div>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="flex justify-between text-sm mb-1">
+                                    <span>Midterm 3 Completion</span>
+                                    <span id="midterm3Percent">0%</span>
+                                </div>
+                                <div class="progress-bar">
+                                    <div class="progress-fill bg-yellow-300" id="midterm3Progress" style="width: 0%"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Download Section for Midterm -->
+                    <div class="download-section mt-6">
+                        <h3 class="font-semibold text-gray-800 dark:text-white mb-2">Download Midterm Results</h3>
+                        <p class="text-sm text-gray-600 dark:text-gray-400 mb-3">Select a class and midterm to download results:</p>
+                        <div class="flex space-x-4 mb-4">
+                            <select id="midtermDownloadClass" class="px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                                <option value="">Select Class</option>
+                                <!-- Options will be populated by JavaScript -->
+                            </select>
+                            <select id="midtermDownloadType" class="px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                                <option value="midterm1">Midterm 1</option>
+                                <option value="midterm2">Midterm 2</option>
+                                <option value="midterm3">Midterm 3</option>
+                                <option value="all">All Midterms</option>
+                            </select>
+                        </div>
+                        <div class="download-options">
+                            <div class="download-btn" onclick="downloadMidtermResults('excel')">
+                                <i class="fas fa-file-excel"></i> Excel
+                            </div>
+                            <div class="download-btn" onclick="downloadMidtermResults('pdf')">
+                                <i class="fas fa-file-pdf"></i> PDF
+                            </div>
+                            <div class="download-btn" onclick="downloadMidtermResults('csv')">
+                                <i class="fas fa-file-csv"></i> CSV
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Exam Management Tab Content -->
+            <div id="exam-management" class="tab-content">
+                <div class="card p-6">
+                    <h2 class="text-xl font-bold text-blue-700 dark:text-blue-400 mb-6">Exam Management</h2>
+                    
+                    <div class="term-selector mb-6">
+                        <div class="term-btn active" data-term="term1">Term 1</div>
+                        <div class="term-btn" data-term="term2">Term 2</div>
+                        <div class="term-btn" data-term="term3">Term 3</div>
+                        <div class="add-term-btn" id="addTermBtn">
+                            <i class="fas fa-plus mr-2"></i> Add Term
+                        </div>
+                    </div>
+                    
+                    <div class="class-tabs mb-6">
+                        <!-- Class tabs will be populated by JavaScript -->
+                    </div>
+                    
+                    <div class="bulk-actions mb-4">
+                        <button class="btn btn-primary" id="applyBulkMarks">
+                            <i class="fas fa-bolt mr-2"></i> Apply to All
+                        </button>
+                        <input type="number" min="0" max="100" placeholder="Mark" class="bulk-input" id="bulkMarkValue">
+                        <select class="bulk-input" id="bulkExamType">
+                            <option value="exam1">Exam 1</option>
+                            <option value="exam2">Exam 2</option>
+                            <option value="exam3">Exam 3</option>
+                        </select>
+                        <button class="btn btn-secondary" id="clearAllMarks">
+                            <i class="fas fa-eraser mr-2"></i> Clear All
+                        </button>
+                    </div>
+                    
+                    <div class="overflow-x-auto">
+                        <table class="marks-table">
+                            <thead>
+                                <tr>
+                                    <th>Student Name</th>
+                                    <th>Exam 1</th>
+                                    <th>Exam 2</th>
+                                    <th>Exam 3</th>
+                                    <th>Total</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="examTableBody">
+                                <!-- Exam rows will be populated by JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <div class="flex justify-end mt-4">
+                        <button class="btn btn-primary" id="saveExamMarks">
+                            <i class="fas fa-save mr-2"></i> Save All Exam Marks
+                        </button>
+                    </div>
+
+                    <!-- Year Total Section -->
+                    <div class="year-total-section">
+                        <h3 class="font-semibold text-blue-800 dark:text-blue-200 mb-2">Year Total Calculation</h3>
+                        <p class="text-sm text-gray-700 dark:text-gray-300 mb-3">Calculate the total marks for the entire academic year for all students in this class.</p>
+                        <div class="year-total-btn" onclick="calculateYearTotal()">
+                            <i class="fas fa-calculator mr-2"></i> Calculate Year Total
+                        </div>
+                    </div>
+
+                    <!-- Download Section for Exams -->
+                    <div class="download-section mt-6">
+                        <h3 class="font-semibold text-gray-800 dark:text-white mb-2">Download Exam Results</h3>
+                        <p class="text-sm text-gray-600 dark:text-gray-400 mb-3">Select a class and term to download results:</p>
+                        <div class="flex space-x-4 mb-4">
+                            <select id="examDownloadClass" class="px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                                <option value="">Select Class</option>
+                                <!-- Options will be populated by JavaScript -->
+                            </select>
+                            <select id="examDownloadTerm" class="px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                                <option value="term1">Term 1</option>
+                                <option value="term2">Term 2</option>
+                                <option value="term3">Term 3</option>
+                                <option value="all">All Terms</option>
+                            </select>
+                        </div>
+                        <div class="download-options">
+                            <div class="download-btn" onclick="downloadExamResults('excel')">
+                                <i class="fas fa-file-excel"></i> Excel
+                            </div>
+                            <div class="download-btn" onclick="downloadExamResults('pdf')">
+                                <i class="fas fa-file-pdf"></i> PDF
+                            </div>
+                            <div class="download-btn" onclick="downloadExamResults('csv')">
+                                <i class="fas fa-file-csv"></i> CSV
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Discipline Management Tab Content -->
+            <div id="discipline-management" class="tab-content">
+                <div class="card p-6">
+                    <div class="flex justify-between items-center mb-6">
+                        <h2 class="text-xl font-bold text-blue-700 dark:text-blue-400">Discipline Management</h2>
+                        <button class="btn btn-primary" onclick="openAddDisciplineModal()">
+                            <i class="fas fa-plus mr-2"></i> Add Record
+                        </button>
+                    </div>
+                    
+                    <div class="overflow-x-auto">
+                        <table class="discipline-table">
+                            <thead>
+                                <tr>
+                                    <th>Student Name</th>
+                                    <th>Class</th>
+                                    <th>Incident Type</th>
+                                    <th>Date</th>
+                                    <th>Severity</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="disciplineTableBody">
+                                <!-- Discipline records will be populated by JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Results Management Tab Content -->
+            <div id="results-management" class="tab-content">
+                <div class="card p-6">
+                    <h2 class="text-xl font-bold text-blue-700 dark:text-blue-400 mb-6">Results Management</h2>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+                        <div class="stat-card blue">
+                            <div class="flex justify-between items-center">
+                                <div>
+                                    <div class="text-2xl font-bold" id="totalExamsEntered">0</div>
+                                    <div class="text-blue-100">Total Exams Entered</div>
+                                </div>
+                                <i class="fas fa-file-alt text-3xl opacity-80"></i>
+                            </div>
+                        </div>
+                        
+                        <div class="stat-card green">
+                            <div class="flex justify-between items-center">
+                                <div>
+                                    <div class="text-2xl font-bold" id="resultsPublished">0</div>
+                                    <div class="text-green-100">Results Published</div>
+                                </div>
+                                <i class="fas fa-check-circle text-3xl opacity-80"></i>
+                            </div>
+                        </div>
+                        
+                        <div class="stat-card yellow">
+                            <div class="flex justify-between items-center">
+                                <div>
+                                    <div class="text-2xl font-bold" id="averageScore">0%</div>
+                                    <div class="text-yellow-100">Average Score</div>
+                                </div>
+                                <i class="fas fa-chart-line text-3xl opacity-80"></i>
+                            </div>
+                        </div>
+                        
+                        <div class="stat-card purple">
+                            <div class="flex justify-between items-center">
+                                <div>
+                                    <div class="text-2xl font-bold" id="passRate">0%</div>
+                                    <div class="text-purple-100">Pass Rate</div>
+                                </div>
+                                <i class="fas fa-graduation-cap text-3xl opacity-80"></i>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="text-lg font-semibold text-gray-800 dark:text-white">Class Results</h3>
+                        <div class="flex space-x-2">
+                            <select id="resultsClassSelect" class="px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                                <option value="">All Classes</option>
+                                <!-- Options will be populated by JavaScript -->
+                            </select>
+                            <select id="resultsTermSelect" class="px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                                <option value="term1">Term 1</option>
+                                <option value="term2">Term 2</option>
+                                <option value="term3">Term 3</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="overflow-x-auto">
+                        <table class="marks-table">
+                            <thead>
+                                <tr>
+                                    <th>Class</th>
+                                    <th>Students</th>
+                                    <th>Average Score</th>
+                                    <th>Pass Rate</th>
+                                    <th>Top Student</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="resultsTableBody">
+                                <!-- Results rows will be populated by JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <div class="flex justify-end mt-6 space-x-2">
+                        <button class="btn btn-secondary" id="exportResults">
+                            <i class="fas fa-file-export mr-2"></i> Export Results
+                        </button>
+                        <button class="btn btn-primary" id="publishResults">
+                            <i class="fas fa-bullhorn mr-2"></i> Publish Results
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Modals -->
+    <!-- Midterm Marks Modal -->
+    <div id="midtermModal" class="modal">
+        <div class="modal-content p-6">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-xl font-bold text-blue-700 dark:text-blue-400" id="midtermModalTitle">Midterm Marks</h2>
+                <button id="closeMidtermModal" class="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <div class="mb-4">
+                <div class="class-tabs mb-4">
+                    <!-- Class tabs will be populated by JavaScript -->
+                </div>
+                
+                <div class="overflow-x-auto">
+                    <table class="marks-table">
+                        <thead>
+                            <tr>
+                                <th>Student Name</th>
+                                <th>Midterm Mark</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="midtermTableBody">
+                            <!-- Student rows will be populated by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <div class="flex justify-end space-x-2">
+                <button id="saveMidtermMarks" class="btn btn-primary">
+                    Save Marks
+                </button>
+                <button id="closeMidtermModal2" class="btn btn-secondary">
+                    Close
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Student Modal -->
+    <div id="addStudentModal" class="modal">
+        <div class="modal-content p-6">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-xl font-bold text-blue-700 dark:text-blue-400">Add New Student</h2>
+                <button id="closeAddStudentModal" class="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <form id="addStudentForm">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Student ID</label>
+                        <input type="text" class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white" required>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Full Name</label>
+                        <input type="text" class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white" required>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Class</label>
+                        <select class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white" required>
+                            <option value="">Select Class</option>
+                            <!-- Options will be populated by JavaScript -->
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Gender</label>
+                        <select class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white" required>
+                            <option value="">Select Gender</option>
+                            <option value="Male">Male</option>
+                            <option value="Female">Female</option>
+                        </select>
+                    </div>
+                    <div class="md:col-span-2">
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Date of Birth</label>
+                        <input type="date" class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white" required>
+                    </div>
+                </div>
+                
+                <div class="flex justify-end space-x-2">
+                    <button type="submit" class="btn btn-primary">
+                        Add Student
+                    </button>
+                    <button type="button" id="closeAddStudentModal2" class="btn btn-secondary">
+                        Cancel
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Add Discipline Record Modal -->
+    <div id="addDisciplineModal" class="modal">
+        <div class="modal-content p-6">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-xl font-bold text-blue-700 dark:text-blue-400">Add Discipline Record</h2>
+                <button id="closeAddDisciplineModal" class="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <form id="addDisciplineForm">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Student</label>
+                        <select class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white" id="disciplineStudentSelect" required>
+                            <option value="">Select Student</option>
+                            <!-- Options will be populated by JavaScript -->
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Class</label>
+                        <select class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white" id="disciplineClassSelect" required>
+                            <option value="">Select Class</option>
+                            <!-- Options will be populated by JavaScript -->
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Incident Type</label>
+                        <select class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white" required>
+                            <option value="">Select Type</option>
+                            <option value="Late Arrival">Late Arrival</option>
+                            <option value="Class Disruption">Class Disruption</option>
+                            <option value="Incomplete Work">Incomplete Work</option>
+                            <option value="Disrespect">Disrespect</option>
+                            <option value="Fighting">Fighting</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Severity</label>
+                        <select class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white" required>
+                            <option value="">Select Severity</option>
+                            <option value="Low">Low</option>
+                            <option value="Medium">Medium</option>
+                            <option value="High">High</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Date</label>
+                        <input type="date" class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white" required>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Status</label>
+                        <select class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white" required>
+                            <option value="">Select Status</option>
+                            <option value="Open">Open</option>
+                            <option value="Resolved">Resolved</option>
+                            <option value="Pending">Pending</option>
+                        </select>
+                    </div>
+                    <div class="md:col-span-2">
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Description</label>
+                        <textarea class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white" rows="3" required></textarea>
+                    </div>
+                </div>
+                
+                <div class="flex justify-end space-x-2">
+                    <button type="submit" class="btn btn-primary">
+                        Add Record
+                    </button>
+                    <button type="button" id="closeAddDisciplineModal2" class="btn btn-secondary">
+                        Cancel
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="toast"></div>
+
+    <script>
+        // Student data from the Excel file
+        const initial = {
+            "S1A": ["ABEREYIMANA James","ABIMANA HIRWA Gany Blessing","AHISHAKIYE MANZI Aime Miguel","ASHIMWE Nate Brayan","Benedicto King Samuel","BUGINGO BEZA Keny","GASHUMBA NDAYISHIMIYE KIM Kenedy","IGENUKWISHATSE BYISHIMO Jean Maurice","IGIRANEZA CYUSA Milton","IHUMURE NSENGIYUMVA Heroine","INEZA Queen Deborah","IRABARUTA MUGISHA Credo","IRAKOZE Belle Amie","IRAKOZE Janviere","IRAKOZE Yanis","ISHIMWE UWASE Gabriella","ISIMBI UWASE Joyeuse","ITANGANEZA Parfait","KAMIKAZI Patience","MUNEZERO Enock","MUNEZERO Priscilla","MUTONIWASE Benitha","MUVUNYI UWIMPUHWE Benie Hortance","MWITENEZA Jean Pierre","NDARUHUTSE Danny","NGABONZIZA MUGISHA Boris","NGANZO Born Bercee","RORIRORA Gihozo Anella","UWANYAGASANI Cedrick","UWASE Benitha","UWIDUHAYE Pascaline","UWINEZA AKALIZA Martina","UWIZEYIMANA Valentine","YUBAHWE Anitha"],
+            "S1B": ["ABAYISENGA Emmu Shalom","AMANI NSHUTI Claver","ARERWENEZA Laetitia","BAGABE Dieudonne","CYOMORO Nicky Prince","GAGA Lioness","IGANZE Olla Mireille","IGIRIMBABAZI Pamella","INEZA Aure Alexandrine","INEZA Deborah","INEZA KAMIKAZI TETA Promesse","IRAGENA Gloria","IRAGENA Laetitia","IRAME MUCYO Angelo","ISHEMA Rayan","ISHIMWE NGABO Hertier","ISHIMWE Olga","ISINGIZWE Ange Afurika Maombe","KAYITARE Caleb","KEZA UMI Abdoulatomani","KUNDA Beny Bienaime","KWIZERA MUHOZA Prince","MANZI Boaz","MBABAZI Blessed","MUNEZERO Gentil Hertier","MUNEZERO Yvette","MUTONIWASE Esther","NDIKUMWENAYO Jeannette","NIRAGIRE Aline","NIYONZIMA Lucky","RUDASINGWA","SHAMI Ianis Vangelis","UWASE GASARO Kelia","UWASE Sendrine","UWIZEYIMANA Chakilla","UYIZERA Regis"],
+            "S2A": ["BYISHIMO Remy","BAHO AKARIZA Kevine","DUKUZUMUREMYI Janvier","GANZA AHADI TRESOR","IHIRWE Benitha","IKUNDABAYO Kevin","IMFURAYASE Aimee Ange","INEZA QUEEN LOVE","INEZA Ryan Merci","IRASUBIZA NANSI Nadia Lenatha","ISHIMWE Brianna","ISUMBINGABO HIRWA HERVE","KALIZA UNEJEJE Ella  Blassia","KAREKEZI SHIMWA SYLIVIE","KWIZE David","KWIZERA Richard","MANZI GANZA Fred","MBABAZI DORCAS","MUBIIRIGI Cyusa Prince","MUCYO MUGWANEZA Magnifique","MUSENGIMANA Marie Divine","NGABO Prince","NIYOMUKIZA STANISLAS","NIZEYIMANA Etienne","NYIRAHABAMUNGU Janviere","SHEMA NZAYITURIKI Benoit","TUYIZERE Solange","UFITEYEZU SERGE","UMUKUNDWA QUEEN VANESSA","UWAMASHIMWE JEANNETTE","UWASE Fabiola","UWIMANA Fideline","UWIMPUHWE JEROME","UWIZEYIMANA Patrick"],
+            "S2B": ["ABE MUGISHA Antoine","ABIJURU Gift Kelly Joel","AGASARO Liza Briante","CYOMORO NIYONZIMA Iba Bright","GIRUMUGISHA MASSIMO","HERO KARENGERA Keutch","HIRWA KAZE  Danyllo","IGIHOZO Kellia","IGIKUNDIRO Fiston","IRERA PROMISE","IRIZA GWIZA Clenie","ISHIMWE  YVETTE","ISHIMWE Belyse","ISHIMWE NGABO Victory","KABANDA RUTERANA He Calvin","KAMALI IGIHOZO IRANZI Marie Mercie","KEZA SANGWA DIVINE","KWIBUKA GIFT CARTINE Arnal","MARIYAMUNGU JUDITH","MUTAGANDA Micky","NDAMUKUNDA GISA CHANELLA","NEZA LIZA Kenia","NIKWIMANIGIZE Bonheur","NIWEKARABO KELIA WIVINE","RWEMA NTETE Arthur","SEBAHIRE MUHINEZA Emmaus","TURIKUMWE LOVE MORE","TUYIZERE Mudathiru","UMWARI GATETE Christa","UWASE GIHOZO Chanella","UWINSHUTI Evelyne"],
+            "S3A": ["ABAYO Samuella","BYIRINGIRO GWIZA SALOMON","IGIHOZO EVA ALLEN QUEEN","IGIZENEZA Benoit Gratus","IHIRWE FLORA","IHOZO Carine","IKUZWE TETA LEATITIA","INEZA Confiance Princesse","INEZA PIERRA","INEZA RUTAYISIRE Kellia","ISHIMWE KEVIN PRINCE","ISHIMWE NOELLA","KAYITARE Brave","MBIKESHIMANA SECONDINE","MUGANWA MAURICE","MUSHIME ISHEJA Natasha","MUYISENGE Gisele","NIWEMUGENI GENNIFER","NIYIBIZI ESPERANCE","NIYIGENA JEANNETTE","NIYO IGIRANEZA Emmanuel","NIYOGIKUNDIRO PASCALINE","NIYOMUKIZA ANYSIA","NIYO NGENZI DAVE FRIEND","NKURUNZIZA INEZA Messi","NSENGIMANA Benjamin","NTIVUGURUZWA Samuel","RUKUNDO Djabil","SHAMI IRAKOZE ALLIANCE","SHEMA HAGUMA Prince Gabin","TETA MARIE CLAIRE","TETERO Lucie","UMUGANWA Hidaya Aisha","UMUKUMBURWA MPETA FIDELINE","UWOYIREMEYE Faida"],
+            "S3B": ["AKIMANIZANYE AGNES","ASHIMWE Aime Gloria","DUSABIMANA NIYIGENA Aline","GIHOZO IRIZA ENOLLA","HAKIZUMWAMI Samuel","HIRWA MANZI HAPPINESS","IGIRANEZA ESTHER","IHIRWE NSHUTI Ian Jadyne","IKUZO ELLA","IKUZWE ADUHIRE Louange","INEMA SYLVIA HEAVEN","INEZA NSHUTI HERVE","INEZA Peace","INGABIRE Ines","IRAGENA CYIZA Belyse","KATUSIME Jeanne d'Arc","MIZERO Aliane","MUGABEKAZI Parfaite","MUHAWENIMANA Nadine","MUNEZERO  ROSINE","MUSENGIMANA Ella Joy","MUTESA NELICKY","NGANZO Nalada","NIRAGIRE MIGNONE","NIYIGENA MUCYO MERCI MAXIME","NIYONGIRA Rene","NIYUBAHWE BIRORI Gloria","NTWALI SHEMA Honore","PENDA Oceanne Pamella","TUYISHIMIRE KEVINE","UMUBYEYI SENGA Benigne","UMUHIRE  Keza Odreille","UMWARI FIONA","UMWARI Natasha","UWIZEYE IRASUBIZA ERNESTINE"],
+            "L3 SWD": ["ABIZERIMANA Benitha","AHISHAKIYE Janvier","BYIRINGIRO Eric","CYUBAHIRO Jackson","CYUZUZO Isaac","GIKUNDIRO Sandrine","HABIMANA Hamis","IBYIZA Speratha","IGIHOZO Frorence","INEZA MUGISHA Landry","INEZA TETA Gloria","IRABIZI Bowaze","IRAGENA Sendrine","IRASUBIZA Emille","IZABAYO Yves","KURUGISHURI Samson","KWIZERA Gad","MANISHIMWE Jean de Dieu","MUGISHA Brian","MUGISHA Isaac","MUNEZERO Danny","MUSHIMIYIMANA Marie Reine","MUSHIMIYIMANA Sumaya","MUSINGUZI Emmanuel","NDUWAYEZU Theophile","NIRAGIRE Daphine","NISHIMIRWE ISUBIRIZIGIHE Dani","NIWEMUGENI Liliane","NIYOGUSHIMWA Ange Christian","NIYONASENZE Beulla","NIYONKURU Vradimir","NYISHIMENTE Naome Nadine","TUGIRINSHUTI Evariste","TURINIMANA Augustin","TUYISHIMIRE Solange","UWUMUGISHA Pacifique","UMUTOZO Eduige","UMWARI Josiane","UWAMAHORO Ange UWASE","UWIDUHAYE Theodette","UWIMBABAZI Lydie","UWIMPUHWE Nadia","UWINGENEYE Claire"],
+            "S4A": ["ABERA Esther","ABIJURU Josiane","BYIRINGIRO Justine","IGIZENEZA Divine","INEZA Alliance Benie","INGABIRE KAYIBANDA Germaine","IRAGENA KAYIRANGWA Elysa","IRAGENA Solange","IRAKOZE Aime","IRAKOZE Pascaline","ISHIMWE Fabrice","ISHIMWE TUYISENGE Emma","ISHIMWE Velentine","ITUZE GWIZA Sabrine","KAMIKAZI Derlene","KEZA EPA","MASEZERANO Fabrice","MBARUTSO IKUNDWE Bertin","MINAKUZESA Amina","MUCYO Ignace Omega","MUGABE Robert","MUKAHIRWA Julienne","MUKIRE WINNY Nicole","MUKUNDWA Faith","MUNEZERO Clemence","MUSHIMIYIMANA Angelique","MUTAMBA Xenie","NAMAHIRWE Ebenizelle","NDAYIZEYE Angelique","NIYOBYOSE Revelien","NIYONAMBAZA Elina","NYIHANZAMASO Yvette","NYIRAMUGISHA Berthilde","NYIRANSENGIYUMVA Aliance","NZAYISENGA Vanessa","SHIMIRWA Caline","TUMUSHIME Vedaste","TUYISHIMIRE Divine","TWAGIRIMANA Riberee","UMUGWANEZA Pascaline","UWAMARIYA Enysia","UWASE KABUGO Aline","UWASE Nicole","UWIMANA Odila"],
+            "S4B": ["AKIMANA Cecile","AMIZERO Nadine","ASHIMIMANA Clementine","BAHATI Cleb","GAHONGAYIRE Pauline","GIKUNDIRO TUMUKUNDE Emelyne","HIRWA Bertin","HIRWA Fabrice","HUMURIZIBYOSE Ange","IGIRANEZA David","IGIRIMBABAZI Emelyne","INEZA Joy","INEZA Veronique","IRADUKUNDA Immaculee","IRADUKUNDA Rahab","IRAKOZE Marlene","IRANZI Aime","MUHAWENIMANA Noella","MUKESHIMANA Jeannette","MUNYANA Kellen","MUSHIMIYIMANA Henriette","MUTONI Queen","NIYONIZEYE Jean d'Amour","NIZIGIYIMANA Banjamin","NSHIMIYUMUKIZA Liliane","TUMUKUNDE Kevine","TURATSINZE Emmanuel","TUYAMBAZE Beatha","TUYISHIMIRE Marie Grace","UMUGWANEZA Beyonce","UMUGWANEZA Scovia","UMUKUNDWA Kelly","UMUTONI Pascaline","UMUTONIWASE Blandine","UWAMAHORO Zawadi","UWASE Jeannine","UWASE SANGWA Kevine","UWAYEZU Fiacrine","UWAYO Ester","UWIMANA Alice","UWITUZE Melisa","UWIZEYIMANA Odette","UWIZEYIMANA Sarah"],
+            "L4 SWD": ["BIRORI Honorine","CYUZUZO Emile","DUSABE Anne Peline","GIKUNDIRO Shalom","GISUBIZO HIRWA Bonheur","GISUBIZO Jean Claude","IBANENATWE Gisele","INEZA Alida","IRADUKUNDA Josiane","IRAKOZE Hyacinthe","IRANKUNDA Pacifique","IRANZI Naome","IRUMVA HIRWA Arsene","ISHEMA Christian","ISHIMWE Jeanne Gentille","ISIMBI Golden","IZABAYO Emeritha","KWIZERA Derick","MUGISHA Aime Kevin","MUGISHA Arnold","MUNEZA Hillo Blandeco","MUPENZI Cedrick","NDAHIDWA Arnould","NDATIMANA Dodoce","NDIZIHIWE Alain Delys","NIRERE Evangeline","NISHIMWE Olive","NIYO Esther Kevine","NSHIMIYIMANA  Dominique","NTAGARAMA Teta Cynthia","NYIRAGUHIRWA Kevine","NYIRAMANA Jeanne","SHYAKA Clever Prince","TONY RAY Hilde","TURINAYO AMANI Basil","UMWIZERWA Sandrine","USANASE Benitha","UWASE Belyse","UWASE Gloria","WIBABARA Janici"],
+            "S5A": ["AHISHAKIYE Annualithe","BYUKUSENGE Adeline","GIKUNDIRO Kessia","HAVUGIMANA Girbert","IGIRANEZA Dorcas","INGABIRE Sifa","IRADUKUNDA Confiance","IRAGANJE Thanks","IRAKOZE Dorcas","IYAMUMPAYE  Julienne","KANGUME Ines","MUGANWA Fulgence","MUKAHIRWA Benitha","MUKIZA  Leonce","MUSANGANYA Elyse","MUTONIWASE  Delphine","NDAYISHIMIYE Lambert","NIYIBIZI Samuel","NIYIDUHA  Carine","NIYINGABIRA Evelyne","TETA REPONSE  Meghan","UNEZEREWE  Ange Sharom","UWASE BWANAKWELI Scovia","UWASE Pauline","UWITUZE Sandrine","UWURUKUNDO Rosine","ZIGIRIMENA Darlene"],
+            "S5B": ["CYUZUZO  Angel","CYUZUZO Ange Benigne","DUSHIMIMANA Jehovajureh","DUSHIMIYIMANA  Rosine","DUSINGIZIMANA Queen","IRADUHAYE Bless","ISHIMO AKARIZA Ange Sabrine","ISHIMWE  Fabiola Aime","ISHIMWE  Cynthia","ISHIMWE Clarisse","ISHIMWE Frank","ISHIMWE MPANO Honoline","IYONASENZE Bonheur","MANIRATANGA Elie","MANIRIHO  Jean Paul","NAMUKUNDIYICYO Pascaline","NIYONSHUTI Bruno","NIYUBAHWE Giselle","NTWARI NZABARINDA Guillaume","NYIRABAGENI Leonille","TUYIKUNDE  Marie Ange","UMWARIWASE Stella Divine","UWAMAHORO HIRWA Berthe","UWAMURERA Anitha","UWIDUHAYE Belise","UWIHANGANYE  Ezechiel"],
+            "S6A": ["BENIHIRWE DATIVE","DUSABIRANE DORCAS","IFASHUWACU KEVINE","IMFURANASE AIME PATRICK","INGABIRE DIVINE","IRAKARAMA NATALIE","KABATESI PHIONAH","MUHONGERWA DIANE","MUKAMABANO Agnes","MUKAMUGABO LILIANE","MUKAMUGISHA DEVOTHE","MUKARUKUNDO CLARISSE","MUKESHIMANA MICHELINE","MUNEZERO DENYSE","MUREKAZE GAUDENCE","MUSHIMIYIMANA CLAUDINE","MUTEZIMANA ANGELINA","MUTUYIMANA ANITHA","NISHIMWE UWIJURU ESTHER","NIYIKORA DELIPHINE","NIYITANGINGABIRE LAURENCE","NIYOMUTABAZI ISMAEL","NIYONGIRA INNOCENT","NIYONSENGA CLARISSE","PRINCE Anathole Nobel","SANGWA EDEN SHALOM","TUMUSIFU EVANGELINE","TUYISHIME Eliane","TUYIZERE Marie Ange","UMUHUZA HELENE","UMURISA HOGOZA Benize","UMUTONI Alice","UMUTONIWASE STEPHANIE","UMUTONIWASE enatha","UWABEZA Charlotte","UWAMAHORO BEATHA","UWAMBAJIMANA DIANE","UWINEZA JOSIANE","UWINEZA Henriette","UWIRAGIYE Joselyne","UWUMUGISHA Consolee"],
+            "S6B": ["AHIMBAZWE CONSTANT","AKURUKUNDO Adeline","DUSHIMIMANA Albine","DUSINGIZIMANA Monica","DUSINGIZIMANA Faustine","GASARO Lucky","IRATUZI PRINCE","ISHIMWE Clementine","IYAMUDUHAYE FORTUNEE","KAYESU HOPE","KAYESU FLORENCE","KIREZI ANGEL","MUGANWA JOYCE","MUGENIWAYEZU HENRIETTE","MUHAWIMANA Aline","MUHORAKEYE ALLIANCE","MUKANDAYISHIMIYE Sylivie","MUTIMAWURUGO ESTHER","MUTONIWASE Bella","NDACYAYISENGA ANITHA","NDAYISHIMIYE SAMUEL","NIKUZE Jean Pierre","NIRERE LOUISE","NIYINDEMERA MUTABARUKA Eunice Helena","NIYINGENERA JOYEUSE","NIYOKWIZERWA LILIANE","NIYONAGIZE AZELE","NYAMPINGA PROVIDENCE","NYIRAKANYANA Sandrine","NYIRANIZEYIMANA Clesence","NYIRIMBABAZI Olive","TUYISENGE SANDRINE","UMURORA JOSIANE","UWAYISENGA ESPERANCE","UWERA Diane","UWIDUHAYE CHARITE","UWINEZA Jeanne d'Arc","UWINGABIRE Albertine","UWIZESERANO SANDRINE","UWONKUNDA Henriette","YEBARE PHIONAH"]
+        };
+
+        // Authentication System
+        const adminCredentials = {
+            username: "admin",
+            password: "kageyo2025"
+        };
+
+        // DOM Elements
+        const loginModal = document.getElementById('loginModal');
+        const loginForm = document.getElementById('loginForm');
+        const darkModeToggle = document.getElementById('darkModeToggle');
+        const currentDateTime = document.getElementById('currentDateTime');
+        const logoutBtn = document.getElementById('logoutBtn');
+        const globalSearch = document.getElementById('globalSearch');
+        const searchResults = document.getElementById('searchResults');
+        const toast = document.getElementById('toast');
+        const midtermModal = document.getElementById('midtermModal');
+        const closeMidtermModal = document.getElementById('closeMidtermModal');
+        const closeMidtermModal2 = document.getElementById('closeMidtermModal2');
+        const midtermTableBody = document.getElementById('midtermTableBody');
+        const saveMidtermMarks = document.getElementById('saveMidtermMarks');
+        const publishAllBtn = document.getElementById('publishAllBtn');
+        const rewriteBtn = document.getElementById('rewriteBtn');
+        const message = document.getElementById('message');
+        
+        // Stats elements
+        const totalStudents = document.getElementById('totalStudents');
+        const classesCount = document.getElementById('classesCount');
+        const midtermEntered = document.getElementById('midtermEntered');
+        const examsEntered = document.getElementById('examsEntered');
+        const enrollmentPercent = document.getElementById('enrollmentPercent');
+        const enrollmentProgress = document.getElementById('enrollmentProgress');
+        const activeClassesPercent = document.getElementById('activeClassesPercent');
+        const activeClassesProgress = document.getElementById('activeClassesProgress');
+        const midtermPercent = document.getElementById('midtermPercent');
+        const midtermProgress = document.getElementById('midtermProgress');
+        const examsPercent = document.getElementById('examsPercent');
+        const examsProgress = document.getElementById('examsProgress');
+        
+        // Quick action buttons
+        const exportResultsBtn = document.getElementById('exportResultsBtn');
+        const sendNoticeBtn = document.getElementById('sendNoticeBtn');
+        const addStudentBtn = document.getElementById('addStudentBtn');
+        const activityLogBtn = document.getElementById('activityLogBtn');
+        
+        // Recent activity container
+        const recentActivity = document.getElementById('recentActivity');
+
+        // Tab elements
+        const navTabs = document.querySelectorAll('.nav-tab');
+        const tabContents = document.querySelectorAll('.tab-content');
+
+        // Exam management elements
+        const examTabs = document.querySelectorAll('.exam-tab');
+        const classTabs = document.querySelector('.class-tabs');
+        const examTableBody = document.getElementById('examTableBody');
+        const saveExamMarks = document.getElementById('saveExamMarks');
+        const applyBulkMarks = document.getElementById('applyBulkMarks');
+        const bulkMarkValue = document.getElementById('bulkMarkValue');
+        const bulkExamType = document.getElementById('bulkExamType');
+        const clearAllMarks = document.getElementById('clearAllMarks');
+        const addTermBtn = document.getElementById('addTermBtn');
+        const termSelector = document.querySelector('.term-selector');
+
+        // Results management elements
+        const totalExamsEntered = document.getElementById('totalExamsEntered');
+        const resultsPublished = document.getElementById('resultsPublished');
+        const averageScore = document.getElementById('averageScore');
+        const passRate = document.getElementById('passRate');
+        const resultsClassSelect = document.getElementById('resultsClassSelect');
+        const resultsTermSelect = document.getElementById('resultsTermSelect');
+        const resultsTableBody = document.getElementById('resultsTableBody');
+        const exportResults = document.getElementById('exportResults');
+        const publishResults = document.getElementById('publishResults');
+
+        // Download elements
+        const midtermDownloadClass = document.getElementById('midtermDownloadClass');
+        const midtermDownloadType = document.getElementById('midtermDownloadType');
+        const examDownloadClass = document.getElementById('examDownloadClass');
+        const examDownloadTerm = document.getElementById('examDownloadTerm');
+
+        // Dynamic content elements
+        const dynamicContent = document.getElementById('dynamicContent');
+        const refreshContent = document.getElementById('refreshContent');
+
+        // State variables
+        let isAuthenticated = false;
+        let currentMidterm = 1;
+        let currentClass = "S1A";
+        let currentTerm = "term1";
+        let marksData = {};
+        let examData = {};
+        let activityLog = [];
+        let disciplineRecords = [];
+        let studentsData = {};
+        let dynamicContentData = [];
+
+        // Initialize the application
+        function initApp() {
+            // Check if user is already logged in
+            const savedAuth = localStorage.getItem('kageyoAuth');
+            if (savedAuth) {
+                const authData = JSON.parse(savedAuth);
+                if (authData.isAuthenticated && authData.expiry > Date.now()) {
+                    isAuthenticated = true;
+                    loginModal.classList.remove('open');
+                }
+            }
+
+            // Initialize marks data
+            initializeMarksData();
+            
+            // Initialize exam data
+            initializeExamData();
+            
+            // Initialize students data
+            initializeStudentsData();
+            
+            // Initialize discipline records
+            initializeDisciplineRecords();
+            
+            // Initialize dynamic content
+            initializeDynamicContent();
+            
+            // Update stats
+            updateStats();
+            
+            // Initialize charts
+            initializeCharts();
+            
+            // Load recent activity
+            loadRecentActivity();
+            
+            // Update date and time
+            updateDateTime();
+            setInterval(updateDateTime, 1000);
+            
+            // Set up event listeners
+            setupEventListeners();
+            
+            // Load initial tab content
+            loadStudentManagement();
+            loadDisciplineManagement();
+            loadExamManagement();
+            loadResultsManagement();
+            populateDownloadSelects();
+        }
+
+        // Initialize marks data structure
+        function initializeMarksData() {
+            // Initialize marks data for all classes and midterms
+            for (const className in initial) {
+                marksData[className] = {};
+                for (let midterm = 1; midterm <= 3; midterm++) {
+                    marksData[className][`midterm${midterm}`] = {};
+                    initial[className].forEach(student => {
+                        marksData[className][`midterm${midterm}`][student] = '';
+                    });
+                }
+            }
+            
+            // Load saved marks from localStorage if available
+            const savedMarks = localStorage.getItem('kageyoMarks');
+            if (savedMarks) {
+                const parsedMarks = JSON.parse(savedMarks);
+                // Merge saved marks with initial structure
+                for (const className in parsedMarks) {
+                    if (marksData[className]) {
+                        for (const midterm in parsedMarks[className]) {
+                            if (marksData[className][midterm]) {
+                                Object.assign(marksData[className][midterm], parsedMarks[className][midterm]);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        // Initialize exam data structure
+        function initializeExamData() {
+            // Initialize exam data for all classes and terms
+            for (const className in initial) {
+                examData[className] = {
+                    term1: {},
+                    term2: {},
+                    term3: {},
+                    yearTotal: {}
+                };
+                
+                initial[className].forEach(student => {
+                    examData[className].term1[student] = {
+                        exam1: '',
+                        exam2: '',
+                        exam3: '',
+                        total: ''
+                    };
+                    
+                    examData[className].term2[student] = {
+                        exam1: '',
+                        exam2: '',
+                        exam3: '',
+                        total: ''
+                    };
+                    
+                    examData[className].term3[student] = {
+                        exam1: '',
+                        exam2: '',
+                        exam3: '',
+                        total: ''
+                    };
+                    
+                    examData[className].yearTotal[student] = '';
+                });
+            }
+            
+            // Load saved exam data from localStorage if available
+            const savedExamData = localStorage.getItem('kageyoExamData');
+            if (savedExamData) {
+                const parsedExamData = JSON.parse(savedExamData);
+                // Merge saved exam data with initial structure
+                for (const className in parsedExamData) {
+                    if (examData[className]) {
+                        for (const term in parsedExamData[className]) {
+                            if (examData[className][term]) {
+                                Object.assign(examData[className][term], parsedExamData[className][term]);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        // Initialize students data
+        function initializeStudentsData() {
+            studentsData = {};
+            let idCounter = 1001;
+            
+            for (const className in initial) {
+                studentsData[className] = [];
+                initial[className].forEach(studentName => {
+                    const [lastName, firstName] = studentName.split(' ').length > 1 ? 
+                        [studentName.split(' ')[0], studentName.split(' ').slice(1).join(' ')] : 
+                        [studentName, ''];
+                    
+                    studentsData[className].push({
+                        id: idCounter.toString(),
+                        firstName: firstName,
+                        lastName: lastName,
+                        fullName: studentName,
+                        class: className,
+                        gender: Math.random() > 0.5 ? 'Male' : 'Female',
+                        dob: generateRandomDOB()
+                    });
+                    idCounter++;
+                });
+            }
+            
+            // Load saved students from localStorage if available
+            const savedStudents = localStorage.getItem('kageyoStudents');
+            if (savedStudents) {
+                const parsedStudents = JSON.parse(savedStudents);
+                // Merge saved students with initial data
+                for (const className in parsedStudents) {
+                    if (studentsData[className]) {
+                        studentsData[className] = parsedStudents[className];
+                    }
+                }
+            }
+        }
+
+        // Initialize discipline records
+        function initializeDisciplineRecords() {
+            // Sample discipline records
+            disciplineRecords = [
+                {
+                    id: 1,
+                    studentName: "ABEREYIMANA James",
+                    class: "S1A",
+                    incidentType: "Late Arrival",
+                    date: "2025-03-15",
+                    severity: "Low",
+                    status: "Resolved",
+                    description: "Student arrived 15 minutes late to class"
+                },
+                {
+                    id: 2,
+                    studentName: "ISHIMWE UWASE Gabriella",
+                    class: "S1A",
+                    incidentType: "Class Disruption",
+                    date: "2025-03-20",
+                    severity: "Medium",
+                    status: "Open",
+                    description: "Student was talking loudly during lesson"
+                },
+                {
+                    id: 3,
+                    studentName: "MUNEZERO Enock",
+                    class: "S1B",
+                    incidentType: "Incomplete Work",
+                    date: "2025-03-18",
+                    severity: "Low",
+                    status: "Pending",
+                    description: "Student did not complete homework assignment"
+                }
+            ];
+            
+            // Load saved discipline records from localStorage if available
+            const savedDiscipline = localStorage.getItem('kageyoDiscipline');
+            if (savedDiscipline) {
+                disciplineRecords = JSON.parse(savedDiscipline);
+            }
+        }
+
+        // Initialize dynamic content
+        function initializeDynamicContent() {
+            dynamicContentData = [
+                {
+                    title: "Midterm 1 Deadline",
+                    content: "Midterm 1 marks entry deadline is approaching. Please ensure all marks are entered by Friday.",
+                    type: "warning",
+                    date: "2025-04-15"
+                },
+                {
+                    title: "New Students Added",
+                    content: "5 new students have been added to S1A class. Please update their marks accordingly.",
+                    type: "info",
+                    date: "2025-04-10"
+                },
+                {
+                    title: "Exam Schedule",
+                    content: "Term 1 exams will begin next week. Please prepare the exam papers and schedule.",
+                    type: "info",
+                    date: "2025-04-05"
+                },
+                {
+                    title: "Staff Meeting",
+                    content: "There will be a staff meeting on Monday to discuss student performance and improvement strategies.",
+                    type: "info",
+                    date: "2025-04-01"
+                }
+            ];
+            
+            updateDynamicContent();
+        }
+
+        // Update dynamic content
+        function updateDynamicContent() {
+            dynamicContent.innerHTML = '';
+            
+            dynamicContentData.forEach(item => {
+                const contentItem = document.createElement('div');
+                contentItem.className = `p-3 mb-3 rounded-lg border-l-4 ${
+                    item.type === 'warning' ? 'border-yellow-500 bg-yellow-50 dark:bg-yellow-900' : 
+                    item.type === 'info' ? 'border-blue-500 bg-blue-50 dark:bg-blue-900' : 
+                    'border-green-500 bg-green-50 dark:bg-green-900'
+                }`;
+                
+                contentItem.innerHTML = `
+                    <div class="font-semibold">${item.title}</div>
+                    <div class="text-sm mt-1">${item.content}</div>
+                    <div class="text-xs mt-2 text-gray-500">${item.date}</div>
+                `;
+                
+                dynamicContent.appendChild(contentItem);
+            });
+        }
+
+        // Generate random date of birth for demo purposes
+        function generateRandomDOB() {
+            const start = new Date(2005, 0, 1);
+            const end = new Date(2008, 11, 31);
+            const randomDate = new Date(start.getTime() + Math.random() * (end.getTime() - start.getTime()));
+            return randomDate.toISOString().split('T')[0];
+        }
+
+        // Update statistics
+        function updateStats() {
+            // Calculate total students
+            let total = 0;
+            for (const className in initial) {
+                total += initial[className].length;
+            }
+            totalStudents.textContent = total;
+            
+            // Calculate classes count
+            classesCount.textContent = Object.keys(initial).length;
+            
+            // Calculate midterm and exam completion
+            let midtermCompleted = 0;
+            let examsCompleted = 0;
+            let totalPossible = 0;
+            
+            for (const className in marksData) {
+                for (let midterm = 1; midterm <= 3; midterm++) {
+                    const midtermKey = `midterm${midterm}`;
+                    const studentMarks = marksData[className][midtermKey];
+                    let classMidtermCompleted = 0;
+                    
+                    for (const student in studentMarks) {
+                        totalPossible++;
+                        if (studentMarks[student] !== '') {
+                            midtermCompleted++;
+                            classMidtermCompleted++;
+                        }
+                    }
+                    
+                    // If all students in this class/midterm have marks, count as exam completed
+                    if (classMidtermCompleted === initial[className].length) {
+                        examsCompleted++;
+                    }
+                }
+            }
+            
+            midtermEntered.textContent = midtermCompleted;
+            examsEntered.textContent = examsCompleted;
+            
+            // Calculate percentages
+            const enrollmentPercentage = Math.min(100, Math.round((total / 250) * 100));
+            enrollmentPercent.textContent = `${enrollmentPercentage}%`;
+            enrollmentProgress.style.width = `${enrollmentPercentage}%`;
+            
+            const activeClassesPercentage = Math.round((Object.keys(initial).length / 6) * 100);
+            activeClassesPercent.textContent = `${activeClassesPercentage}%`;
+            activeClassesProgress.style.width = `${activeClassesPercentage}%`;
+            
+            const midtermPercentage = totalPossible > 0 ? Math.round((midtermCompleted / totalPossible) * 100) : 0;
+            midtermPercent.textContent = `${midtermPercentage}%`;
+            midtermProgress.style.width = `${midtermPercentage}%`;
+            
+            const examsPercentage = Math.round((examsCompleted / (Object.keys(initial).length * 3)) * 100);
+            examsPercent.textContent = `${examsPercentage}%`;
+            examsProgress.style.width = `${examsPercentage}%`;
+            
+            // Update midterm progress bars
+            updateMidtermProgress();
+            
+            // Update exam stats
+            updateExamStats();
+        }
+
+        // Update exam statistics
+        function updateExamStats() {
+            let totalExams = 0;
+            let enteredExams = 0;
+            let publishedResults = 0;
+            let totalScore = 0;
+            let totalStudentsWithMarks = 0;
+            let passedStudents = 0;
+            
+            for (const className in examData) {
+                for (const term in examData[className]) {
+                    if (term === 'yearTotal') continue;
+                    
+                    const termData = examData[className][term];
+                    for (const student in termData) {
+                        const studentData = termData[student];
+                        totalExams += 3; // 3 exams per student per term
+                        
+                        if (studentData.exam1 !== '') enteredExams++;
+                        if (studentData.exam2 !== '') enteredExams++;
+                        if (studentData.exam3 !== '') enteredExams++;
+                        
+                        if (studentData.total !== '') {
+                            totalStudentsWithMarks++;
+                            totalScore += parseFloat(studentData.total);
+                            if (parseFloat(studentData.total) >= 50) {
+                                passedStudents++;
+                            }
+                        }
+                    }
+                }
+            }
+            
+            totalExamsEntered.textContent = enteredExams;
+            resultsPublished.textContent = publishedResults;
+            
+            const avgScore = totalStudentsWithMarks > 0 ? Math.round(totalScore / totalStudentsWithMarks) : 0;
+            averageScore.textContent = `${avgScore}%`;
+            
+            const passRateValue = totalStudentsWithMarks > 0 ? Math.round((passedStudents / totalStudentsWithMarks) * 100) : 0;
+            passRate.textContent = `${passRateValue}%`;
+        }
+
+        // Update midterm progress bars
+        function updateMidtermProgress() {
+            for (let midterm = 1; midterm <= 3; midterm++) {
+                const midtermKey = `midterm${midterm}`;
+                let completed = 0;
+                let total = 0;
+                
+                for (const className in marksData) {
+                    const studentMarks = marksData[className][midtermKey];
+                    for (const student in studentMarks) {
+                        total++;
+                        if (studentMarks[student] !== '') {
+                            completed++;
+                        }
+                    }
+                }
+                
+                const percentage = total > 0 ? Math.round((completed / total) * 100) : 0;
+                document.getElementById(`midterm${midterm}Percent`).textContent = `${percentage}%`;
+                document.getElementById(`midterm${midterm}Progress`).style.width = `${percentage}%`;
+            }
+        }
+
+        // Initialize charts
+        function initializeCharts() {
+            // Class Performance Chart
+            const classPerformanceCtx = document.getElementById('classPerformanceChart').getContext('2d');
+            const classPerformanceChart = new Chart(classPerformanceCtx, {
+                type: 'bar',
+                data: {
+                    labels: Object.keys(initial),
+                    datasets: [{
+                        label: 'Average Midterm Score',
+                        data: [75, 82, 68, 79, 85, 72, 70, 78, 81, 76, 80, 77, 83, 74],
+                        backgroundColor: 'rgba(59, 130, 246, 0.7)',
+                        borderColor: 'rgba(59, 130, 246, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 100
+                        }
+                    }
+                }
+            });
+            
+            // Pass/Fail Chart
+            const passFailCtx = document.getElementById('passFailChart').getContext('2d');
+            const passFailChart = new Chart(passFailCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Pass', 'Fail'],
+                    datasets: [{
+                        data: [85, 15],
+                        backgroundColor: [
+                            'rgba(16, 185, 129, 0.7)',
+                            'rgba(239, 68, 68, 0.7)'
+                        ],
+                        borderColor: [
+                            'rgba(16, 185, 129, 1)',
+                            'rgba(239, 68, 68, 1)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        }
+                    }
+                }
+            });
+            
+            // Marks Distribution Chart
+            const marksDistributionCtx = document.getElementById('marksDistributionChart').getContext('2d');
+            const marksDistributionChart = new Chart(marksDistributionCtx, {
+                type: 'line',
+                data: {
+                    labels: ['0-20', '21-40', '41-60', '61-80', '81-100'],
+                    datasets: [{
+                        label: 'Number of Students',
+                        data: [5, 12, 25, 40, 18],
+                        backgroundColor: 'rgba(139, 92, 246, 0.2)',
+                        borderColor: 'rgba(139, 92, 246, 1)',
+                        borderWidth: 2,
+                        tension: 0.3,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        }
+
+        // Load student management table
+        function loadStudentManagement() {
+            const studentTableBody = document.getElementById('studentTableBody');
+            studentTableBody.innerHTML = '';
+            
+            for (const className in studentsData) {
+                studentsData[className].forEach(student => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${student.id}</td>
+                        <td>${student.fullName}</td>
+                        <td>${student.class}</td>
+                        <td>${student.gender}</td>
+                        <td>${student.dob}</td>
+                        <td>
+                            <button class="action-btn edit" data-id="${student.id}">
+                                <i class="fas fa-edit mr-1"></i> Edit
+                            </button>
+                            <button class="action-btn delete" data-id="${student.id}">
+                                <i class="fas fa-trash mr-1"></i> Delete
+                            </button>
+                        </td>
+                    `;
+                    studentTableBody.appendChild(row);
+                });
+            }
+            
+            // Add event listeners to action buttons
+            document.querySelectorAll('.action-btn.edit').forEach(button => {
+                button.addEventListener('click', function() {
+                    const studentId = this.getAttribute('data-id');
+                    showToast(`Edit student with ID: ${studentId}`, 'info');
+                });
+            });
+            
+            document.querySelectorAll('.action-btn.delete').forEach(button => {
+                button.addEventListener('click', function() {
+                    const studentId = this.getAttribute('data-id');
+                    if (confirm(`Are you sure you want to delete student with ID: ${studentId}?`)) {
+                        showToast(`Student with ID: ${studentId} deleted`, 'success');
+                    }
+                });
+            });
+        }
+
+        // Load discipline management table
+        function loadDisciplineManagement() {
+            const disciplineTableBody = document.getElementById('disciplineTableBody');
+            disciplineTableBody.innerHTML = '';
+            
+            disciplineRecords.forEach(record => {
+                const row = document.createElement('tr');
+                
+                // Determine badge class based on severity
+                let badgeClass = '';
+                if (record.severity === 'Low') badgeClass = 'success';
+                else if (record.severity === 'Medium') badgeClass = 'warning';
+                else if (record.severity === 'High') badgeClass = 'danger';
+                
+                // Determine status badge class
+                let statusBadgeClass = '';
+                if (record.status === 'Resolved') statusBadgeClass = 'success';
+                else if (record.status === 'Open') statusBadgeClass = 'danger';
+                else if (record.status === 'Pending') statusBadgeClass = 'warning';
+                
+                row.innerHTML = `
+                    <td>${record.studentName}</td>
+                    <td>${record.class}</td>
+                    <td>${record.incidentType}</td>
+                    <td>${record.date}</td>
+                    <td><span class="badge ${badgeClass}">${record.severity}</span></td>
+                    <td><span class="badge ${statusBadgeClass}">${record.status}</span></td>
+                    <td>
+                        <button class="action-btn view" data-id="${record.id}">
+                            <i class="fas fa-eye mr-1"></i> View
+                        </button>
+                        <button class="action-btn edit" data-id="${record.id}">
+                            <i class="fas fa-edit mr-1"></i> Edit
+                        </button>
+                        <button class="action-btn delete" data-id="${record.id}">
+                            <i class="fas fa-trash mr-1"></i> Delete
+                        </button>
+                    </td>
+                `;
+                disciplineTableBody.appendChild(row);
+            });
+            
+            // Add event listeners to action buttons
+            document.querySelectorAll('.action-btn.view').forEach(button => {
+                button.addEventListener('click', function() {
+                    const recordId = this.getAttribute('data-id');
+                    const record = disciplineRecords.find(r => r.id == recordId);
+                    if (record) {
+                        alert(`Discipline Record Details:\n\nStudent: ${record.studentName}\nClass: ${record.class}\nIncident: ${record.incidentType}\nDate: ${record.date}\nSeverity: ${record.severity}\nStatus: ${record.status}\nDescription: ${record.description}`);
+                    }
+                });
+            });
+            
+            document.querySelectorAll('.action-btn.edit').forEach(button => {
+                button.addEventListener('click', function() {
+                    const recordId = this.getAttribute('data-id');
+                    showToast(`Edit discipline record with ID: ${recordId}`, 'info');
+                });
+            });
+            
+            document.querySelectorAll('.action-btn.delete').forEach(button => {
+                button.addEventListener('click', function() {
+                    const recordId = this.getAttribute('data-id');
+                    if (confirm(`Are you sure you want to delete this discipline record?`)) {
+                        // Remove record from array
+                        disciplineRecords = disciplineRecords.filter(r => r.id != recordId);
+                        // Save to localStorage
+                        localStorage.setItem('kageyoDiscipline', JSON.stringify(disciplineRecords));
+                        // Reload table
+                        loadDisciplineManagement();
+                        showToast(`Discipline record deleted`, 'success');
+                    }
+                });
+            });
+        }
+
+        // Load exam management table
+        function loadExamManagement() {
+            // Populate class tabs
+            classTabs.innerHTML = '';
+            for (const className in initial) {
+                const tab = document.createElement('div');
+                tab.className = `class-tab ${className === currentClass ? 'active' : ''}`;
+                tab.textContent = className;
+                tab.setAttribute('data-class', className);
+                tab.addEventListener('click', function() {
+                    currentClass = this.getAttribute('data-class');
+                    document.querySelectorAll('.class-tab').forEach(t => t.classList.remove('active'));
+                    this.classList.add('active');
+                    renderExamTable();
+                });
+                classTabs.appendChild(tab);
+            }
+            
+            // Render exam table
+            renderExamTable();
+        }
+
+        // Render exam table for current class and term
+        function renderExamTable() {
+            examTableBody.innerHTML = '';
+            const students = initial[currentClass];
+            const termData = examData[currentClass][currentTerm];
+            
+            students.forEach(student => {
+                const studentData = termData[student] || { exam1: '', exam2: '', exam3: '', total: '' };
+                const row = document.createElement('tr');
+                row.className = 'student-row';
+                
+                // Calculate total if all exams have marks
+                let total = '';
+                if (studentData.exam1 !== '' && studentData.exam2 !== '' && studentData.exam3 !== '') {
+                    total = (parseFloat(studentData.exam1) + parseFloat(studentData.exam2) + parseFloat(studentData.exam3)).toFixed(1);
+                }
+                
+                row.innerHTML = `
+                    <td class="font-medium">${student}</td>
+                    <td>
+                        <input type="number" min="0" max="100" value="${studentData.exam1}" 
+                               data-student="${student}" data-exam="exam1" class="mark-input exam-input">
+                    </td>
+                    <td>
+                        <input type="number" min="0" max="100" value="${studentData.exam2}" 
+                               data-student="${student}" data-exam="exam2" class="mark-input exam-input">
+                    </td>
+                    <td>
+                        <input type="number" min="0" max="100" value="${studentData.exam3}" 
+                               data-student="${student}" data-exam="exam3" class="mark-input exam-input">
+                    </td>
+                    <td class="total-cell font-semibold">${total}</td>
+                    <td>
+                        <button class="action-btn calculate" data-student="${student}">
+                            <i class="fas fa-calculator mr-1"></i> Calculate
+                        </button>
+                    </td>
+                `;
+                examTableBody.appendChild(row);
+            });
+            
+            // Add event listeners to exam inputs
+            document.querySelectorAll('.exam-input').forEach(input => {
+                input.addEventListener('change', function() {
+                    const student = this.getAttribute('data-student');
+                    const exam = this.getAttribute('data-exam');
+                    const value = this.value;
+                    
+                    // Validate mark
+                    if (value !== '' && (value < 0 || value > 100)) {
+                        showToast('Mark must be between 0 and 100', 'error');
+                        this.value = '';
+                        this.classList.add('error');
+                        return;
+                    }
+                    
+                    this.classList.remove('error');
+                    
+                    // Update exam data
+                    examData[currentClass][currentTerm][student][exam] = value;
+                    
+                    // Auto-calculate total if all exams have marks
+                    const studentData = examData[currentClass][currentTerm][student];
+                    if (studentData.exam1 !== '' && studentData.exam2 !== '' && studentData.exam3 !== '') {
+                        const total = (parseFloat(studentData.exam1) + parseFloat(studentData.exam2) + parseFloat(studentData.exam3)).toFixed(1);
+                        studentData.total = total;
+                        
+                        // Update total in table
+                        const row = this.closest('tr');
+                        const totalCell = row.querySelector('.total-cell');
+                        totalCell.textContent = total;
+                    }
+                });
+            });
+            
+            // Add event listeners to calculate buttons
+            document.querySelectorAll('.action-btn.calculate').forEach(button => {
+                button.addEventListener('click', function() {
+                    const student = this.getAttribute('data-student');
+                    const studentData = examData[currentClass][currentTerm][student];
+                    
+                    if (studentData.exam1 !== '' && studentData.exam2 !== '' && studentData.exam3 !== '') {
+                        const total = (parseFloat(studentData.exam1) + parseFloat(studentData.exam2) + parseFloat(studentData.exam3)).toFixed(1);
+                        studentData.total = total;
+                        
+                        // Update total in table
+                        const row = this.closest('tr');
+                        const totalCell = row.querySelector('.total-cell');
+                        totalCell.textContent = total;
+                        
+                        showToast(`Total calculated for ${student}: ${total}`, 'success');
+                    } else {
+                        showToast('Please enter all three exam marks first', 'warning');
+                    }
+                });
+            });
+        }
+
+        // Load results management
+        function loadResultsManagement() {
+            // Populate class select
+            resultsClassSelect.innerHTML = '<option value="">All Classes</option>';
+            for (const className in initial) {
+                const option = document.createElement('option');
+                option.value = className;
+                option.textContent = className;
+                resultsClassSelect.appendChild(option);
+            }
+            
+            // Render results table
+            renderResultsTable();
+        }
+
+        // Render results table
+        function renderResultsTable() {
+            resultsTableBody.innerHTML = '';
+            const selectedClass = resultsClassSelect.value;
+            const selectedTerm = resultsTermSelect.value;
+            
+            for (const className in initial) {
+                if (selectedClass && className !== selectedClass) continue;
+                
+                const students = initial[className];
+                let totalScore = 0;
+                let studentsWithMarks = 0;
+                let passedStudents = 0;
+                let topStudent = '';
+                let topScore = 0;
+                
+                // Calculate class statistics
+                students.forEach(student => {
+                    const studentData = examData[className][selectedTerm][student];
+                    if (studentData.total !== '') {
+                        const total = parseFloat(studentData.total);
+                        totalScore += total;
+                        studentsWithMarks++;
+                        
+                        if (total >= 50) {
+                            passedStudents++;
+                        }
+                        
+                        if (total > topScore) {
+                            topScore = total;
+                            topStudent = student;
+                        }
+                    }
+                });
+                
+                const average = studentsWithMarks > 0 ? (totalScore / studentsWithMarks).toFixed(1) : 0;
+                const passRate = studentsWithMarks > 0 ? Math.round((passedStudents / studentsWithMarks) * 100) : 0;
+                
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${className}</td>
+                    <td>${students.length}</td>
+                    <td>${average}%</td>
+                    <td>${passRate}%</td>
+                    <td>${topStudent || 'N/A'}</td>
+                    <td>
+                        <button class="action-btn view" data-class="${className}">
+                            <i class="fas fa-eye mr-1"></i> View
+                        </button>
+                        <button class="action-btn publish" data-class="${className}">
+                            <i class="fas fa-bullhorn mr-1"></i> Publish
+                        </button>
+                    </td>
+                `;
+                resultsTableBody.appendChild(row);
+            }
+            
+            // Add event listeners to action buttons
+            document.querySelectorAll('.action-btn.view').forEach(button => {
+                button.addEventListener('click', function() {
+                    const className = this.getAttribute('data-class');
+                    showToast(`Viewing results for ${className}`, 'info');
+                });
+            });
+            
+            document.querySelectorAll('.action-btn.publish').forEach(button => {
+                button.addEventListener('click', function() {
+                    const className = this.getAttribute('data-class');
+                    if (confirm(`Are you sure you want to publish results for ${className}?`)) {
+                        showToast(`Results published for ${className}`, 'success');
+                    }
+                });
+            });
+        }
+
+        // Populate download selects
+        function populateDownloadSelects() {
+            // Populate midterm download class select
+            midtermDownloadClass.innerHTML = '<option value="">Select Class</option>';
+            for (const className in initial) {
+                const option = document.createElement('option');
+                option.value = className;
+                option.textContent = className;
+                midtermDownloadClass.appendChild(option);
+            }
+            
+            // Populate exam download class select
+            examDownloadClass.innerHTML = '<option value="">Select Class</option>';
+            for (const className in initial) {
+                const option = document.createElement('option');
+                option.value = className;
+                option.textContent = className;
+                examDownloadClass.appendChild(option);
+            }
+        }
+
+        // Download midterm results
+        function downloadMidtermResults(format) {
+            const className = midtermDownloadClass.value;
+            const midtermType = midtermDownloadType.value;
+            
+            if (!className) {
+                showToast('Please select a class first', 'error');
+                return;
+            }
+            
+            let data = [];
+            let filename = '';
+            
+            if (midtermType === 'all') {
+                // Download all midterms
+                filename = `${className}_All_Midterms_${new Date().toISOString().split('T')[0]}`;
+                
+                // Create headers
+                const headers = ['Student Name'];
+                for (let i = 1; i <= 3; i++) {
+                    headers.push(`Midterm ${i}`);
+                }
+                data.push(headers);
+                
+                // Add student data
+                initial[className].forEach(student => {
+                    const row = [student];
+                    for (let i = 1; i <= 3; i++) {
+                        row.push(marksData[className][`midterm${i}`][student] || '');
+                    }
+                    data.push(row);
+                });
+            } else {
+                // Download specific midterm
+                const midtermNum = midtermType.replace('midterm', '');
+                filename = `${className}_Midterm_${midtermNum}_${new Date().toISOString().split('T')[0]}`;
+                
+                // Create headers
+                data.push(['Student Name', `Midterm ${midtermNum}`]);
+                
+                // Add student data
+                initial[className].forEach(student => {
+                    data.push([student, marksData[className][`midterm${midtermNum}`][student] || '']);
+                });
+            }
+            
+            // Export based on format
+            exportToFormat(data, filename, format);
+            showToast(`Midterm results downloaded as ${format.toUpperCase()}`, 'success');
+        }
+
+        // Download exam results
+        function downloadExamResults(format) {
+            const className = examDownloadClass.value;
+            const termType = examDownloadTerm.value;
+            
+            if (!className) {
+                showToast('Please select a class first', 'error');
+                return;
+            }
+            
+            let data = [];
+            let filename = '';
+            
+            if (termType === 'all') {
+                // Download all terms
+                filename = `${className}_All_Terms_${new Date().toISOString().split('T')[0]}`;
+                
+                // Create headers
+                const headers = ['Student Name'];
+                for (let i = 1; i <= 3; i++) {
+                    headers.push(`Term ${i} Exam 1`, `Term ${i} Exam 2`, `Term ${i} Exam 3`, `Term ${i} Total`);
+                }
+                headers.push('Year Total');
+                data.push(headers);
+                
+                // Add student data
+                initial[className].forEach(student => {
+                    const row = [student];
+                    for (let i = 1; i <= 3; i++) {
+                        const termData = examData[className][`term${i}`][student];
+                        row.push(
+                            termData.exam1 || '',
+                            termData.exam2 || '',
+                            termData.exam3 || '',
+                            termData.total || ''
+                        );
+                    }
+                    row.push(examData[className].yearTotal[student] || '');
+                    data.push(row);
+                });
+            } else {
+                // Download specific term
+                filename = `${className}_${termType}_${new Date().toISOString().split('T')[0]}`;
+                
+                // Create headers
+                data.push(['Student Name', 'Exam 1', 'Exam 2', 'Exam 3', 'Total']);
+                
+                // Add student data
+                initial[className].forEach(student => {
+                    const studentData = examData[className][termType][student];
+                    data.push([
+                        student,
+                        studentData.exam1 || '',
+                        studentData.exam2 || '',
+                        studentData.exam3 || '',
+                        studentData.total || ''
+                    ]);
+                });
+            }
+            
+            // Export based on format
+            exportToFormat(data, filename, format);
+            showToast(`Exam results downloaded as ${format.toUpperCase()}`, 'success');
+        }
+
+        // Export data to different formats
+        function exportToFormat(data, filename, format) {
+            if (format === 'excel') {
+                // Create worksheet
+                const ws = XLSX.utils.aoa_to_sheet(data);
+                
+                // Create workbook
+                const wb = XLSX.utils.book_new();
+                XLSX.utils.book_append_sheet(wb, ws, 'Results');
+                
+                // Export to Excel
+                XLSX.writeFile(wb, `${filename}.xlsx`);
+            } else if (format === 'csv') {
+                // Convert to CSV
+                const csvContent = data.map(row => 
+                    row.map(cell => `"${cell}"`).join(',')
+                ).join('\n');
+                
+                // Create download link
+                const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+                const link = document.createElement('a');
+                const url = URL.createObjectURL(blob);
+                link.setAttribute('href', url);
+                link.setAttribute('download', `${filename}.csv`);
+                link.style.visibility = 'hidden';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            } else if (format === 'pdf') {
+                // For PDF, we'll create a simple table representation
+                // In a real application, you would use a PDF library like jsPDF
+                showToast('PDF export would be implemented with a PDF library in a real application', 'info');
+                
+                // Create a simple HTML table for demonstration
+                const tableHtml = `
+                    <html>
+                    <head>
+                        <title>${filename}</title>
+                        <style>
+                            table { border-collapse: collapse; width: 100%; }
+                            th, td { border: 1px solid #000; padding: 8px; text-align: left; }
+                            th { background-color: #f2f2f2; }
+                        </style>
+                    </head>
+                    <body>
+                        <h1>${filename}</h1>
+                        <table>
+                            ${data.map((row, i) => `
+                                <tr>
+                                    ${row.map(cell => `<${i === 0 ? 'th' : 'td'}>${cell}</${i === 0 ? 'th' : 'td'}>`).join('')}
+                                </tr>
+                            `).join('')}
+                        </table>
+                    </body>
+                    </html>
+                `;
+                
+                // Open in new window for printing/saving as PDF
+                const newWindow = window.open();
+                newWindow.document.write(tableHtml);
+                newWindow.document.close();
+            }
+        }
+
+        // Calculate year total
+        function calculateYearTotal() {
+            const students = initial[currentClass];
+            let hasAllData = true;
+            
+            // Check if all terms have complete data
+            for (const student of students) {
+                for (let i = 1; i <= 3; i++) {
+                    const termData = examData[currentClass][`term${i}`][student];
+                    if (!termData.exam1 || !termData.exam2 || !termData.exam3 || !termData.total) {
+                        hasAllData = false;
+                        break;
+                    }
+                }
+                if (!hasAllData) break;
+            }
+            
+            if (!hasAllData) {
+                showToast('Some students are missing exam data. Please complete all term exams first.', 'warning');
+                return;
+            }
+            
+            // Calculate year total for each student
+            students.forEach(student => {
+                let yearTotal = 0;
+                for (let i = 1; i <= 3; i++) {
+                    const termData = examData[currentClass][`term${i}`][student];
+                    yearTotal += parseFloat(termData.total);
+                }
+                examData[currentClass].yearTotal[student] = (yearTotal / 3).toFixed(1);
+            });
+            
+            // Save to localStorage
+            localStorage.setItem('kageyoExamData', JSON.stringify(examData));
+            
+            showToast(`Year total calculated for ${currentClass}`, 'success');
+        }
+
+        // Load recent activity
+        function loadRecentActivity() {
+            // Sample activity data
+            const activities = [
+                { action: 'Marks Updated', details: 'Midterm 1 marks for S1A', time: '2 minutes ago', user: 'Admin' },
+                { action: 'Student Added', details: 'New student registered in S2B', time: '15 minutes ago', user: 'Admin' },
+                { action: 'Results Published', details: 'Midterm 2 results for all classes', time: '1 hour ago', user: 'Admin' },
+                { action: 'Notice Sent', details: 'Parent meeting announcement', time: '3 hours ago', user: 'Admin' },
+                { action: 'Discipline Record', details: 'Updated behavior record for S3A', time: '5 hours ago', user: 'Admin' }
+            ];
+            
+            // Add to activity log
+            activityLog = activities;
+            
+            // Render activities
+            recentActivity.innerHTML = '';
+            activities.forEach(activity => {
+                const activityItem = document.createElement('div');
+                activityItem.className = 'flex items-start space-x-3 p-3 bg-gray-50 dark:bg-gray-700 rounded-lg';
+                activityItem.innerHTML = `
+                    <div class="w-2 h-2 bg-blue-500 rounded-full mt-2"></div>
+                    <div class="flex-1">
+                        <div class="font-medium text-gray-800 dark:text-white">${activity.action}</div>
+                        <div class="text-sm text-gray-600 dark:text-gray-400">${activity.details}</div>
+                        <div class="text-xs text-gray-500 dark:text-gray-500 mt-1">${activity.time} by ${activity.user}</div>
+                    </div>
+                `;
+                recentActivity.appendChild(activityItem);
+            });
+        }
+
+        // Update date and time
+        function updateDateTime() {
+            const now = new Date();
+            const options = { 
+                weekday: 'long', 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit'
+            };
+            currentDateTime.textContent = now.toLocaleDateString('en-US', options);
+        }
+
+        // Set up event listeners
+        function setupEventListeners() {
+            // Login form submission
+            loginForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                const username = document.getElementById('username').value;
+                const password = document.getElementById('password').value;
+                
+                if (username === adminCredentials.username && password === adminCredentials.password) {
+                    isAuthenticated = true;
+                    // Save authentication state with expiry (24 hours)
+                    const authData = {
+                        isAuthenticated: true,
+                        expiry: Date.now() + (24 * 60 * 60 * 1000)
+                    };
+                    localStorage.setItem('kageyoAuth', JSON.stringify(authData));
+                    loginModal.classList.remove('open');
+                    showToast('Login successful!', 'success');
+                } else {
+                    showToast('Invalid credentials. Please try again.', 'error');
+                }
+            });
+            
+            // Dark mode toggle
+            darkModeToggle.addEventListener('click', function() {
+                document.body.classList.toggle('dark-mode');
+                if (document.body.classList.contains('dark-mode')) {
+                    darkModeToggle.innerHTML = '<i class="fas fa-sun"></i>';
+                    localStorage.setItem('kageyoDarkMode', 'enabled');
+                } else {
+                    darkModeToggle.innerHTML = '<i class="fas fa-moon"></i>';
+                    localStorage.setItem('kageyoDarkMode', 'disabled');
+                }
+            });
+            
+            // Check for saved dark mode preference
+            const savedDarkMode = localStorage.getItem('kageyoDarkMode');
+            if (savedDarkMode === 'enabled') {
+                document.body.classList.add('dark-mode');
+                darkModeToggle.innerHTML = '<i class="fas fa-sun"></i>';
+            }
+            
+            // Logout button
+            logoutBtn.addEventListener('click', function() {
+                isAuthenticated = false;
+                localStorage.removeItem('kageyoAuth');
+                loginModal.classList.add('open');
+                showToast('You have been logged out.', 'info');
+            });
+            
+            // Global search
+            globalSearch.addEventListener('input', function() {
+                const query = this.value.toLowerCase();
+                if (query.length < 2) {
+                    searchResults.classList.add('hidden');
+                    return;
+                }
+                
+                // Filter students based on query
+                const results = [];
+                for (const className in initial) {
+                    initial[className].forEach(student => {
+                        if (student.toLowerCase().includes(query)) {
+                            results.push({ student, className });
+                        }
+                    });
+                }
+                
+                // Display results
+                if (results.length > 0) {
+                    searchResults.innerHTML = '';
+                    results.forEach(result => {
+                        const resultItem = document.createElement('div');
+                        resultItem.className = 'p-3 hover:bg-gray-100 dark:hover:bg-gray-600 cursor-pointer border-b dark:border-gray-600';
+                        resultItem.textContent = `${result.student} (${result.className})`;
+                        resultItem.addEventListener('click', function() {
+                            globalSearch.value = '';
+                            searchResults.classList.add('hidden');
+                            showToast(`Selected: ${result.student}`, 'info');
+                        });
+                        searchResults.appendChild(resultItem);
+                    });
+                    searchResults.classList.remove('hidden');
+                } else {
+                    searchResults.classList.add('hidden');
+                }
+            });
+            
+            // Close search results when clicking outside
+            document.addEventListener('click', function(e) {
+                if (!globalSearch.contains(e.target) && !searchResults.contains(e.target)) {
+                    searchResults.classList.add('hidden');
+                }
+            });
+            
+            // Navigation tabs
+            navTabs.forEach(tab => {
+                tab.addEventListener('click', function() {
+                    const tabId = this.getAttribute('data-tab');
+                    
+                    // Update active tab
+                    navTabs.forEach(t => t.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    // Show corresponding content
+                    tabContents.forEach(content => {
+                        content.classList.remove('active');
+                    });
+                    document.getElementById(tabId).classList.add('active');
+                });
+            });
+            
+            // Term selector
+            document.querySelectorAll('.term-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const term = this.getAttribute('data-term');
+                    
+                    // Update active term
+                    document.querySelectorAll('.term-btn').forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    // Update current term and reload table
+                    currentTerm = term;
+                    renderExamTable();
+                });
+            });
+            
+            // Add term button
+            addTermBtn.addEventListener('click', function() {
+                const termCount = document.querySelectorAll('.term-btn').length;
+                const newTerm = `term${termCount + 1}`;
+                
+                // Create new term button
+                const newTermBtn = document.createElement('div');
+                newTermBtn.className = 'term-btn';
+                newTermBtn.setAttribute('data-term', newTerm);
+                newTermBtn.textContent = `Term ${termCount + 1}`;
+                newTermBtn.addEventListener('click', function() {
+                    document.querySelectorAll('.term-btn').forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    currentTerm = newTerm;
+                    renderExamTable();
+                });
+                
+                // Insert before add term button
+                termSelector.insertBefore(newTermBtn, addTermBtn);
+                
+                // Initialize exam data for new term
+                for (const className in initial) {
+                    examData[className][newTerm] = {};
+                    initial[className].forEach(student => {
+                        examData[className][newTerm][student] = {
+                            exam1: '',
+                            exam2: '',
+                            exam3: '',
+                            total: ''
+                        };
+                    });
+                }
+                
+                showToast(`Term ${termCount + 1} added successfully`, 'success');
+            });
+            
+            // Midterm modal events
+            closeMidtermModal.addEventListener('click', closeMidtermModalFunc);
+            closeMidtermModal2.addEventListener('click', closeMidtermModalFunc);
+            
+            // Save midterm marks
+            saveMidtermMarks.addEventListener('click', function() {
+                saveMarks();
+                closeMidtermModalFunc();
+                showToast(`Midterm ${currentMidterm} marks saved for ${currentClass}`, 'success');
+            });
+            
+            // Save exam marks
+            saveExamMarks.addEventListener('click', function() {
+                saveExamData();
+                showToast(`Exam marks saved for ${currentClass} - ${currentTerm}`, 'success');
+            });
+            
+            // Apply bulk marks
+            applyBulkMarks.addEventListener('click', function() {
+                const markValue = bulkMarkValue.value;
+                const examType = bulkExamType.value;
+                
+                if (markValue === '' || markValue < 0 || markValue > 100) {
+                    showToast('Please enter a valid mark between 0 and 100', 'error');
+                    return;
+                }
+                
+                const students = initial[currentClass];
+                students.forEach(student => {
+                    examData[currentClass][currentTerm][student][examType] = markValue;
+                });
+                
+                renderExamTable();
+                showToast(`Applied mark ${markValue} to all students for ${examType}`, 'success');
+            });
+            
+            // Clear all marks
+            clearAllMarks.addEventListener('click', function() {
+                if (confirm('Are you sure you want to clear all exam marks for this class?')) {
+                    const students = initial[currentClass];
+                    students.forEach(student => {
+                        examData[currentClass][currentTerm][student] = {
+                            exam1: '',
+                            exam2: '',
+                            exam3: '',
+                            total: ''
+                        };
+                    });
+                    
+                    renderExamTable();
+                    showToast('All exam marks cleared', 'success');
+                }
+            });
+            
+            // Results management filters
+            resultsClassSelect.addEventListener('change', renderResultsTable);
+            resultsTermSelect.addEventListener('change', renderResultsTable);
+            
+            // Export results
+            exportResults.addEventListener('click', function() {
+                showToast('Exporting results...', 'info');
+                setTimeout(() => {
+                    showToast('Results exported successfully!', 'success');
+                }, 1500);
+            });
+            
+            // Publish results
+            publishResults.addEventListener('click', function() {
+                if (confirm('Are you sure you want to publish all results? This action cannot be undone.')) {
+                    showToast('Results published successfully!', 'success');
+                }
+            });
+            
+            // Refresh dynamic content
+            refreshContent.addEventListener('click', function() {
+                // Add a new dynamic content item
+                const newItem = {
+                    title: "System Update",
+                    content: "The system has been updated with new features for better mark management.",
+                    type: "info",
+                    date: new Date().toISOString().split('T')[0]
+                };
+                
+                dynamicContentData.unshift(newItem);
+                updateDynamicContent();
+                showToast('Content refreshed successfully', 'success');
+            });
+            
+            // Tab buttons for classes in midterm modal
+            document.addEventListener('click', function(e) {
+                if (e.target.classList.contains('tab-button')) {
+                    // Update active tab
+                    document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
+                    e.target.classList.add('active');
+                    
+                    // Update current class and reload table
+                    currentClass = e.target.getAttribute('data-class');
+                    loadMidtermTable();
+                }
+            });
+            
+            // Publish all results
+            publishAllBtn.addEventListener('click', function() {
+                // Publish marks to student portal
+                publishAllMarks();
+                showToast('Results published successfully! Students can now view their marks.', 'success');
+                message.textContent = 'Results have been published successfully.';
+                message.classList.remove('hidden');
+                setTimeout(() => {
+                    message.classList.add('hidden');
+                }, 5000);
+                
+                // Log activity
+                logActivity('Results Published', 'All midterm results published for student portal');
+            });
+            
+            // Rewrite results
+            rewriteBtn.addEventListener('click', function() {
+                if (confirm('Are you sure you want to rewrite all results? This action cannot be undone.')) {
+                    // Reset all marks
+                    initializeMarksData();
+                    initializeExamData();
+                    updateStats();
+                    showToast('All results have been reset.', 'warning');
+                    
+                    // Log activity
+                    logActivity('Results Reset', 'All marks reset for rewriting');
+                }
+            });
+            
+            // Quick action buttons
+            exportResultsBtn.addEventListener('click', function() {
+                showToast('Exporting results...', 'info');
+                // In a real app, this would trigger a download
+                setTimeout(() => {
+                    showToast('Results exported successfully!', 'success');
+                }, 1500);
+                
+                // Log activity
+                logActivity('Results Exported', 'All results exported to Excel');
+            });
+            
+            sendNoticeBtn.addEventListener('click', function() {
+                showToast('Notice sent to all parents!', 'success');
+                
+                // Log activity
+                logActivity('Notice Sent', 'Announcement sent to all parents');
+            });
+            
+            addStudentBtn.addEventListener('click', function() {
+                openAddStudentModal();
+            });
+            
+            activityLogBtn.addEventListener('click', function() {
+                showToast('Activity log opened!', 'info');
+            });
+            
+            // Add student modal events
+            document.getElementById('closeAddStudentModal').addEventListener('click', closeAddStudentModal);
+            document.getElementById('closeAddStudentModal2').addEventListener('click', closeAddStudentModal);
+            
+            // Add student form submission
+            document.getElementById('addStudentForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                showToast('New student added successfully!', 'success');
+                closeAddStudentModal();
+                
+                // Log activity
+                logActivity('Student Added', 'New student registered in the system');
+            });
+            
+            // Add discipline modal events
+            document.getElementById('closeAddDisciplineModal').addEventListener('click', closeAddDisciplineModal);
+            document.getElementById('closeAddDisciplineModal2').addEventListener('click', closeAddDisciplineModal);
+            
+            // Add discipline form submission
+            document.getElementById('addDisciplineForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                // Get form values
+                const studentSelect = document.getElementById('disciplineStudentSelect');
+                const classSelect = document.getElementById('disciplineClassSelect');
+                const studentName = studentSelect.options[studentSelect.selectedIndex].text;
+                const className = classSelect.value;
+                
+                // Create new record
+                const newRecord = {
+                    id: disciplineRecords.length > 0 ? Math.max(...disciplineRecords.map(r => r.id)) + 1 : 1,
+                    studentName: studentName,
+                    class: className,
+                    incidentType: document.querySelector('#addDisciplineForm select:nth-child(3)').value,
+                    date: document.querySelector('#addDisciplineForm input[type="date"]').value,
+                    severity: document.querySelector('#addDisciplineForm select:nth-child(5)').value,
+                    status: document.querySelector('#addDisciplineForm select:nth-child(6)').value,
+                    description: document.querySelector('#addDisciplineForm textarea').value
+                };
+                
+                // Add to records
+                disciplineRecords.push(newRecord);
+                
+                // Save to localStorage
+                localStorage.setItem('kageyoDiscipline', JSON.stringify(disciplineRecords));
+                
+                // Reload table
+                loadDisciplineManagement();
+                
+                showToast('Discipline record added successfully!', 'success');
+                closeAddDisciplineModal();
+                
+                // Log activity
+                logActivity('Discipline Record Added', `New record for ${studentName}`);
+            });
+            
+            // Update student options when class changes in discipline form
+            document.getElementById('disciplineClassSelect').addEventListener('change', function() {
+                const className = this.value;
+                const studentSelect = document.getElementById('disciplineStudentSelect');
+                
+                // Clear existing options
+                studentSelect.innerHTML = '<option value="">Select Student</option>';
+                
+                // Add students from selected class
+                if (className && studentsData[className]) {
+                    studentsData[className].forEach(student => {
+                        const option = document.createElement('option');
+                        option.value = student.id;
+                        option.textContent = student.fullName;
+                        studentSelect.appendChild(option);
+                    });
+                }
+            });
+        }
+
+        // Open midterm modal
+        function openMidtermModal(midterm) {
+            currentMidterm = midterm;
+            document.getElementById('midtermModalTitle').textContent = `Midterm ${midterm} Marks`;
+            
+            // Populate class tabs
+            const classTabsContainer = document.querySelector('#midtermModal .class-tabs');
+            classTabsContainer.innerHTML = '';
+            for (const className in initial) {
+                const tab = document.createElement('div');
+                tab.className = `class-tab ${className === currentClass ? 'active' : ''}`;
+                tab.textContent = className;
+                tab.setAttribute('data-class', className);
+                tab.addEventListener('click', function() {
+                    currentClass = this.getAttribute('data-class');
+                    document.querySelectorAll('.class-tab').forEach(t => t.classList.remove('active'));
+                    this.classList.add('active');
+                    loadMidtermTable();
+                });
+                classTabsContainer.appendChild(tab);
+            }
+            
+            loadMidtermTable();
+            midtermModal.classList.add('open');
+        }
+
+        // Close midterm modal
+        function closeMidtermModalFunc() {
+            midtermModal.classList.remove('open');
+        }
+
+        // Load midterm table with student data
+        function loadMidtermTable() {
+            midtermTableBody.innerHTML = '';
+            const students = initial[currentClass];
+            const midtermKey = `midterm${currentMidterm}`;
+            
+            students.forEach(student => {
+                const row = document.createElement('tr');
+                const currentMark = marksData[currentClass][midtermKey][student] || '';
+                
+                row.innerHTML = `
+                    <td class="font-medium">${student}</td>
+                    <td>
+                        <input type="number" min="0" max="100" value="${currentMark}" 
+                               data-student="${student}" class="mark-input">
+                    </td>
+                    <td>
+                        <button class="btn btn-secondary mark-btn" data-student="${student}">
+                            <i class="fas fa-edit mr-1"></i> Edit
+                        </button>
+                    </td>
+                `;
+                midtermTableBody.appendChild(row);
+            });
+            
+            // Add event listeners to mark inputs
+            document.querySelectorAll('.mark-input').forEach(input => {
+                input.addEventListener('change', function() {
+                    const student = this.getAttribute('data-student');
+                    const value = this.value;
+                    
+                    // Validate mark
+                    if (value !== '' && (value < 0 || value > 100)) {
+                        showToast('Mark must be between 0 and 100', 'error');
+                        this.value = '';
+                        return;
+                    }
+                    
+                    // Update marks data
+                    marksData[currentClass][midtermKey][student] = value;
+                    
+                    // Auto-save and sync to student portal in real-time
+                    localStorage.setItem('kageyoMarks', JSON.stringify(marksData));
+                    localStorage.setItem('publishedMarks', JSON.stringify(marksData));
+                    
+                    // Show subtle confirmation
+                    this.style.backgroundColor = '#dcfce7';
+                    setTimeout(() => {
+                        this.style.backgroundColor = '';
+                    }, 500);
+                });
+            });
+        }
+
+        // Save marks to localStorage and publish to student portal
+        function saveMarks() {
+            localStorage.setItem('kageyoMarks', JSON.stringify(marksData));
+            
+            // Also save to student data key for immediate access
+            localStorage.setItem('publishedMarks', JSON.stringify(marksData));
+            
+            updateStats();
+            
+            // Log activity
+            logActivity('Marks Updated', `Midterm ${currentMidterm} marks for ${currentClass}`);
+            
+            showToast('Marks saved and published to student portal', 'success');
+        }
+
+        // Save exam data to localStorage and publish to student portal
+        function saveExamData() {
+            localStorage.setItem('kageyoExamData', JSON.stringify(examData));
+            
+            // Also save to student data key for immediate access
+            localStorage.setItem('publishedExamData', JSON.stringify(examData));
+            
+            updateStats();
+            
+            // Log activity
+            logActivity('Exam Marks Updated', `${currentTerm} exam marks for ${currentClass}`);
+            
+            showToast('Exam marks saved and published to student portal', 'success');
+        }
+
+        // Open add student modal
+        function openAddStudentModal() {
+            document.getElementById('addStudentModal').classList.add('open');
+        }
+
+        // Close add student modal
+        function closeAddStudentModal() {
+            document.getElementById('addStudentModal').classList.remove('open');
+        }
+
+        // Open add discipline modal
+        function openAddDisciplineModal() {
+            // Initialize class dropdown
+            const classSelect = document.getElementById('disciplineClassSelect');
+            classSelect.innerHTML = '<option value="">Select Class</option>';
+            for (const className in initial) {
+                const option = document.createElement('option');
+                option.value = className;
+                option.textContent = className;
+                classSelect.appendChild(option);
+            }
+            classSelect.value = '';
+            
+            // Initialize student dropdown
+            const studentSelect = document.getElementById('disciplineStudentSelect');
+            studentSelect.innerHTML = '<option value="">Select Student</option>';
+            
+            document.getElementById('addDisciplineModal').classList.add('open');
+        }
+
+        // Close add discipline modal
+        function closeAddDisciplineModal() {
+            document.getElementById('addDisciplineModal').classList.remove('open');
+        }
+
+        // Open exam management
+        function openExamManagement() {
+            // Switch to exam management tab
+            navTabs.forEach(t => t.classList.remove('active'));
+            document.querySelector('.nav-tab[data-tab="exam-management"]').classList.add('active');
+            
+            tabContents.forEach(content => {
+                content.classList.remove('active');
+            });
+            document.getElementById('exam-management').classList.add('active');
+        }
+
+        // Show toast notification
+        function showToast(message, type) {
+            toast.textContent = message;
+            toast.className = `toast ${type} show`;
+            
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
+        // Log activity
+        function logActivity(action, details) {
+            const now = new Date();
+            const timeString = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+            
+            const activity = {
+                action,
+                details,
+                time: `${timeString}`,
+                user: 'Admin'
+            };
+            
+            activityLog.unshift(activity);
+            
+            // Update recent activity display
+            if (activityLog.length > 5) {
+                activityLog.pop();
+            }
+            
+            loadRecentActivity();
+        }
+
+        // Open discipline modal (placeholder)
+        function openDisciplineModal() {
+            // Switch to discipline management tab
+            navTabs.forEach(t => t.classList.remove('active'));
+            document.querySelector('.nav-tab[data-tab="discipline-management"]').classList.add('active');
+            
+            tabContents.forEach(content => {
+                content.classList.remove('active');
+            });
+            document.getElementById('discipline-management').classList.add('active');
+        }
+
+        // Publish all marks to student portal
+        function publishAllMarks() {
+            // Save current marks data
+            localStorage.setItem('kageyoMarks', JSON.stringify(marksData));
+            
+            // Publish to student portal
+            localStorage.setItem('publishedMarks', JSON.stringify(marksData));
+            
+            // Save exam data
+            localStorage.setItem('kageyoExamData', JSON.stringify(examData));
+            localStorage.setItem('publishedExamData', JSON.stringify(examData));
+            
+            // Set publish timestamp
+            localStorage.setItem('publishTimestamp', new Date().toISOString());
+            
+            // Set publish status
+            localStorage.setItem('marksPublished', 'true');
+            
+            // Log the publish event
+            console.log('All marks published to student portal:', {
+                timestamp: new Date().toISOString(),
+                classesPublished: Object.keys(marksData).length,
+                midtermsPublished: 3
+            });
+        }
+
+        // Initialize the app when DOM is loaded
+        document.addEventListener('DOMContentLoaded', initApp);
+    </script>
+</body>
+</html>

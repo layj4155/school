@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Kageyo TVET — Discipline Marks Management</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="icon" type="image/png" sizes="32x32" href="kageyo-logo.jpg">
+    <style>
+        .card { border-radius: .75rem; box-shadow: 0 8px 24px rgba(2,6,23,0.06); }
+        input[type=number]::-webkit-outer-spin-button,
+        input[type=number]::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+        .publish-bar { position: sticky; bottom: 0; background: white; z-index: 40; border-top: 1px solid rgba(0,0,0,0.06); }
+        .year-box { cursor: pointer; }
+        .year-box:hover { background-color: #eff6ff; }
+        .hidden { display: none; }
+    </style>
+</head>
+<body class="bg-gray-50 font-sans antialiased text-gray-800">
+    <header class="bg-white shadow-sm">
+        <div class="bg-blue-600 text-white py-2">
+            <div class="container mx-auto px-4 flex justify-between items-center">
+                <a href="#" class="hover:underline"><i class="fab fa-whatsapp mr-2"></i>Join WhatsApp Group</a>
+                <select id="header-language-selector" class="p-1 rounded bg-white text-blue-600">
+                    <option value="en">English</option>
+                    <option value="rw">Kinyarwanda</option>
+                    <option value="fr">Français</option>
+                </select>
+            </div>
+        </div>
+        <div class="container mx-auto px-4 py-4">
+            <nav class="flex items-center justify-between">
+                <div class="flex items-center space-x-4">
+                    <a href="index.html">
+                        <img src="kageyo-logo.jpg" alt="Kageyo TVET School Logo" class="w-16 h-16 object-cover rounded-full shadow-sm">
+                    </a>
+                    <div>
+                        <a class="text-xl font-bold text-blue-600" href="/">KAGEYO TVET SCHOOL</a>
+                        <div class="text-sm text-gray-500">Work - Courage - Solidarity</div>
+                    </div>
+                </div>
+                <div class="hidden md:flex items-center space-x-6">
+                    <a class="text-blue-600 hover:text-blue-800" href="/">Home</a>
+                    <a class="text-blue-600 hover:text-blue-800" href="/about">About Us</a>
+                    <a href="student-data.html" class="text-blue-600 hover:text-blue-800">Student Portal</a>
+                    <a class="text-blue-600 hover:text-blue-800" href="/contact">Contact</a>
+                    <a class="px-3 py-2 bg-blue-600 text-white rounded" href="admin-login.html">Logout</a>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container mx-auto px-4 py-6">
+        <section class="card bg-white p-6">
+            <div class="flex items-start justify-between">
+                <div>
+                    <h1 class="text-xl font-bold text-blue-700">Discipline Marks Management — Dean of Discipline</h1>
+                    <p class="text-sm text-gray-600">Enter discipline marks for students.</p>
+                </div>
+                <div class="text-right text-sm text-gray-500">
+                    Academic Year: <strong>2025 - 2026</strong>
+                </div>
+            </div>
+
+            <div class="my-4">
+                <input type="text" id="studentSearch" placeholder="Search student by name..."
+                       class="w-full border rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-600">
+                <div id="searchResults" class="mt-2"></div>
+            </div>
+
+            <hr class="my-4">
+
+            <div id="classesContainer" class="space-y-4 max-h-[70vh] overflow-auto pr-2"></div>
+
+            <div class="publish-bar p-4 mt-4">
+                <div class="flex items-center justify-between">
+                    <div class="text-sm text-gray-700">Click below to publish discipline results.</div>
+                    <div class="space-x-2">
+                        <button id="rewriteBtn" class="bg-red-600 text-white px-5 py-2 rounded font-semibold">Clear Results</button>
+                        <button id="publishAllBtn" class="bg-blue-600 text-white px-5 py-2 rounded font-semibold">Publish Results</button>
+                    </div>
+                </div>
+                <div id="message" class="text-green-600 text-sm font-medium mt-2 hidden"></div>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        const initial = {
+            "S1A": ["ABEREYIMANA James","ABIMANA HIRWA Gany Blessing","AHISHAKIYE MANZI Aime Miguel","ASHIMWE Nate Brayan","Benedicto King Samuel","BUGINGO BEZA Keny","GASHUMBA NDAYISHIMIYE KIM Kenedy","IGENUKWISHATSE BYISHIMO Jean Maurice","IGIRANEZA CYUSA Milton","IHUMURE NSENGIYUMVA Heroine","INEZA Queen Deborah","IRABARUTA MUGISHA Credo","IRAKOZE Belle Amie","IRAKOZE Janviere","IRAKOZE Yanis","ISHIMWE UWASE Gabriella","ISIMBI UWASE Joyeuse","ITANGANEZA Parfait","KAMIKAZI Patience","MUNEZERO Enock","MUNEZERO Priscilla","MUTONIWASE Benitha","MUVUNYI UWIMPUHWE Benie Hortance","MWITENEZA Jean Pierre","NDARUHUTSE Danny","NGABONZIZA MUGISHA Boris","NGANZO Born Bercee","RORIRORA Gihozo Anella","UWANYAGASANI Cedrick","UWASE Benitha","UWIDUHAYE Pascaline","UWINEZA AKALIZA Martina","UWIZEYIMANA Valentine","YUBAHWE Anitha"],
+            "S1B": ["ABAYISENGA Emmu Shalom","AMANI NSHUTI Claver","ARERWENEZA Laetitia","BAGABE Dieudonne","CYOMORO Nicky Prince","GAGA Lioness","IGANZE Olla Mireille","IGIRIMBABAZI Pamella","INEZA Aure Alexandrine","INEZA Deborah","INEZA KAMIKAZI TETA Promesse","IRAGENA Gloria","IRAGENA Laetitia","IRAME MUCYO Angelo","ISHEMA Rayan","ISHIMWE NGABO Hertier","ISHIMWE Olga","ISINGIZWE Ange Afurika Maombe","KAYITARE Caleb","KEZA UMI Abdoulatomani","KUNDA Beny Bienaime","KWIZERA MUHOZA Prince","MANZI Boaz","MBABAZI Blessed","MUNEZERO Gentil Hertier","MUNEZERO Yvette","MUTONIWASE Esther","NDIKUMWENAYO Jeannette","NIRAGIRE Aline","NIYONZIMA Lucky","RUDASINGWA","SHAMI Ianis Vangelis","UWASE GASARO Kelia","UWASE Sendrine","UWIZEYIMANA Chakilla","UYIZERA Regis"],
+            "S2A": ["BYISHIMO Remy","BAHO AKARIZA Kevine","DUKUZUMUREMYI Janvier","GANZA AHADI TRESOR","IHIRWE Benitha","IKUNDABAYO Kevin","IMFURAYASE Aimee Ange","INEZA QUEEN LOVE","INEZA Ryan Merci","IRASUBIZA NANSI Nadia Lenatha","ISHIMWE Brianna","ISUMBINGABO HIRWA HERVE","KALIZA UNEJEJE Ella Blassia","KAREKEZI SHIMWA SYLIVIE","KWIZE David","KWIZERA Richard","MANZI GANZA Fred","MBABAZI DORCAS"]
+        };
+
+        let students = JSON.parse(localStorage.getItem('draftResults')) || [];
+        if (students.length === 0) {
+            Object.keys(initial).forEach(cls => {
+                initial[cls].forEach((name, i) => {
+                    students.push({ id: cls + '-' + (i+1), name, cls, midTerm: 0, t1: 0, t2: 0, t3: 0, termExam: 0, discipline: 0 });
+                });
+            });
+            saveDraft();
+        }
+
+        const classesContainer = document.getElementById('classesContainer');
+        const msg = document.getElementById('message');
+        const searchInput = document.getElementById('studentSearch');
+        const searchResults = document.getElementById('searchResults');
+
+        function saveDraft() {
+            localStorage.setItem('draftResults', JSON.stringify(students));
+        }
+
+        function render() {
+            const yearGroups = {};
+            Object.keys(initial).forEach(cls => {
+                const year = cls.match(/^([SL]\d+)/)[1];
+                if (!yearGroups[year]) yearGroups[year] = [];
+                yearGroups[year].push(cls);
+            });
+
+            const groups = {};
+            students.forEach(s => {
+                if (!groups[s.cls]) groups[s.cls] = [];
+                groups[s.cls].push(s);
+            });
+
+            classesContainer.innerHTML = '';
+            Object.keys(yearGroups).sort().forEach(year => {
+                const box = document.createElement('div');
+                box.className = 'border rounded p-3 year-box';
+                box.innerHTML = `
+                    <h3 class="font-semibold text-blue-700 mb-2 flex justify-between items-center">
+                        ${year} <span class="text-gray-500 text-sm">(${yearGroups[year].reduce((sum, cls) => sum + groups[cls].length, 0)} students)</span>
+                        <span class="text-blue-600">▼</span>
+                    </h3>
+                    <div class="class-list hidden">
+                        ${yearGroups[year].sort().map(cls => `
+                            <div class="mb-4">
+                                <h4 class="font-semibold text-blue-600 mb-2">${cls} (${groups[cls].length} students)</h4>
+                                <div class="overflow-auto">
+                                    <table class="w-full text-sm">
+                                        <thead><tr class="text-left text-xs text-gray-600">
+                                            <th class="pb-2">Student</th>
+                                            <th class="pb-2">Discipline (/100)</th>
+                                        </tr></thead>
+                                        <tbody>
+                                            ${groups[cls].map(s => `
+                                                <tr class="border-t">
+                                                    <td class="py-1">${s.name}</td>
+                                                    <td><input type="number" min="0" max="100" value="${s.discipline}" data-id="${s.id}" data-field="discipline" class="border rounded w-20 px-2 py-1 text-sm mark-input" />%</td>
+                                                </tr>
+                                            `).join('')}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>`;
+                classesContainer.appendChild(box);
+                box.querySelector('h3').addEventListener('click', () => {
+                    const classList = box.querySelector('.class-list');
+                    const arrow = box.querySelector('h3 span');
+                    classList.classList.toggle('hidden');
+                    arrow.textContent = classList.classList.contains('hidden') ? '▼' : '▲';
+                });
+            });
+
+            document.querySelectorAll('.mark-input').forEach(input => {
+                input.addEventListener('change', () => {
+                    update(input.dataset.id, input.dataset.field, input.value);
+                });
+            });
+        }
+
+        function update(id, field, value) {
+            const s = students.find(x => x.id === id);
+            let v = Number(value) || 0;
+            if (v > 100) v = 100;
+            if (v < 0) v = 0;
+            s[field] = v;
+            saveDraft();
+            searchStudent(searchInput.value);
+        }
+
+        function searchStudent(query) {
+            searchResults.innerHTML = '';
+            if (query.trim() === '') return;
+
+            const results = students.filter(s => s.name.toLowerCase().includes(query.toLowerCase()));
+            if (results.length === 0) {
+                searchResults.innerHTML = '<p class="text-sm text-gray-600">No students found.</p>';
+                return;
+            }
+
+            results.forEach(s => {
+                const resultDiv = document.createElement('div');
+                resultDiv.className = 'border rounded p-3 mb-2';
+                resultDiv.innerHTML = `
+                    <h4 class="font-semibold text-blue-700">${s.name} (${s.cls})</h4>
+                    <p class="text-sm">Discipline: ${s.discipline}%</p>
+                `;
+                searchResults.appendChild(resultDiv);
+            });
+        }
+
+        searchInput.addEventListener('input', () => searchStudent(searchInput.value));
+
+        document.getElementById('publishAllBtn').addEventListener('click', () => {
+            localStorage.setItem('publishedResults', JSON.stringify(students));
+            students.forEach(s => s.discipline = 0);
+            saveDraft();
+            render();
+            msg.classList.remove('hidden');
+            msg.textContent = "✅ Discipline results published successfully!";
+            msg.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            setTimeout(() => msg.classList.add('hidden'), 4000);
+        });
+
+        document.getElementById('rewriteBtn').addEventListener('click', () => {
+            students.forEach(s => s.discipline = 0);
+            saveDraft();
+            localStorage.removeItem('publishedResults');
+            render();
+            msg.classList.remove('hidden');
+            msg.textContent = "✅ Discipline results cleared.";
+            msg.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            setTimeout(() => msg.classList.add('hidden'), 4000);
+        });
+
+        render();
+    </script>
+    <script src="https://kit.fontawesome.com/a2e8b3b7d5.js" crossorigin="anonymous"></script>
+</body>
+</html>

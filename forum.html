@@ -1,0 +1,2161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Kageyo TVET School Parent Portal">
+    <meta name="author" content="jobeuse| yobu| job| iradukunda">
+    <title>Parent Portal | Kageyo TVET School</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/png" sizes="32x32" href="download.jpg">
+    <style>
+        :root {
+            --primary: #1D4ED8;
+            --primary-dark: #1E40AF;
+            --secondary: #10B981;
+            --accent: #F59E0B;
+        }
+        
+        body {
+            font-family: 'Roboto', sans-serif;
+        }
+        
+        .registration-hero {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+        }
+        
+        .form-container {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+        
+        .form-progress {
+            height: 6px;
+            background: #E5E7EB;
+            border-radius: 3px;
+            overflow: hidden;
+        }
+        
+        .form-progress-bar {
+            height: 100%;
+            background: var(--secondary);
+            transition: width 0.5s ease;
+        }
+        
+        .step-indicator {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 2rem;
+            position: relative;
+        }
+        
+        .step-indicator::before {
+            content: '';
+            position: absolute;
+            top: 15px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: #E5E7EB;
+            z-index: 1;
+        }
+        
+        .step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+            z-index: 2;
+        }
+        
+        .step-circle {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: white;
+            border: 2px solid #E5E7EB;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            color: #6B7280;
+            margin-bottom: 8px;
+            transition: all 0.3s ease;
+        }
+        
+        .step.active .step-circle {
+            background: var(--primary);
+            border-color: var(--primary);
+            color: white;
+        }
+        
+        .step.completed .step-circle {
+            background: var(--secondary);
+            border-color: var(--secondary);
+            color: white;
+        }
+        
+        .step-label {
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: #6B7280;
+        }
+        
+        .step.active .step-label {
+            color: var(--primary);
+            font-weight: 600;
+        }
+        
+        .form-step {
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        .form-step.active {
+            display: block;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .form-card {
+            background: #F9FAFB;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            border-left: 4px solid var(--primary);
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-label {
+            display: block;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+            color: #374151;
+        }
+        
+        .form-input {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 1px solid #D1D5DB;
+            border-radius: 6px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+        
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(29, 78, 216, 0.1);
+        }
+        
+        .form-select {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 1px solid #D1D5DB;
+            border-radius: 6px;
+            font-size: 1rem;
+            background: white;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%236B7280'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 1rem center;
+            background-size: 1.5rem;
+        }
+        
+        .form-select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(29, 78, 216, 0.1);
+        }
+        
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.75rem 1.5rem;
+            font-weight: 500;
+            border-radius: 6px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: none;
+            font-size: 1rem;
+        }
+        
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: var(--primary-dark);
+        }
+        
+        .btn-secondary {
+            background: #6B7280;
+            color: white;
+        }
+        
+        .btn-secondary:hover {
+            background: #4B5563;
+        }
+        
+        .btn-outline {
+            background: transparent;
+            border: 1px solid #D1D5DB;
+            color: #374151;
+        }
+        
+        .btn-outline:hover {
+            background: #F9FAFB;
+            border-color: #9CA3AF;
+        }
+        
+        .btn-sm {
+            padding: 0.5rem 1rem;
+            font-size: 0.875rem;
+        }
+        
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+        
+        .feature-card {
+            background: white;
+            border-radius: 8px;
+            padding: 1.5rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            border: 1px solid #E5E7EB;
+            transition: all 0.3s ease;
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+        
+        .feature-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 8px;
+            background: rgba(29, 78, 216, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1rem;
+            color: var(--primary);
+            font-size: 1.5rem;
+        }
+        
+        .access-methods {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin: 2rem 0;
+        }
+        
+        .access-card {
+            flex: 1;
+            min-width: 200px;
+            background: white;
+            border-radius: 8px;
+            padding: 1.5rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            border: 1px solid #E5E7EB;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+        
+        .access-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+        
+        .access-icon {
+            font-size: 2rem;
+            color: var(--primary);
+            margin-bottom: 1rem;
+        }
+        
+        .password-strength {
+            height: 4px;
+            background: #E5E7EB;
+            border-radius: 2px;
+            margin-top: 0.5rem;
+            overflow: hidden;
+        }
+        
+        .password-strength-bar {
+            height: 100%;
+            border-radius: 2px;
+            transition: width 0.3s ease;
+        }
+        
+        .password-strength.weak .password-strength-bar {
+            background: #EF4444;
+            width: 33%;
+        }
+        
+        .password-strength.medium .password-strength-bar {
+            background: #F59E0B;
+            width: 66%;
+        }
+        
+        .password-strength.strong .password-strength-bar {
+            background: #10B981;
+            width: 100%;
+        }
+        
+        .success-message {
+            background: #D1FAE5;
+            border: 1px solid #A7F3D0;
+            color: #065F46;
+            padding: 1rem;
+            border-radius: 6px;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+        }
+        
+        .success-message i {
+            margin-right: 0.5rem;
+        }
+        
+        .student-card {
+            background: white;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            border: 1px solid #E5E7EB;
+            position: relative;
+        }
+        
+        .student-card-header {
+            display: flex;
+            justify-content: between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+        
+        .student-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 2rem;
+            color: #6B7280;
+        }
+        
+        .empty-state i {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            color: #D1D5DB;
+        }
+        
+        /* Chat Forum Styles */
+        .forum-hero {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+        }
+        
+        .forum-container {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+        
+        .category-card {
+            background: #F9FAFB;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            border-left: 4px solid var(--primary);
+            transition: all 0.3s ease;
+        }
+        
+        .category-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+        
+        .thread-card {
+            background: white;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            border: 1px solid #E5E7EB;
+            transition: all 0.3s ease;
+        }
+        
+        .thread-card:hover {
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+        
+        .message {
+            background: #F9FAFB;
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            border-left: 4px solid var(--primary);
+        }
+        
+        .admin-message {
+            border-left-color: var(--secondary);
+            background: #F0FDF4;
+        }
+        
+        .committee-message {
+            border-left-color: var(--accent);
+            background: #FFFBEB;
+        }
+        
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--primary);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+        
+        .admin-badge {
+            background: var(--secondary);
+            color: white;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+        
+        .committee-badge {
+            background: var(--accent);
+            color: white;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+        
+        .nav-link {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 1rem;
+            color: #374151;
+            border-radius: 6px;
+            transition: all 0.3s ease;
+        }
+        
+        .nav-link:hover {
+            background: #F3F4F6;
+            color: var(--primary);
+        }
+        
+        .nav-link.active {
+            background: rgba(29, 78, 216, 0.1);
+            color: var(--primary);
+            font-weight: 600;
+        }
+        
+        .notification-badge {
+            background: #EF4444;
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+        
+        .welcome-section {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            border-radius: 12px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        .chat-container {
+            height: 500px;
+            display: flex;
+            flex-direction: column;
+            border: 1px solid #E5E7EB;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        
+        .chat-header {
+            background: var(--primary);
+            color: white;
+            padding: 1rem;
+            font-weight: 600;
+        }
+        
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 1rem;
+            background: #F9FAFB;
+        }
+        
+        .chat-input-container {
+            display: flex;
+            padding: 1rem;
+            background: white;
+            border-top: 1px solid #E5E7EB;
+        }
+        
+        .chat-input {
+            flex: 1;
+            padding: 0.75rem 1rem;
+            border: 1px solid #D1D5DB;
+            border-radius: 6px;
+            margin-right: 0.5rem;
+        }
+        
+        .chat-message {
+            margin-bottom: 1rem;
+            padding: 0.75rem;
+            border-radius: 8px;
+            max-width: 80%;
+        }
+        
+        .chat-message.sent {
+            background: var(--primary);
+            color: white;
+            margin-left: auto;
+            border-bottom-right-radius: 0;
+        }
+        
+        .chat-message.received {
+            background: white;
+            border: 1px solid #E5E7EB;
+            margin-right: auto;
+            border-bottom-left-radius: 0;
+        }
+        
+        .chat-message.admin {
+            border-left: 4px solid var(--secondary);
+        }
+        
+        .chat-message.committee {
+            border-left: 4px solid var(--accent);
+        }
+        
+        .message-time {
+            font-size: 0.75rem;
+            opacity: 0.7;
+            margin-top: 0.25rem;
+        }
+        
+        .chat-user {
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+        
+        .online-indicator {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #10B981;
+            display: inline-block;
+            margin-right: 0.5rem;
+        }
+        
+        .reply-indicator {
+            font-size: 0.75rem;
+            color: #6B7280;
+            margin-top: 0.25rem;
+        }
+        
+        .reply-btn {
+            font-size: 0.75rem;
+            color: var(--primary);
+            cursor: pointer;
+            margin-top: 0.25rem;
+        }
+        
+        .reply-form {
+            margin-top: 0.5rem;
+            display: none;
+        }
+        
+        .reply-input {
+            width: 100%;
+            padding: 0.5rem;
+            border: 1px solid #D1D5DB;
+            border-radius: 4px;
+            font-size: 0.875rem;
+        }
+        
+        .reply-actions {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 0.5rem;
+            gap: 0.5rem;
+        }
+        
+        @media (max-width: 768px) {
+            .step-label {
+                font-size: 0.75rem;
+            }
+            
+            .feature-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .access-methods {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Registration Section (Initially Visible) -->
+    <section id="registrationSection">
+        <!-- Header -->
+        <header class="bg-white shadow-sm">
+            <div class="container mx-auto px-4 py-4">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center space-x-3">
+                        <img src="logo.jpg" alt="Kageyo TVET School Logo" class="w-12 h-12">
+                        <div>
+                            <h1 class="text-xl font-bold text-gray-800">KAGEYO TVET SCHOOL</h1>
+                            <p class="text-sm text-gray-500">Parent Portal Registration</p>
+                        </div>
+                    </div>
+                    <a href="index.html" class="text-gray-600 hover:text-gray-800">
+                        <i class="fas fa-home mr-1"></i> Back to Home
+                    </a>
+                </div>
+            </div>
+        </header>
+
+        <!-- Hero Section -->
+        <section class="registration-hero py-12 text-white">
+            <div class="container mx-auto px-4 text-center">
+                <h1 class="text-4xl font-bold mb-4">Join Our Parent Community</h1>
+                <p class="text-xl max-w-2xl mx-auto mb-8">Register now to access student progress, connect with teachers, and participate in school activities</p>
+                
+                <div class="max-w-4xl mx-auto bg-white bg-opacity-10 backdrop-blur-sm rounded-lg p-6">
+                    <h2 class="text-2xl font-bold mb-4">All Access Features</h2>
+                    <div class="feature-grid">
+                        <div class="feature-card">
+                            <div class="feature-icon">
+                                <i class="fas fa-user-graduate"></i>
+                            </div>
+                            <h3 class="font-bold text-lg mb-2">Student Progress</h3>
+                            <p class="text-white text-opacity-90">Track academic performance, attendance, and assignments</p>
+                        </div>
+                        <div class="feature-card">
+                            <div class="feature-icon">
+                                <i class="fas fa-comments"></i>
+                            </div>
+                            <h3 class="font-bold text-lg mb-2">Parent Forum</h3>
+                            <p class="text-white text-opacity-90">Connect with other parents and share experiences</p>
+                        </div>
+                        <div class="feature-card">
+                            <div class="feature-icon">
+                                <i class="fas fa-calendar-alt"></i>
+                            </div>
+                            <h3 class="font-bold text-lg mb-2">School Events</h3>
+                            <p class="text-white text-opacity-90">Stay updated with school calendar and activities</p>
+                        </div>
+                        <div class="feature-card">
+                            <div class="feature-icon">
+                                <i class="fas fa-chart-line"></i>
+                            </div>
+                            <h3 class="font-bold text-lg mb-2">Performance Analytics</h3>
+                            <p class="text-white text-opacity-90">Detailed insights into student learning progress</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Registration Form -->
+        <section class="py-12">
+            <div class="container mx-auto px-4">
+                <div class="max-w-4xl mx-auto">
+                    <div class="form-container p-6 md:p-8">
+                        <!-- Progress Bar -->
+                        <div class="form-progress mb-8">
+                            <div class="form-progress-bar" id="formProgress" style="width: 25%"></div>
+                        </div>
+                        
+                        <!-- Step Indicators -->
+                        <div class="step-indicator mb-8">
+                            <div class="step active" data-step="1">
+                                <div class="step-circle">1</div>
+                                <div class="step-label">Parent Info</div>
+                            </div>
+                            <div class="step" data-step="2">
+                                <div class="step-circle">2</div>
+                                <div class="step-label">Students</div>
+                            </div>
+                            <div class="step" data-step="3">
+                                <div class="step-circle">3</div>
+                                <div class="step-label">Account</div>
+                            </div>
+                            <div class="step" data-step="4">
+                                <div class="step-circle">4</div>
+                                <div class="step-label">Review</div>
+                            </div>
+                        </div>
+                        
+                        <!-- Step 1: Parent Information -->
+                        <div class="form-step active" id="step1">
+                            <h2 class="text-2xl font-bold text-gray-800 mb-6">Parent Information</h2>
+                            
+                            <div class="form-card">
+                                <h3 class="font-bold text-lg mb-4 text-gray-700">Personal Details</h3>
+                                
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div class="form-group">
+                                        <label class="form-label" for="firstName">First Name *</label>
+                                        <input type="text" id="firstName" class="form-input" placeholder="Enter your first name" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label" for="lastName">Last Name *</label>
+                                        <input type="text" id="lastName" class="form-input" placeholder="Enter your last name" required>
+                                    </div>
+                                </div>
+                                
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div class="form-group">
+                                        <label class="form-label" for="idNumber">National ID Number *</label>
+                                        <input type="text" id="idNumber" class="form-input" placeholder="Enter your ID number" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label" for="phone">Phone Number *</label>
+                                        <input type="tel" id="phone" class="form-input" placeholder="+250 XXX XXX XXX" required>
+                                    </div>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label class="form-label" for="email">Email Address *</label>
+                                    <input type="email" id="email" class="form-input" placeholder="your.email@example.com" required>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label class="form-label" for="address">Home Address *</label>
+                                    <textarea id="address" class="form-input" rows="2" placeholder="Enter your complete address" required></textarea>
+                                </div>
+                            </div>
+                            
+                            <div class="flex justify-between mt-8">
+                                <div></div> <!-- Empty div for spacing -->
+                                <button class="btn btn-primary" id="nextStep1">
+                                    Next <i class="fas fa-arrow-right ml-2"></i>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <!-- Step 2: Student Information -->
+                        <div class="form-step" id="step2">
+                            <h2 class="text-2xl font-bold text-gray-800 mb-6">Student Information</h2>
+                            
+                            <div class="form-card">
+                                <h3 class="font-bold text-lg mb-4 text-gray-700">Add Your Students</h3>
+                                <p class="text-gray-600 mb-4">Please provide information about each child enrolled at Kageyo TVET School</p>
+                                
+                                <div id="studentsContainer">
+                                    <!-- Student cards will be added here dynamically -->
+                                    <div class="empty-state" id="emptyStudentsState">
+                                        <i class="fas fa-user-graduate"></i>
+                                        <h3 class="font-medium text-lg mb-2">No Students Added</h3>
+                                        <p class="text-gray-500">Click the button below to add your first student</p>
+                                    </div>
+                                </div>
+                                
+                                <div class="text-center mt-4">
+                                    <button class="btn btn-outline" id="addStudentBtn">
+                                        <i class="fas fa-plus mr-2"></i> Add Student
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <div class="flex justify-between mt-8">
+                                <button class="btn btn-outline" id="prevStep2">
+                                    <i class="fas fa-arrow-left mr-2"></i> Back
+                                </button>
+                                <button class="btn btn-primary" id="nextStep2">
+                                    Next <i class="fas fa-arrow-right ml-2"></i>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <!-- Step 3: Account Setup -->
+                        <div class="form-step" id="step3">
+                            <h2 class="text-2xl font-bold text-gray-800 mb-6">Account Setup</h2>
+                            
+                            <div class="form-card">
+                                <h3 class="font-bold text-lg mb-4 text-gray-700">Security</h3>
+                                
+                                <div class="form-group">
+                                    <label class="form-label" for="username">Username *</label>
+                                    <input type="text" id="username" class="form-input" placeholder="Choose a username" required>
+                                    <p class="text-sm text-gray-500 mt-1">This will be your login ID for the parent portal</p>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label class="form-label" for="password">Create Password *</label>
+                                    <input type="password" id="password" class="form-input" placeholder="Create a secure password" required>
+                                    <div class="password-strength" id="passwordStrength">
+                                        <div class="password-strength-bar"></div>
+                                    </div>
+                                    <p class="text-sm text-gray-500 mt-1">Password must be at least 8 characters with letters and numbers</p>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label class="form-label" for="confirmPassword">Confirm Password *</label>
+                                    <input type="password" id="confirmPassword" class="form-input" placeholder="Confirm your password" required>
+                                </div>
+                            </div>
+                            
+                            <div class="flex justify-between mt-8">
+                                <button class="btn btn-outline" id="prevStep3">
+                                    <i class="fas fa-arrow-left mr-2"></i> Back
+                                </button>
+                                <button class="btn btn-primary" id="nextStep3">
+                                    Next <i class="fas fa-arrow-right ml-2"></i>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <!-- Step 4: Review and Submit -->
+                        <div class="form-step" id="step4">
+                            <h2 class="text-2xl font-bold text-gray-800 mb-6">Review & Submit</h2>
+                            
+                            <div class="form-card">
+                                <h3 class="font-bold text-lg mb-4 text-gray-700">Please review your information</h3>
+                                
+                                <div class="space-y-4">
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <div>
+                                            <h4 class="font-medium text-gray-700">Parent Information</h4>
+                                            <p id="reviewName" class="text-gray-600">-</p>
+                                            <p id="reviewEmail" class="text-gray-600">-</p>
+                                            <p id="reviewPhone" class="text-gray-600">-</p>
+                                        </div>
+                                        <div>
+                                            <h4 class="font-medium text-gray-700">Student Information</h4>
+                                            <div id="reviewStudents" class="text-gray-600">
+                                                <!-- Student review info will be added here -->
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div>
+                                        <h4 class="font-medium text-gray-700">Account Details</h4>
+                                        <p id="reviewUsername" class="text-gray-600">-</p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="form-card">
+                                <h3 class="font-bold text-lg mb-4 text-gray-700">Terms & Conditions</h3>
+                                
+                                <div class="bg-gray-50 p-4 rounded border max-h-40 overflow-y-auto mb-4">
+                                    <p class="text-sm text-gray-600">
+                                        By registering for the Kageyo TVET School Parent Portal, you agree to the following terms:
+                                    </p>
+                                    <ul class="text-sm text-gray-600 list-disc pl-5 mt-2 space-y-1">
+                                        <li>You are the parent or legal guardian of the student(s) you are registering</li>
+                                        <li>You will use the portal responsibly and maintain the confidentiality of your account</li>
+                                        <li>You understand that the school may contact you regarding your child's education</li>
+                                        <li>You agree to abide by the school's code of conduct and privacy policy</li>
+                                        <li>The school reserves the right to suspend access if terms are violated</li>
+                                    </ul>
+                                </div>
+                                
+                                <label class="flex items-center">
+                                    <input type="checkbox" id="agreeTerms" class="rounded text-primary focus:ring-primary">
+                                    <span class="ml-2 text-gray-700">I agree to the terms and conditions</span>
+                                </label>
+                            </div>
+                            
+                            <div class="flex justify-between mt-8">
+                                <button class="btn btn-outline" id="prevStep4">
+                                    <i class="fas fa-arrow-left mr-2"></i> Back
+                                </button>
+                                <button class="btn btn-primary" id="submitForm" disabled>
+                                    <i class="fas fa-check-circle mr-2"></i> Complete Registration
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <!-- Success Message (Hidden by default) -->
+                        <div class="hidden" id="successMessage">
+                            <div class="success-message">
+                                <i class="fas fa-check-circle"></i>
+                                <div>
+                                    <h3 class="font-bold">Registration Successful!</h3>
+                                    <p>Your account has been created. You can now access all parent portal features.</p>
+                                </div>
+                            </div>
+                            
+                            <div class="text-center py-6">
+                                <h3 class="text-xl font-bold text-gray-800 mb-4">Access Your Parent Portal</h3>
+                                
+                                <div class="access-methods">
+                                    <div class="access-card">
+                                        <div class="access-icon">
+                                            <i class="fas fa-comments"></i>
+                                        </div>
+                                        <h4 class="font-bold mb-2">Parent Forum</h4>
+                                        <p class="text-gray-600 text-sm">Chat with school administrators and other parents</p>
+                                    </div>
+                                    
+                                    <div class="access-card">
+                                        <div class="access-icon">
+                                            <i class="fas fa-user-graduate"></i>
+                                        </div>
+                                        <h4 class="font-bold mb-2">Student Progress</h4>
+                                        <p class="text-gray-600 text-sm">Track academic performance and attendance</p>
+                                    </div>
+                                    
+                                    <div class="access-card">
+                                        <div class="access-icon">
+                                            <i class="fas fa-calendar-alt"></i>
+                                        </div>
+                                        <h4 class="font-bold mb-2">School Events</h4>
+                                        <p class="text-gray-600 text-sm">Stay updated with school calendar</p>
+                                    </div>
+                                </div>
+                                
+                                <div class="mt-6">
+                                    <button class="btn btn-primary mr-4" id="goToForumBtn">
+                                        <i class="fas fa-comments mr-2"></i> Go to Parent Forum
+                                    </button>
+                                    <a href="index.html" class="btn btn-outline">
+                                        <i class="fas fa-home mr-2"></i> Back to Home
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Alternative Registration Options -->
+                    <div class="mt-8 text-center">
+                        <p class="text-gray-600 mb-4">Other ways to register or get help</p>
+                        <div class="flex flex-wrap justify-center gap-4">
+                            <a href="#" class="text-primary hover:underline">
+                                <i class="fas fa-phone-alt mr-1"></i> Call for assistance
+                            </a>
+                            <a href="#" class="text-primary hover:underline">
+                                <i class="fas fa-envelope mr-1"></i> Email registration
+                            </a>
+                            <a href="#" class="text-primary hover:underline">
+                                <i class="fas fa-user-check mr-1"></i> In-person registration
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="bg-gray-800 text-white py-8">
+            <div class="container mx-auto px-4">
+                <div class="text-center">
+                    <p>&copy; 2025 Kageyo TVET School. All rights reserved.</p>
+                    <p class="mt-2 text-gray-400">Gicumbi District, Rwanda | Phone: +250 738266603 | Email: kageyotvet@gmail.com</p>
+                </div>
+            </div>
+        </footer>
+    </section>
+
+    <!-- Forum Section (Initially Hidden) -->
+    <section id="forumSection" class="hidden">
+        <!-- Header -->
+        <header class="bg-white shadow-sm">
+            <div class="container mx-auto px-4 py-4">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center space-x-3">
+                        <img src="logo.jpg" alt="Kageyo TVET School Logo" class="w-12 h-12">
+                        <div>
+                            <h1 class="text-xl font-bold text-gray-800">KAGEYO TVET SCHOOL</h1>
+                            <p class="text-sm text-gray-500">Parent Community Forum</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center space-x-4">
+                        <div class="relative">
+                            <button class="p-2 text-gray-600 hover:text-gray-800">
+                                <i class="fas fa-bell"></i>
+                                <span class="notification-badge absolute -top-1 -right-1">3</span>
+                            </button>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <div class="user-avatar" id="userAvatar">JP</div>
+                            <div>
+                                <p class="text-sm font-medium" id="userName">John Parent</p>
+                                <p class="text-xs text-gray-500" id="userStudent">Parent of Sarah</p>
+                            </div>
+                        </div>
+                        <button class="text-gray-600 hover:text-gray-800" id="logoutBtn">
+                            <i class="fas fa-sign-out-alt mr-1"></i> Logout
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <div class="container mx-auto px-4 py-8">
+            <!-- Welcome Section -->
+            <div class="welcome-section fade-in">
+                <h1 class="text-3xl font-bold mb-2">Welcome to the Parent Community Forum</h1>
+                <p class="text-xl opacity-90">Connect with school administrators, committee members, and other parents</p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
+                <!-- Sidebar Navigation -->
+                <div class="lg:col-span-1">
+                    <div class="forum-container p-6 mb-6">
+                        <h2 class="text-lg font-bold text-gray-800 mb-4">Forum Navigation</h2>
+                        <nav class="space-y-2">
+                            <a href="#" class="nav-link active" id="forumHomeLink">
+                                <i class="fas fa-home mr-3"></i> Forum Home
+                            </a>
+                            <a href="#" class="nav-link" id="liveChatLink">
+                                <i class="fas fa-comments mr-3"></i> Live Chat
+                            </a>
+                            <a href="#" class="nav-link">
+                                <i class="fas fa-star mr-3"></i> Favorites
+                            </a>
+                            <a href="#" class="nav-link">
+                                <i class="fas fa-calendar-alt mr-3"></i> School Events
+                            </a>
+                            <a href="#" class="nav-link">
+                                <i class="fas fa-question-circle mr-3"></i> FAQ
+                            </a>
+                            <a href="#" class="nav-link">
+                                <i class="fas fa-cog mr-3"></i> Settings
+                            </a>
+                        </nav>
+                    </div>
+
+                    <div class="forum-container p-6">
+                        <h2 class="text-lg font-bold text-gray-800 mb-4">Online Users</h2>
+                        <div class="space-y-3">
+                            <div class="flex items-center">
+                                <span class="online-indicator"></span>
+                                <div class="user-avatar bg-green-100 text-green-800">SA</div>
+                                <div class="ml-3">
+                                    <p class="text-sm font-medium">School Admin</p>
+                                    <span class="admin-badge">Admin</span>
+                                </div>
+                            </div>
+                            <div class="flex items-center">
+                                <span class="online-indicator"></span>
+                                <div class="user-avatar bg-yellow-100 text-yellow-800">CM</div>
+                                <div class="ml-3">
+                                    <p class="text-sm font-medium">Committee Member</p>
+                                    <span class="committee-badge">Committee</span>
+                                </div>
+                            </div>
+                            <div class="flex items-center">
+                                <span class="online-indicator"></span>
+                                <div class="user-avatar">MP</div>
+                                <div class="ml-3">
+                                    <p class="text-sm font-medium">Mary Parent</p>
+                                    <p class="text-xs text-gray-500">Parent of James</p>
+                                </div>
+                            </div>
+                            <div class="flex items-center">
+                                <span class="online-indicator"></span>
+                                <div class="user-avatar">RP</div>
+                                <div class="ml-3">
+                                    <p class="text-sm font-medium">Robert Parent</p>
+                                    <p class="text-xs text-gray-500">Parent of Grace</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Main Forum Content -->
+                <div class="lg:col-span-3">
+                    <!-- Quick Actions -->
+                    <div class="forum-container p-6 mb-6">
+                        <div class="flex flex-wrap gap-4">
+                            <button class="btn btn-primary" id="newDiscussionBtn">
+                                <i class="fas fa-plus mr-2"></i> New Discussion
+                            </button>
+                            <button class="btn btn-outline">
+                                <i class="fas fa-search mr-2"></i> Search Forum
+                            </button>
+                            <button class="btn btn-outline">
+                                <i class="fas fa-filter mr-2"></i> Filter Topics
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Forum Categories -->
+                    <div class="forum-container p-6 mb-6" id="forumHome">
+                        <h2 class="text-xl font-bold text-gray-800 mb-4">Forum Categories</h2>
+                        
+                        <div class="category-card">
+                            <div class="flex justify-between items-start">
+                                <div>
+                                    <h3 class="font-bold text-lg text-gray-800 mb-2">Academic Discussions</h3>
+                                    <p class="text-gray-600">Discuss curriculum, assignments, and academic progress</p>
+                                </div>
+                                <div class="text-right">
+                                    <p class="font-bold text-gray-800">24</p>
+                                    <p class="text-sm text-gray-500">Topics</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="category-card">
+                            <div class="flex justify-between items-start">
+                                <div>
+                                    <h3 class="font-bold text-lg text-gray-800 mb-2">School Events & Activities</h3>
+                                    <p class="text-gray-600">Information about upcoming events, trips, and activities</p>
+                                </div>
+                                <div class="text-right">
+                                    <p class="font-bold text-gray-800">12</p>
+                                    <p class="text-sm text-gray-500">Topics</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="category-card">
+                            <div class="flex justify-between items-start">
+                                <div>
+                                    <h3 class="font-bold text-lg text-gray-800 mb-2">Parent-Teacher Communication</h3>
+                                    <p class="text-gray-600">Direct communication with teachers and administrators</p>
+                                </div>
+                                <div class="text-right">
+                                    <p class="font-bold text-gray-800">18</p>
+                                    <p class="text-sm text-gray-500">Topics</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="category-card">
+                            <div class="flex justify-between items-start">
+                                <div>
+                                    <h3 class="font-bold text-lg text-gray-800 mb-2">General Discussions</h3>
+                                    <p class="text-gray-600">General topics and community building</p>
+                                </div>
+                                <div class="text-right">
+                                    <p class="font-bold text-gray-800">32</p>
+                                    <p class="text-sm text-gray-500">Topics</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Live Chat Section (Hidden by default) -->
+                    <div class="forum-container p-6 hidden" id="liveChatSection">
+                        <h2 class="text-xl font-bold text-gray-800 mb-4">Live Chat with School Community</h2>
+                        
+                        <div class="chat-container">
+                            <div class="chat-header">
+                                <i class="fas fa-comments mr-2"></i> School Community Chat
+                            </div>
+                            <div class="chat-messages" id="chatMessages">
+                                <!-- Messages will be added here dynamically -->
+                                <div class="chat-message received admin">
+                                    <div class="chat-user">School Admin <span class="admin-badge">Admin</span></div>
+                                    <div>Welcome to the Kageyo TVET School community chat! How can we help you today?</div>
+                                    <div class="message-time">10:30 AM</div>
+                                    <div class="reply-btn" data-message="Welcome to the Kageyo TVET School community chat! How can we help you today?">Reply</div>
+                                </div>
+                                <div class="chat-message received committee">
+                                    <div class="chat-user">Committee Member <span class="committee-badge">Committee</span></div>
+                                    <div>Just a reminder about the parent meeting next Thursday at 5 PM.</div>
+                                    <div class="message-time">10:32 AM</div>
+                                    <div class="reply-btn" data-message="Just a reminder about the parent meeting next Thursday at 5 PM.">Reply</div>
+                                </div>
+                                <div class="chat-message sent">
+                                    <div>Hello! I have a question about the upcoming science fair.</div>
+                                    <div class="message-time">10:35 AM</div>
+                                </div>
+                                <div class="chat-message received">
+                                    <div class="chat-user">Mary Parent</div>
+                                    <div>I can help with that! The science fair is scheduled for March 25th.</div>
+                                    <div class="message-time">10:36 AM</div>
+                                    <div class="reply-btn" data-message="I can help with that! The science fair is scheduled for March 25th.">Reply</div>
+                                </div>
+                            </div>
+                            <div class="chat-input-container">
+                                <input type="text" class="chat-input" id="chatInput" placeholder="Type your message here...">
+                                <button class="btn btn-primary" id="sendMessageBtn">
+                                    <i class="fas fa-paper-plane"></i>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-4">
+                            <h3 class="font-bold text-gray-700 mb-2">Quick Actions</h3>
+                            <div class="flex flex-wrap gap-2">
+                                <button class="btn btn-outline btn-sm quick-action" data-message="I have a question about my child's progress">
+                                    <i class="fas fa-user-graduate mr-1"></i> Academic Progress
+                                </button>
+                                <button class="btn btn-outline btn-sm quick-action" data-message="When is the next parent-teacher meeting?">
+                                    <i class="fas fa-calendar mr-1"></i> Meeting Schedule
+                                </button>
+                                <button class="btn btn-outline btn-sm quick-action" data-message="I'd like to volunteer for school events">
+                                    <i class="fas fa-hands-helping mr-1"></i> Volunteer
+                                </button>
+                                <button class="btn btn-outline btn-sm quick-action" data-message="I have a concern I'd like to discuss">
+                                    <i class="fas fa-exclamation-circle mr-1"></i> Raise Concern
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Recent Discussions -->
+                    <div class="forum-container p-6" id="recentDiscussions">
+                        <h2 class="text-xl font-bold text-gray-800 mb-4">Recent Discussions</h2>
+                        
+                        <div class="thread-card">
+                            <div class="flex justify-between items-start mb-3">
+                                <div>
+                                    <h3 class="font-bold text-lg text-gray-800">Upcoming Science Fair - Parent Volunteers Needed</h3>
+                                    <p class="text-gray-600">Posted by <span class="font-medium">School Admin</span> in <span class="text-primary">School Events & Activities</span></p>
+                                </div>
+                                <div class="text-right">
+                                    <p class="text-sm text-gray-500">2 hours ago</p>
+                                    <p class="text-sm text-gray-500">15 replies</p>
+                                </div>
+                            </div>
+                            <p class="text-gray-700 mb-3">We're excited to announce our annual Science Fair on March 25th. We need parent volunteers to help with setup, judging, and cleanup. Please sign up if you're available!</p>
+                            <div class="flex justify-between items-center">
+                                <div class="flex space-x-2">
+                                    <button class="text-sm text-gray-500 hover:text-primary reply-to-thread">
+                                        <i class="far fa-comment mr-1"></i> Reply
+                                    </button>
+                                    <button class="text-sm text-gray-500 hover:text-primary">
+                                        <i class="far fa-bookmark mr-1"></i> Save
+                                    </button>
+                                </div>
+                                <div class="flex items-center">
+                                    <div class="user-avatar bg-green-100 text-green-800 text-xs">SA</div>
+                                    <div class="ml-2">
+                                        <p class="text-sm font-medium">School Admin</p>
+                                        <span class="admin-badge">Admin</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="thread-card">
+                            <div class="flex justify-between items-start mb-3">
+                                <div>
+                                    <h3 class="font-bold text-lg text-gray-800">Mathematics Curriculum Update</h3>
+                                    <p class="text-gray-600">Posted by <span class="font-medium">Committee Member</span> in <span class="text-primary">Academic Discussions</span></p>
+                                </div>
+                                <div class="text-right">
+                                    <p class="text-sm text-gray-500">1 day ago</p>
+                                    <p class="text-sm text-gray-500">8 replies</p>
+                                </div>
+                            </div>
+                            <p class="text-gray-700 mb-3">The mathematics department is implementing a new curriculum starting next semester. We'd like to gather parent feedback on the proposed changes.</p>
+                            <div class="flex justify-between items-center">
+                                <div class="flex space-x-2">
+                                    <button class="text-sm text-gray-500 hover:text-primary reply-to-thread">
+                                        <i class="far fa-comment mr-1"></i> Reply
+                                    </button>
+                                    <button class="text-sm text-gray-500 hover:text-primary">
+                                        <i class="far fa-bookmark mr-1"></i> Save
+                                    </button>
+                                </div>
+                                <div class="flex items-center">
+                                    <div class="user-avatar bg-yellow-100 text-yellow-800 text-xs">CM</div>
+                                    <div class="ml-2">
+                                        <p class="text-sm font-medium">Committee Member</p>
+                                        <span class="committee-badge">Committee</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="thread-card">
+                            <div class="flex justify-between items-start mb-3">
+                                <div>
+                                    <h3 class="font-bold text-lg text-gray-800">Carpool Coordination for S3 Students</h3>
+                                    <p class="text-gray-600">Posted by <span class="font-medium">Mary Parent</span> in <span class="text-primary">General Discussions</span></p>
+                                </div>
+                                <div class="text-right">
+                                    <p class="text-sm text-gray-500">2 days ago</p>
+                                    <p class="text-sm text-gray-500">5 replies</p>
+                                </div>
+                            </div>
+                            <p class="text-gray-700 mb-3">I'm trying to organize a carpool for S3 students in the Kigali area. If you're interested in participating, please reply with your location and availability.</p>
+                            <div class="flex justify-between items-center">
+                                <div class="flex space-x-2">
+                                    <button class="text-sm text-gray-500 hover:text-primary reply-to-thread">
+                                        <i class="far fa-comment mr-1"></i> Reply
+                                    </button>
+                                    <button class="text-sm text-gray-500 hover:text-primary">
+                                        <i class="far fa-bookmark mr-1"></i> Save
+                                    </button>
+                                </div>
+                                <div class="flex items-center">
+                                    <div class="user-avatar text-xs">MP</div>
+                                    <div class="ml-2">
+                                        <p class="text-sm font-medium">Mary Parent</p>
+                                        <p class="text-xs text-gray-500">Parent of James</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <footer class="bg-gray-800 text-white py-8 mt-12">
+            <div class="container mx-auto px-4">
+                <div class="text-center">
+                    <p>&copy; 2025 Kageyo TVET School. All rights reserved.</p>
+                    <p class="mt-2 text-gray-400">Gicumbi District, Rwanda | Phone: +250 738266603 | Email: kageyotvet@gmail.com</p>
+                </div>
+            </div>
+        </footer>
+    </section>
+
+    <!-- Student Modal -->
+    <div id="studentModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50">
+        <div class="bg-white rounded-lg w-full max-w-2xl mx-4 max-h-[90vh] overflow-y-auto">
+            <div class="p-6 border-b">
+                <h2 class="text-xl font-bold text-gray-800" id="studentModalTitle">Add Student</h2>
+            </div>
+            <div class="p-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="form-group">
+                        <label class="form-label" for="studentFirstName">First Name *</label>
+                        <input type="text" id="studentFirstName" class="form-input" placeholder="Student's first name" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="studentLastName">Last Name *</label>
+                        <input type="text" id="studentLastName" class="form-input" placeholder="Student's last name" required>
+                    </div>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="form-group">
+                        <label class="form-label" for="studentGender">Gender *</label>
+                        <select id="studentGender" class="form-select" required>
+                            <option value="">Select Gender</option>
+                            <option value="male">Male</option>
+                            <option value="female">Female</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="studentDob">Date of Birth *</label>
+                        <input type="date" id="studentDob" class="form-input" required>
+                    </div>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="form-group">
+                        <label class="form-label" for="studentClass">Class/Grade *</label>
+                        <select id="studentClass" class="form-select" required>
+                            <option value="">Select Class</option>
+                            <option value="S1A">Senior 1A</option>
+                            <option value="S1B">Senior 1B</option>
+                            <option value="S2A">Senior 2A</option>
+                            <option value="S2B">Senior 2B</option>
+                            <option value="S3A">Senior 3A</option>
+                            <option value="S3B">Senior 3B</option>
+                            <option value="L3 SWD">Level 3 SWD</option>
+                            <option value="S4A">Senior 4A</option>
+                            <option value="S4B">Senior 4B</option>
+                            <option value="L4 SWD">Level 4 SWD</option>
+                            <option value="S5A">Senior 5A</option>
+                            <option value="S5B">Senior 5B</option>
+                            <option value="S6A">Senior 6A</option>
+                            <option value="S6B">Senior 6B</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label" for="studentId">Student ID (Optional)</label>
+                        <input type="text" id="studentId" class="form-input" placeholder="If known">
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label" for="studentRelationship">Relationship to Student *</label>
+                    <select id="studentRelationship" class="form-select" required>
+                        <option value="">Select Relationship</option>
+                        <option value="parent">Parent</option>
+                        <option value="guardian">Guardian</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+            </div>
+            <div class="p-6 border-t flex justify-end space-x-3">
+                <button class="btn btn-outline" id="cancelStudent">Cancel</button>
+                <button class="btn btn-primary" id="saveStudent">Save Student</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- New Discussion Modal -->
+    <div id="newDiscussionModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50">
+        <div class="bg-white rounded-lg w-full max-w-2xl mx-4">
+            <div class="p-6 border-b">
+                <h2 class="text-xl font-bold text-gray-800">Start New Discussion</h2>
+            </div>
+            <div class="p-6">
+                <div class="mb-4">
+                    <label class="block text-gray-700 mb-2" for="discussionTitle">Title</label>
+                    <input type="text" id="discussionTitle" class="form-input" placeholder="Enter discussion title">
+                </div>
+                <div class="mb-4">
+                    <label class="block text-gray-700 mb-2" for="discussionCategory">Category</label>
+                    <select id="discussionCategory" class="form-input">
+                        <option value="">Select a category</option>
+                        <option value="academic">Academic Discussions</option>
+                        <option value="events">School Events & Activities</option>
+                        <option value="communication">Parent-Teacher Communication</option>
+                        <option value="general">General Discussions</option>
+                    </select>
+                </div>
+                <div class="mb-4">
+                    <label class="block text-gray-700 mb-2" for="discussionContent">Content</label>
+                    <textarea id="discussionContent" class="form-textarea" placeholder="What would you like to discuss?"></textarea>
+                </div>
+            </div>
+            <div class="p-6 border-t flex justify-end space-x-3">
+                <button class="btn btn-outline" id="cancelDiscussion">Cancel</button>
+                <button class="btn btn-primary" id="postDiscussion">Post Discussion</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Form Navigation
+        document.addEventListener('DOMContentLoaded', function() {
+            // Registration form elements
+            const registrationSection = document.getElementById('registrationSection');
+            const forumSection = document.getElementById('forumSection');
+            const goToForumBtn = document.getElementById('goToForumBtn');
+            const logoutBtn = document.getElementById('logoutBtn');
+            
+            // User info elements
+            const userAvatar = document.getElementById('userAvatar');
+            const userName = document.getElementById('userName');
+            const userStudent = document.getElementById('userStudent');
+            
+            // Forum navigation
+            const forumHomeLink = document.getElementById('forumHomeLink');
+            const liveChatLink = document.getElementById('liveChatLink');
+            const forumHome = document.getElementById('forumHome');
+            const liveChatSection = document.getElementById('liveChatSection');
+            const recentDiscussions = document.getElementById('recentDiscussions');
+            const navLinks = document.querySelectorAll('.nav-link');
+            
+            // Chat functionality
+            const chatInput = document.getElementById('chatInput');
+            const sendMessageBtn = document.getElementById('sendMessageBtn');
+            const chatMessages = document.getElementById('chatMessages');
+            const quickActionButtons = document.querySelectorAll('.quick-action');
+            
+            // Student management
+            let students = [];
+            let editingStudentIndex = -1;
+            
+            // Password Strength Indicator
+            const passwordInput = document.getElementById('password');
+            const passwordStrength = document.getElementById('passwordStrength');
+            
+            if (passwordInput) {
+                passwordInput.addEventListener('input', function() {
+                    const password = this.value;
+                    let strength = 0;
+                    
+                    if (password.length >= 8) strength++;
+                    if (/[A-Z]/.test(password)) strength++;
+                    if (/[0-9]/.test(password)) strength++;
+                    if (/[^A-Za-z0-9]/.test(password)) strength++;
+                    
+                    passwordStrength.className = 'password-strength';
+                    if (strength <= 1) {
+                        passwordStrength.classList.add('weak');
+                    } else if (strength <= 3) {
+                        passwordStrength.classList.add('medium');
+                    } else {
+                        passwordStrength.classList.add('strong');
+                    }
+                });
+            }
+            
+            // Step Navigation Functions
+            function showStep(stepNumber) {
+                const steps = document.querySelectorAll('.form-step');
+                const stepIndicators = document.querySelectorAll('.step');
+                const progressBar = document.getElementById('formProgress');
+                
+                steps.forEach(step => step.classList.remove('active'));
+                document.getElementById(`step${stepNumber}`).classList.add('active');
+                
+                stepIndicators.forEach((indicator, index) => {
+                    indicator.classList.remove('active', 'completed');
+                    if (index + 1 < stepNumber) {
+                        indicator.classList.add('completed');
+                    } else if (index + 1 === stepNumber) {
+                        indicator.classList.add('active');
+                    }
+                });
+                
+                // Update progress bar
+                const progress = (stepNumber / steps.length) * 100;
+                progressBar.style.width = `${progress}%`;
+            }
+            
+            // Next Step Buttons
+            if (document.getElementById('nextStep1')) {
+                document.getElementById('nextStep1').addEventListener('click', function() {
+                    if (validateStep1()) {
+                        updateReviewData();
+                        showStep(2);
+                    }
+                });
+            }
+            
+            if (document.getElementById('nextStep2')) {
+                document.getElementById('nextStep2').addEventListener('click', function() {
+                    if (validateStep2()) {
+                        updateReviewData();
+                        showStep(3);
+                    }
+                });
+            }
+            
+            if (document.getElementById('nextStep3')) {
+                document.getElementById('nextStep3').addEventListener('click', function() {
+                    if (validateStep3()) {
+                        updateReviewData();
+                        showStep(4);
+                    }
+                });
+            }
+            
+            // Previous Step Buttons
+            if (document.getElementById('prevStep2')) {
+                document.getElementById('prevStep2').addEventListener('click', function() {
+                    showStep(1);
+                });
+            }
+            
+            if (document.getElementById('prevStep3')) {
+                document.getElementById('prevStep3').addEventListener('click', function() {
+                    showStep(2);
+                });
+            }
+            
+            if (document.getElementById('prevStep4')) {
+                document.getElementById('prevStep4').addEventListener('click', function() {
+                    showStep(3);
+                });
+            }
+            
+            // Form Submission
+            if (document.getElementById('agreeTerms')) {
+                document.getElementById('agreeTerms').addEventListener('change', function() {
+                    document.getElementById('submitForm').disabled = !this.checked;
+                });
+            }
+            
+            if (document.getElementById('submitForm')) {
+                document.getElementById('submitForm').addEventListener('click', function() {
+                    if (validateStep4()) {
+                        // Store user data
+                        const userData = {
+                            firstName: document.getElementById('firstName').value,
+                            lastName: document.getElementById('lastName').value,
+                            username: document.getElementById('username').value,
+                            students: students
+                        };
+                        
+                        localStorage.setItem('parentUser', JSON.stringify(userData));
+                        
+                        // Hide the form and show success message
+                        document.querySelector('.form-step.active').classList.remove('active');
+                        document.getElementById('successMessage').classList.remove('hidden');
+                        
+                        // Reset form progress UI
+                        document.querySelector('.form-progress').style.display = 'none';
+                        document.querySelector('.step-indicator').style.display = 'none';
+                    }
+                });
+            }
+            
+            // Go to Forum Button
+            if (goToForumBtn) {
+                goToForumBtn.addEventListener('click', function() {
+                    // Load user data and update forum UI
+                    const userData = JSON.parse(localStorage.getItem('parentUser'));
+                    if (userData) {
+                        userAvatar.textContent = userData.firstName.charAt(0) + userData.lastName.charAt(0);
+                        userName.textContent = `${userData.firstName} ${userData.lastName}`;
+                        userStudent.textContent = `Parent of ${userData.students.length > 0 ? userData.students[0].firstName : 'Student'}`;
+                    }
+                    
+                    // Switch to forum view
+                    registrationSection.classList.add('hidden');
+                    forumSection.classList.remove('hidden');
+                });
+            }
+            
+            // Logout Button
+            if (logoutBtn) {
+                logoutBtn.addEventListener('click', function() {
+                    // Clear user data and return to registration
+                    localStorage.removeItem('parentUser');
+                    forumSection.classList.add('hidden');
+                    registrationSection.classList.remove('hidden');
+                    
+                    // Reset registration form
+                    document.getElementById('successMessage').classList.add('hidden');
+                    document.querySelector('.form-progress').style.display = 'block';
+                    document.querySelector('.step-indicator').style.display = 'flex';
+                    showStep(1);
+                });
+            }
+            
+            // Student Management
+            const studentModal = document.getElementById('studentModal');
+            const addStudentBtn = document.getElementById('addStudentBtn');
+            const cancelStudentBtn = document.getElementById('cancelStudent');
+            const saveStudentBtn = document.getElementById('saveStudent');
+            const studentsContainer = document.getElementById('studentsContainer');
+            const emptyStudentsState = document.getElementById('emptyStudentsState');
+            
+            if (addStudentBtn) {
+                addStudentBtn.addEventListener('click', function() {
+                    editingStudentIndex = -1;
+                    document.getElementById('studentModalTitle').textContent = 'Add Student';
+                    resetStudentForm();
+                    studentModal.classList.remove('hidden');
+                });
+            }
+            
+            if (cancelStudentBtn) {
+                cancelStudentBtn.addEventListener('click', function() {
+                    studentModal.classList.add('hidden');
+                });
+            }
+            
+            if (saveStudentBtn) {
+                saveStudentBtn.addEventListener('click', function() {
+                    if (validateStudentForm()) {
+                        const student = {
+                            firstName: document.getElementById('studentFirstName').value,
+                            lastName: document.getElementById('studentLastName').value,
+                            gender: document.getElementById('studentGender').value,
+                            dob: document.getElementById('studentDob').value,
+                            class: document.getElementById('studentClass').value,
+                            studentId: document.getElementById('studentId').value,
+                            relationship: document.getElementById('studentRelationship').value
+                        };
+                        
+                        if (editingStudentIndex === -1) {
+                            students.push(student);
+                        } else {
+                            students[editingStudentIndex] = student;
+                        }
+                        
+                        renderStudents();
+                        studentModal.classList.add('hidden');
+                    }
+                });
+            }
+            
+            // Close modal when clicking outside
+            if (studentModal) {
+                studentModal.addEventListener('click', function(e) {
+                    if (e.target === studentModal) {
+                        studentModal.classList.add('hidden');
+                    }
+                });
+            }
+            
+            function renderStudents() {
+                if (!studentsContainer) return;
+                
+                studentsContainer.innerHTML = '';
+                
+                if (students.length === 0) {
+                    studentsContainer.appendChild(emptyStudentsState);
+                    emptyStudentsState.classList.remove('hidden');
+                    return;
+                }
+                
+                emptyStudentsState.classList.add('hidden');
+                
+                students.forEach((student, index) => {
+                    const studentCard = document.createElement('div');
+                    studentCard.className = 'student-card';
+                    
+                    const dob = new Date(student.dob);
+                    const age = new Date().getFullYear() - dob.getFullYear();
+                    
+                    studentCard.innerHTML = `
+                        <div class="student-card-header">
+                            <h4 class="font-bold text-lg">${student.firstName} ${student.lastName}</h4>
+                            <div class="student-actions">
+                                <button class="btn btn-outline btn-sm edit-student" data-index="${index}">
+                                    <i class="fas fa-edit mr-1"></i> Edit
+                                </button>
+                                <button class="btn btn-outline btn-sm delete-student" data-index="${index}">
+                                    <i class="fas fa-trash mr-1"></i> Delete
+                                </button>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm">
+                            <div><span class="font-medium">Class:</span> ${student.class}</div>
+                            <div><span class="font-medium">Gender:</span> ${student.gender}</div>
+                            <div><span class="font-medium">Age:</span> ${age} years</div>
+                            <div><span class="font-medium">Relationship:</span> ${student.relationship}</div>
+                            ${student.studentId ? `<div><span class="font-medium">Student ID:</span> ${student.studentId}</div>` : ''}
+                        </div>
+                    `;
+                    
+                    studentsContainer.appendChild(studentCard);
+                });
+                
+                // Add event listeners for edit and delete buttons
+                document.querySelectorAll('.edit-student').forEach(button => {
+                    button.addEventListener('click', function() {
+                        const index = parseInt(this.getAttribute('data-index'));
+                        editStudent(index);
+                    });
+                });
+                
+                document.querySelectorAll('.delete-student').forEach(button => {
+                    button.addEventListener('click', function() {
+                        const index = parseInt(this.getAttribute('data-index'));
+                        deleteStudent(index);
+                    });
+                });
+            }
+            
+            function editStudent(index) {
+                editingStudentIndex = index;
+                const student = students[index];
+                
+                document.getElementById('studentModalTitle').textContent = 'Edit Student';
+                document.getElementById('studentFirstName').value = student.firstName;
+                document.getElementById('studentLastName').value = student.lastName;
+                document.getElementById('studentGender').value = student.gender;
+                document.getElementById('studentDob').value = student.dob;
+                document.getElementById('studentClass').value = student.class;
+                document.getElementById('studentId').value = student.studentId || '';
+                document.getElementById('studentRelationship').value = student.relationship;
+                
+                studentModal.classList.remove('hidden');
+            }
+            
+            function deleteStudent(index) {
+                if (confirm('Are you sure you want to remove this student?')) {
+                    students.splice(index, 1);
+                    renderStudents();
+                }
+            }
+            
+            function resetStudentForm() {
+                document.getElementById('studentFirstName').value = '';
+                document.getElementById('studentLastName').value = '';
+                document.getElementById('studentGender').value = '';
+                document.getElementById('studentDob').value = '';
+                document.getElementById('studentClass').value = '';
+                document.getElementById('studentId').value = '';
+                document.getElementById('studentRelationship').value = '';
+            }
+            
+            function validateStudentForm() {
+                const firstName = document.getElementById('studentFirstName').value;
+                const lastName = document.getElementById('studentLastName').value;
+                const gender = document.getElementById('studentGender').value;
+                const dob = document.getElementById('studentDob').value;
+                const studentClass = document.getElementById('studentClass').value;
+                const relationship = document.getElementById('studentRelationship').value;
+                
+                if (!firstName || !lastName || !gender || !dob || !studentClass || !relationship) {
+                    alert('Please fill in all required fields');
+                    return false;
+                }
+                
+                return true;
+            }
+            
+            // Validation Functions
+            function validateStep1() {
+                const firstName = document.getElementById('firstName').value;
+                const lastName = document.getElementById('lastName').value;
+                const idNumber = document.getElementById('idNumber').value;
+                const phone = document.getElementById('phone').value;
+                const email = document.getElementById('email').value;
+                const address = document.getElementById('address').value;
+                
+                if (!firstName || !lastName || !idNumber || !phone || !email || !address) {
+                    alert('Please fill in all required fields');
+                    return false;
+                }
+                
+                if (!isValidEmail(email)) {
+                    alert('Please enter a valid email address');
+                    return false;
+                }
+                
+                return true;
+            }
+            
+            function validateStep2() {
+                if (students.length === 0) {
+                    alert('Please add at least one student');
+                    return false;
+                }
+                
+                return true;
+            }
+            
+            function validateStep3() {
+                const username = document.getElementById('username').value;
+                const password = document.getElementById('password').value;
+                const confirmPassword = document.getElementById('confirmPassword').value;
+                
+                if (!username || !password || !confirmPassword) {
+                    alert('Please fill in all required fields');
+                    return false;
+                }
+                
+                if (password.length < 8) {
+                    alert('Password must be at least 8 characters long');
+                    return false;
+                }
+                
+                if (password !== confirmPassword) {
+                    alert('Passwords do not match');
+                    return false;
+                }
+                
+                return true;
+            }
+            
+            function validateStep4() {
+                if (!document.getElementById('agreeTerms').checked) {
+                    alert('You must agree to the terms and conditions');
+                    return false;
+                }
+                
+                return true;
+            }
+            
+            function isValidEmail(email) {
+                const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                return re.test(email);
+            }
+            
+            // Update Review Data
+            function updateReviewData() {
+                // Parent Information
+                const firstName = document.getElementById('firstName').value;
+                const lastName = document.getElementById('lastName').value;
+                const email = document.getElementById('email').value;
+                const phone = document.getElementById('phone').value;
+                const username = document.getElementById('username').value;
+                
+                document.getElementById('reviewName').textContent = `${firstName} ${lastName}`;
+                document.getElementById('reviewEmail').textContent = email;
+                document.getElementById('reviewPhone').textContent = phone;
+                document.getElementById('reviewUsername').textContent = username;
+                
+                // Student Information
+                const reviewStudents = document.getElementById('reviewStudents');
+                if (reviewStudents) {
+                    reviewStudents.innerHTML = '';
+                    
+                    if (students.length === 0) {
+                        reviewStudents.innerHTML = '<p>No students added</p>';
+                    } else {
+                        students.forEach(student => {
+                            const studentDiv = document.createElement('div');
+                            studentDiv.className = 'mb-2';
+                            studentDiv.innerHTML = `<strong>${student.firstName} ${student.lastName}</strong> - ${student.class} (${student.relationship})`;
+                            reviewStudents.appendChild(studentDiv);
+                        });
+                    }
+                }
+            }
+            
+            // Forum Navigation
+            if (forumHomeLink) {
+                forumHomeLink.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    
+                    // Update active nav link
+                    navLinks.forEach(link => link.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    // Show forum home, hide other sections
+                    forumHome.classList.remove('hidden');
+                    recentDiscussions.classList.remove('hidden');
+                    liveChatSection.classList.add('hidden');
+                });
+            }
+            
+            if (liveChatLink) {
+                liveChatLink.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    
+                    // Update active nav link
+                    navLinks.forEach(link => link.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    // Show live chat, hide other sections
+                    forumHome.classList.add('hidden');
+                    recentDiscussions.classList.add('hidden');
+                    liveChatSection.classList.remove('hidden');
+                });
+            }
+            
+            // Live Chat Functionality
+            if (sendMessageBtn) {
+                sendMessageBtn.addEventListener('click', function() {
+                    sendMessage();
+                });
+            }
+            
+            if (chatInput) {
+                chatInput.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter') {
+                        sendMessage();
+                    }
+                });
+            }
+            
+            // Quick action buttons
+            if (quickActionButtons) {
+                quickActionButtons.forEach(button => {
+                    button.addEventListener('click', function() {
+                        const message = this.getAttribute('data-message');
+                        chatInput.value = message;
+                        sendMessage();
+                    });
+                });
+            }
+            
+            // Reply buttons
+            document.addEventListener('click', function(e) {
+                if (e.target.classList.contains('reply-btn')) {
+                    const message = e.target.getAttribute('data-message');
+                    chatInput.value = `Replying to: "${message}" - `;
+                    chatInput.focus();
+                }
+                
+                if (e.target.classList.contains('reply-to-thread')) {
+                    const threadTitle = e.target.closest('.thread-card').querySelector('h3').textContent;
+                    chatInput.value = `Regarding "${threadTitle}": `;
+                    chatInput.focus();
+                    
+                    // Switch to live chat if not already there
+                    if (liveChatSection.classList.contains('hidden')) {
+                        navLinks.forEach(link => link.classList.remove('active'));
+                        liveChatLink.classList.add('active');
+                        
+                        forumHome.classList.add('hidden');
+                        recentDiscussions.classList.add('hidden');
+                        liveChatSection.classList.remove('hidden');
+                    }
+                }
+            });
+            
+            function sendMessage() {
+                const message = chatInput.value.trim();
+                if (message === '') return;
+                
+                // Get user data
+                const userData = JSON.parse(localStorage.getItem('parentUser'));
+                const userName = userData ? `${userData.firstName} ${userData.lastName}` : 'You';
+                
+                // Add user message to chat
+                addMessageToChat(message, 'sent', userName);
+                
+                // Clear input
+                chatInput.value = '';
+                
+                // Simulate responses from different users
+                setTimeout(() => {
+                    // Randomly select a responder
+                    const responders = [
+                        { name: 'School Admin', type: 'admin', badge: 'Admin' },
+                        { name: 'Committee Member', type: 'committee', badge: 'Committee' },
+                        { name: 'Mary Parent', type: 'received' },
+                        { name: 'Robert Parent', type: 'received' }
+                    ];
+                    
+                    const responder = responders[Math.floor(Math.random() * responders.length)];
+                    
+                    // Generate a response based on the message
+                    let response = generateResponse(message, responder.name);
+                    
+                    // Add response to chat
+                    addMessageToChat(response, responder.type, responder.name, responder.badge);
+                    
+                    // Scroll to bottom of chat
+                    chatMessages.scrollTop = chatMessages.scrollHeight;
+                }, 1000 + Math.random() * 2000);
+            }
+            
+            function addMessageToChat(message, type, user, badge = null) {
+                const messageDiv = document.createElement('div');
+                messageDiv.className = `chat-message ${type} ${type === 'admin' ? 'admin' : ''} ${type === 'committee' ? 'committee' : ''}`;
+                
+                let userHtml = `<div class="chat-user">${user}`;
+                if (badge) {
+                    userHtml += ` <span class="${badge === 'Admin' ? 'admin-badge' : 'committee-badge'}">${badge}</span>`;
+                }
+                userHtml += `</div>`;
+                
+                const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                
+                messageDiv.innerHTML = `
+                    ${type !== 'sent' ? userHtml : ''}
+                    <div>${message}</div>
+                    <div class="message-time">${time}</div>
+                    ${type !== 'sent' ? `<div class="reply-btn" data-message="${message}">Reply</div>` : ''}
+                `;
+                
+                chatMessages.appendChild(messageDiv);
+                
+                // Scroll to bottom of chat
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            }
+            
+            function generateResponse(userMessage, responder) {
+                const responses = {
+                    'School Admin': [
+                        "Thank you for your question. We'll look into this and get back to you.",
+                        "That's a great question! Let me check our records and provide you with the information.",
+                        "I appreciate you bringing this to our attention. We'll address it promptly.",
+                        "We're happy to help with that. Could you provide a bit more detail?",
+                        "I understand your concern. Let me connect you with the right person who can assist."
+                    ],
+                    'Committee Member': [
+                        "The committee is currently discussing this matter. We'll share updates soon.",
+                        "Thank you for your feedback. We'll consider it in our next meeting.",
+                        "I'll bring this up at our next committee meeting. Thanks for sharing!",
+                        "We value parent input on this topic. Would you like to join our next meeting?",
+                        "The committee has been working on this. We'll share our recommendations soon."
+                    ],
+                    'Mary Parent': [
+                        "I had the same question last week. Here's what I found out...",
+                        "I can help with that! I've been through this process before.",
+                        "Let me share my experience with that situation.",
+                        "I know a few other parents who had similar questions. Let me connect you.",
+                        "Based on my experience, here's what worked for us..."
+                    ],
+                    'Robert Parent': [
+                        "I'm also interested in this topic. Does anyone have more information?",
+                        "Thanks for asking this! I was wondering the same thing.",
+                        "I'll check with my child and see if they have any insights.",
+                        "Has anyone tried reaching out to the teacher directly about this?",
+                        "I recall there was a similar discussion last month. Let me find the details."
+                    ]
+                };
+                
+                // Return a random response from the appropriate responder
+                const responderResponses = responses[responder] || ["Thank you for your message. How can I help?"];
+                return responderResponses[Math.floor(Math.random() * responderResponses.length)];
+            }
+            
+            // New Discussion Modal
+            const newDiscussionBtn = document.getElementById('newDiscussionBtn');
+            const newDiscussionModal = document.getElementById('newDiscussionModal');
+            const cancelDiscussionBtn = document.getElementById('cancelDiscussion');
+            const postDiscussionBtn = document.getElementById('postDiscussion');
+            
+            if (newDiscussionBtn) {
+                newDiscussionBtn.addEventListener('click', function() {
+                    newDiscussionModal.classList.remove('hidden');
+                });
+            }
+            
+            if (cancelDiscussionBtn) {
+                cancelDiscussionBtn.addEventListener('click', function() {
+                    newDiscussionModal.classList.add('hidden');
+                });
+            }
+            
+            if (postDiscussionBtn) {
+                postDiscussionBtn.addEventListener('click', function() {
+                    const title = document.getElementById('discussionTitle').value;
+                    const category = document.getElementById('discussionCategory').value;
+                    const content = document.getElementById('discussionContent').value;
+                    
+                    if (!title || !category || !content) {
+                        alert('Please fill in all fields');
+                        return;
+                    }
+                    
+                    // In a real application, you would send this data to a server
+                    // For this demo, we'll just close the modal and show a success message
+                    newDiscussionModal.classList.add('hidden');
+                    
+                    // Show success message
+                    alert('Your discussion has been posted successfully!');
+                    
+                    // Reset form
+                    document.getElementById('discussionTitle').value = '';
+                    document.getElementById('discussionCategory').value = '';
+                    document.getElementById('discussionContent').value = '';
+                });
+            }
+            
+            // Close modal when clicking outside
+            if (newDiscussionModal) {
+                newDiscussionModal.addEventListener('click', function(e) {
+                    if (e.target === newDiscussionModal) {
+                        newDiscussionModal.classList.add('hidden');
+                    }
+                });
+            }
+            
+            // Check if user is already logged in
+            const userData = JSON.parse(localStorage.getItem('parentUser'));
+            if (userData) {
+                // User is already registered, show forum directly
+                registrationSection.classList.add('hidden');
+                forumSection.classList.remove('hidden');
+                
+                // Update user info in forum
+                userAvatar.textContent = userData.firstName.charAt(0) + userData.lastName.charAt(0);
+                userName.textContent = `${userData.firstName} ${userData.lastName}`;
+                userStudent.textContent = `Parent of ${userData.students.length > 0 ? userData.students[0].firstName : 'Student'}`;
+            }
+        });
+    </script>
+</body>
+</html>

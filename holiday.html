@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Admin Dashboard for Kageyo TVET School - Publish holiday packages with text and file attachments.">
+    <title>Kageyo TVET School | Admin Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" integrity="sha512-9usAa10IRO0HhonpyAIVpjrylPvoDwiPUiKdWk5t3PyolY1cOd4DSE0Ga+ri4AuTroPR5aQvXU9xC6qOPnzFeg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/png" sizes="32x32" href="download.jpg">
+    <link rel="apple-touch-icon" sizes="180x180" href="">
+    <meta name="theme-color" content="#1D4ED8">
+    <style>
+        .dropdown-menu {
+            display: none;
+            transition: all 0.3s ease-in-out;
+            z-index: 1000;
+        }
+        .dropdown-menu.active {
+            display: block;
+        }
+        @media (min-width: 769px) {
+            .dropdown-menu {
+                position: absolute;
+                background-color: #ffffff;
+                box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+                border-radius: 0.375rem;
+                min-width: 12rem;
+                top: 100%;
+                left: 0;
+            }
+            .dropdown:hover .dropdown-menu {
+                display: block;
+            }
+        }
+        @media (max-width: 768px) {
+            .dropdown-menu {
+                position: static;
+                box-shadow: none;
+                background-color: #f3f4f6;
+                width: 100%;
+                display: none;
+            }
+            .dropdown-menu.active {
+                display: block;
+            }
+        }
+        :focus {
+            outline: 3px solid #1D4ED8;
+            outline-offset: 2px;
+        }
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            border: 0;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 font-roboto" onload="myFunction()">
+    <header class="bg-white shadow">
+        <div class="bg-blue-600 text-white py-2">
+            <div class="container mx-auto px-4 flex justify-end">
+                <a href="https://chat.whatsapp.com/EkDQiiIS9SYHg8HEZ7cVZ6" target="_blank" class="hover:underline"><i class="fab fa-whatsapp mr-2" aria-hidden="true"></i>Join WhatsApp Group</a>
+                    <button id="logoutBtn" class="ml-4 hidden bg-white text-blue-600 px-3 py-1 rounded-md">Logout</button>
+            </div>
+        </div>
+        <div class="container mx-auto px-4 py-4">
+            <nav class="flex flex-wrap items-center justify-between" role="navigation" aria-label="Main navigation">
+                <div class="flex items-center space-x-4">
+                    <a href="index.html" aria-label="Kageyo TVET School Home"><img src="logo.jpg" alt="Kageyo TVET Logo" class="w-20 h-20"></a>
+                    <div>
+                        <h1><a href="index.html" class="text-2xl font-bold text-blue-600">KAGEYO TVET SCHOOL</a></h1>
+                        <p class="text-sm text-gray-500">WORK - COURAGE - SOLIDARITY</p>
+                    </div>
+                </div>
+                <button class="md:hidden text-blue-600" aria-label="Toggle navigation menu" aria-expanded="false" aria-controls="navbar" onclick="toggleNav()">
+                    <i class="fas fa-bars" aria-hidden="true"></i>
+                    <span class="sr-only">Toggle menu</span>
+                </button>
+                <div id="navbar" class="hidden md:flex md:items-center w-full md:w-auto mt-4 md:mt-0" role="menu">
+                    <ul class="flex flex-col md:flex-row md:space-x-6 w-full md:w-auto">
+                        <li><a href="index.html" class="block py-2 text-blue-600 hover:text-blue-800" role="menuitem">Home</a></li>
+                        <li><a href="about.html" class="block py-2 text-blue-600 hover:text-blue-800" role="menuitem">About Us</a></li>
+                        <li class="relative dropdown">
+                            <button class="block py-2 text-blue-600 hover:text-blue-800 flex items-center" aria-expanded="false" aria-controls="admin-menu" onclick="toggleDropdown('admin-menu')" role="menuitem">
+                                Administration <i class="fas fa-chevron-down ml-2" aria-hidden="true"></i>
+                                <span class="sr-only">Toggle Administration submenu</span>
+                            </button>
+                            <ul id="admin-menu" class="dropdown-menu bg-white shadow-lg mt-2 rounded-md w-48 z-10" role="menu">
+                                <li><a href="staff.html" class="block px-4 py-2 text-blue-600 hover:bg-blue-100" role="menuitem">Staff</a></li>
+                                <li><a href="leadership.html" class="block px-4 py-2 text-blue-600 hover:bg-blue-100" role="menuitem">Leadership</a></li>
+                                <li><a href="administration.html" class="block px-4 py-2 text-blue-600 hover:bg-blue-100" role="menuitem">Administration</a></li>
+                                <li><a href="departments.html" class="block px-4 py-2 text-blue-600 hover:bg-blue-100" role="menuitem">Departments</a></li>
+                            </ul>
+                        </li>
+                        <li><a href="trainers.html" class="block py-2 text-blue-600 hover:text-blue-800" role="menuitem">Trainers</a></li>
+                        <li><a href="trades.html" class="block py-2 text-blue-600 hover:text-blue-800" role="menuitem">Trades</a></li>
+                        <li class="relative dropdown">
+                            <button class="block py-2 text-blue-600 hover:text-blue-800 flex items-center" aria-expanded="false" aria-controls="more-menu" onclick="toggleDropdown('more-menu')" role="menuitem">
+                                More <i class="fas fa-chevron-down ml-2" aria-hidden="true"></i>
+                                <span class="sr-only">Toggle More submenu</span>
+                            </button>
+                            <ul id="more-menu" class="dropdown-menu bg-white shadow-lg mt-2 rounded-md w-48 z-10" role="menu">
+                                <li><a href="blog.html" class="block px-4 py-2 text-blue-600 hover:bg-blue-100" role="menuitem">News</a></li>
+                                <li><a href="events.html" class="block px-4 py-2 text-blue-600 hover:bg-blue-100" role="menuitem">Events</a></li>
+                                <li><a href="index.html#announcements" class="block px-4 py-2 text-blue-600 hover:bg-blue-100" role="menuitem">Announcements</a></li>
+                                <li><a href="index.html#beststudent" class="block px-4 py-2 text-blue-600 hover:bg-blue-100" role="menuitem">Best Performers</a></li>
+                                <li><a href="index.html#head-teacher" class="block px-4 py-2 text-blue-600 hover:bg-blue-100" role="menuitem">Head Teacher</a></li>
+                                <li><a href="index.html#Papers" class="block px-4 py-2 text-blue-600 hover:bg-blue-100" role="menuitem">Student Papers</a></li>
+                                <li><a href="index.html#employ_year" class="block px-4 py-2 text-blue-600 hover:bg-blue-100" role="menuitem">Employee of the Year</a></li>
+                                <li><a href="forum.html" class="block px-4 py-2 text-blue-600 hover:bg-blue-100" role="menuitem">Forum</a></li>
+                                <li><a href="developers.html" class="block px-4 py-2 text-blue-600 hover:bg-blue-100" role="menuitem">Developers</a></li>
+                                <li><a href="projects.html" class="block px-4 py-2 text-blue-600 hover:bg-blue-100" role="menuitem">Student Projects</a></li>
+                                <li><a href="achievements.html" class="block px-4 py-2 text-blue-600 hover:bg-blue-100" role="menuitem">Achievements</a></li>
+                            </ul>
+                        </li>
+                        <li><a href="contact.html" class="block py-2 text-blue-600 hover:text-blue-800" role="menuitem">Contact</a></li>
+                    </ul>
+                </div>
+            </nav>
+        </div>
+        <div class="bg-gray-100 py-12">
+            <div class="container mx-auto px-4">
+                <div class="flex flex-col md:flex-row">
+                    <div class="md:w-2/3">
+                        <h1 class="text-4xl font-bold text-blue-600 mb-4">Admin Dashboard: Publish Holiday Package</h1>
+                        <!-- Breadcrumb removed as requested -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <section class="py-12 bg-white">
+        <div class="container mx-auto px-4">
+                <div class="bg-gray-50 p-6 rounded-lg shadow">
+
+                    <!-- Login container: visible until authenticated -->
+                    <div id="loginContainer" class="space-y-4">
+                        <h2 class="text-xl font-bold text-blue-600">Admin Login</h2>
+                        <p class="text-sm text-gray-600">Enter credentials to access the Admin Dashboard.</p>
+                        <div>
+                            <label for="loginUser" class="block text-sm font-medium text-gray-700">Username</label>
+                            <input id="loginUser" type="text" class="mt-1 block w-full p-2 border border-gray-300 rounded-md" placeholder="mfashwanimana jmv" aria-label="username">
+                        </div>
+                        <div>
+                            <label for="loginPass" class="block text-sm font-medium text-gray-700">Password</label>
+                            <input id="loginPass" type="password" class="mt-1 block w-full p-2 border border-gray-300 rounded-md" placeholder="Password" aria-label="password">
+                        </div>
+                        <div>
+                            <button id="loginBtn" class="px-4 py-2 bg-blue-600 text-white rounded-md">Login</button>
+                        </div>
+                        <div id="loginMessage" class="text-sm text-red-600" aria-live="polite"></div>
+                    </div>
+
+                    <!-- Publish form: hidden until login succeeds -->
+                    <form id="publishForm" class="space-y-6" style="display:none;">
+                    <div>
+                        <label for="classSelect" class="block text-lg font-bold text-blue-600 mb-2">Select Class:</label>
+                        <select id="classSelect" class="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-600" required>
+                            <option value="">-- Choose a Class --</option>
+                            <option value="Class 1">Class 1</option>
+                            <option value="Class 2">Class 2</option>
+                            <option value="Class 3">Class 3</option>
+                            <option value="Class 4">Class 4</option>
+                            <option value="Class 5">Class 5</option>
+                            <option value="senior1">Senior 1</option>
+                            <option value="senior2">Senior 2</option>
+                            <option value="senior3">Senior 3</option>
+                            <option value="senior4">Senior 4</option>
+                            <option value="senior5">Senior 5</option>
+                            <option value="senior6">Senior 6</option>
+                            <option value="level3">Level 3</option>
+                            <option value="level4">Level 4</option>
+                            <option value="level5">Level 5</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label for="workContent" class="block text-lg font-bold text-blue-600 mb-2">Paste Work Content:</label>
+                        <textarea id="workContent" rows="10" class="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-600" required placeholder="Paste the holiday work details here..."></textarea>
+                    </div>
+
+                    <div>
+                        <label for="fileUpload" class="block text-lg font-bold text-blue-600 mb-2">Attach File or Image:</label>
+                        <input type="file" id="fileUpload" class="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-600" accept="image/*,.pdf,.doc,.docx,.txt">
+                        <p class="text-sm text-gray-500 mt-2">Supported files: Images (PNG, JPG, JPEG), PDF, Word, Text</p>
+                    </div>
+
+                    <div class="flex items-center space-x-3">
+                        <input type="checkbox" id="allowDownload" class="h-4 w-4 text-blue-600 border-gray-300 rounded" checked>
+                        <label for="allowDownload" class="text-sm text-gray-700">Allow students to download attached file</label>
+                    </div>
+
+                    <button type="submit" class="w-full p-3 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-600">Publish</button>
+                </form>
+
+                <div id="message" class="text-center mt-6 text-lg" aria-live="polite"></div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="bg-blue-900 text-white py-12">
+        <div class="container mx-auto px-4">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div>
+                    <h2><a href="index.html" class="text-2xl font-bold" aria-label="Kageyo TVET School Home">KAGEYO TVET SCHOOL</a></h2>
+                    <p class="mt-2">Work - Courage - Solidarity</p>
+                    <p class="mt-2">
+                        Northern Province<br>
+                        Gicumbi District<br>
+                        Kaniga Sector
+                    </p>
+                </div>
+                <div>
+                    <h3 class="text-xl font-bold mb-4">Useful Links</h3>
+                    <ul class="space-y-2">
+                        <li><a href="index.html" class="hover:underline" aria-label="Go to Home page">Home</a></li>
+                        <li><a href="about.html" class="hover:underline" aria-label="Go to About Us page">About Us</a></li>
+                        <li><a href="blog.html" class="hover:underline" aria-label="Go to News page">News</a></li>
+                        <li><a href="trades.html" class="hover:underline" aria-label="Go to Trades page">Trades</a></li>
+                        <li><a href="contact.html" class="hover:underline" aria-label="Go to Contact page">Contact</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-xl font-bold mb-4">Information</h3>
+                    <ul class="space-y-2">
+                        <li><a href="developers.html" class="hover:underline" aria-label="Go to Developers page">Developers</a></li>
+                        <li><a href="projects.html" class="hover:underline" aria-label="Go to Student Projects page">Student Projects</a></li>
+                        <li><a href="achievements.html" class="hover:underline" aria-label="Go to Achievements page">Achievements</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="mt-8 text-center">
+                <p>© KAGEYO TVET SCHOOL 2025</p>
+            </div>
+        </div>
+    </footer>
+
+    <section id="scroll-top" class="fixed bottom-4 right-4 hidden">
+        <button class="bg-blue-600 text-white p-3 rounded-full shadow-lg hover:bg-blue-700" aria-label="Scroll to top of page">
+            <i class="fas fa-arrow-up" aria-hidden="true"></i>
+        </button>
+    </section>
+    <div id="loader" class="text-center" aria-live="polite">Loading site</div>
+
+    <script>
+        // Page load functions
+        function myFunction() {
+            setTimeout(showPage, 3000);
+        }
+
+        function showPage() {
+            document.getElementById("loader").style.display = "none";
+            document.getElementById("scroll-top").style.display = "block";
+        }
+
+        // Toggle navigation for mobile
+        function toggleNav() {
+            const nav = document.getElementById("navbar");
+            const button = document.querySelector("button[aria-controls='navbar']");
+            const isExpanded = nav.classList.toggle("hidden");
+            button.setAttribute("aria-expanded", !isExpanded);
+        }
+
+        // Toggle dropdown menus
+        function toggleDropdown(menuId) {
+            const menu = document.getElementById(menuId);
+            const button = document.querySelector(`button[aria-controls="${menuId}"]`);
+            const isExpanded = menu.classList.toggle("active");
+            button.setAttribute("aria-expanded", isExpanded);
+        }
+
+        // Dropdown hover and click handling
+        document.querySelectorAll('.dropdown').forEach(dropdown => {
+            const button = dropdown.querySelector('button');
+            const menu = dropdown.querySelector('.dropdown-menu');
+            let timeout;
+
+            // Click handling for mobile
+            dropdown.addEventListener('click', (e) => {
+                if (window.innerWidth <= 768) {
+                    e.preventDefault();
+                    toggleDropdown(menu.id);
+                }
+            });
+
+            // Hover handling for desktop
+            if (window.innerWidth > 768) {
+                dropdown.addEventListener('mouseenter', () => {
+                    clearTimeout(timeout);
+                    menu.classList.add('active');
+                    button.setAttribute('aria-expanded', 'true');
+                });
+
+                dropdown.addEventListener('mouseleave', () => {
+                    timeout = setTimeout(() => {
+                        menu.classList.remove('active');
+                        button.setAttribute('aria-expanded', 'false');
+                    }, 200);
+                });
+
+                menu.addEventListener('mouseenter', () => {
+                    clearTimeout(timeout);
+                });
+
+                menu.addEventListener('mouseleave', () => {
+                    timeout = setTimeout(() => {
+                        menu.classList.remove('active');
+                        button.setAttribute('aria-expanded', 'false');
+                    }, 200);
+                });
+            }
+
+            // Keyboard accessibility
+            button.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    toggleDropdown(menu.id);
+                }
+            });
+        });
+
+        // Scroll to top
+        document.querySelector('#scroll-top button').addEventListener('click', (e) => {
+            e.preventDefault();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+
+        // Form submission handling
+        const form = document.getElementById('publishForm');
+        const messageDiv = document.getElementById('message');
+        const fileUpload = document.getElementById('fileUpload');
+
+        // Login elements
+        const loginContainer = document.getElementById('loginContainer');
+        const loginBtn = document.getElementById('loginBtn');
+        const loginUser = document.getElementById('loginUser');
+        const loginPass = document.getElementById('loginPass');
+        const loginMessage = document.getElementById('loginMessage');
+        const logoutBtn = document.getElementById('logoutBtn');
+
+        // Simple session check
+        function setAuthenticated(state) {
+            sessionStorage.setItem('adminAuthenticated', state ? '1' : '0');
+            if (state) {
+                loginContainer.style.display = 'none';
+                form.style.display = '';
+                logoutBtn.classList.remove('hidden');
+            } else {
+                loginContainer.style.display = '';
+                form.style.display = 'none';
+                logoutBtn.classList.add('hidden');
+            }
+        }
+
+        // Initialize based on session
+        const authFlag = sessionStorage.getItem('adminAuthenticated');
+        setAuthenticated(authFlag === '1');
+
+        loginBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            const user = (loginUser.value || '').trim().toLowerCase();
+            const pass = (loginPass.value || '').trim();
+
+            if (user === 'mfashwanimana jmv' && pass === 'study') {
+                setAuthenticated(true);
+                loginMessage.textContent = '';
+                // clear inputs
+                loginUser.value = '';
+                loginPass.value = '';
+            } else {
+                loginMessage.textContent = 'Invalid credentials.';
+            }
+        });
+
+        logoutBtn.addEventListener('click', () => {
+            setAuthenticated(false);
+            sessionStorage.removeItem('adminAuthenticated');
+        });
+
+        form.addEventListener('submit', async function(event) {
+            event.preventDefault();
+
+            const selectedClass = document.getElementById('classSelect').value;
+            const workContent = document.getElementById('workContent').value.trim();
+            const file = fileUpload.files[0];
+
+            if (!selectedClass || !workContent) {
+                messageDiv.textContent = 'Please select a class and enter work content.';
+                messageDiv.classList.remove('text-green-600');
+                messageDiv.classList.add('text-red-600');
+                return;
+            }
+
+            let fileData = null;
+            if (file) {
+                // Convert file to Base64
+                try {
+                    fileData = await new Promise((resolve, reject) => {
+                        const reader = new FileReader();
+                        reader.onload = () => resolve({
+                            name: file.name,
+                            type: file.type,
+                            data: reader.result
+                        });
+                        reader.onerror = reject;
+                        reader.readAsDataURL(file);
+                    });
+                } catch (error) {
+                    messageDiv.textContent = 'Error reading file. Please try again.';
+                    messageDiv.classList.remove('text-green-600');
+                    messageDiv.classList.add('text-red-600');
+                    return;
+                }
+            }
+
+            // Load existing data from localStorage
+            let holidayPackages = JSON.parse(localStorage.getItem('holidayPackages')) || [];
+
+            // Read allowDownload checkbox
+            const allowDownload = document.getElementById('allowDownload').checked;
+
+            // Add new package
+            holidayPackages.push({
+                class: selectedClass,
+                work: workContent,
+                file: fileData,
+                allowDownload: allowDownload,
+                publishedDate: new Date().toISOString()
+            });
+
+            // Save back to localStorage
+            localStorage.setItem('holidayPackages', JSON.stringify(holidayPackages));
+
+            // Clear form
+            document.getElementById('classSelect').value = '';
+            document.getElementById('workContent').value = '';
+            fileUpload.value = '';
+
+            // Show success message
+            messageDiv.textContent = `Holiday package published for ${selectedClass}!`;
+            messageDiv.classList.remove('text-red-600');
+            messageDiv.classList.add('text-green-600');
+
+            // Clear message after 5 seconds
+            setTimeout(() => {
+                messageDiv.textContent = '';
+            }, 5000);
+        });
+    </script>
+</body>
+</html>
