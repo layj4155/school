@@ -44,8 +44,8 @@ Add this to the `<head>` section of any HTML page:
 
 1. Open terminal in `backend` folder
 2. Run: `npm run dev`
-3. Server should start on `http://localhost:5000`
-4. Test: Open `http://localhost:5000/api/health` in browser
+3. Server should start on `http://localhost:5002`
+4. Test: Open `http://localhost:5002/api/health` in browser
 
 ### Step 3: Use API Functions
 

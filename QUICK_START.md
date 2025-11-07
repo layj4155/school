@@ -1,166 +1,239 @@
-# 🚀 Quick Start Guide - Role-Based Admin Dashboard
+# 🚀 Quick Start Guide - Kageyo TVET School System
 
-## ⚡ 5-Minute Setup
+## Start the System in 3 Steps
 
-### 1. Backend Setup (2 minutes)
+### Step 1: Start Backend Server
 ```bash
 cd backend
 npm install
+npm run dev
+```
+✅ Server running at `http://localhost:5002`
+
+### Step 2: Open Frontend
+Open `app.html` in your browser
+
+### Step 3: Register & Login
+1. Go to Registration page
+2. Select your role
+3. Login and access your dashboard
+
+---
+
+## 🔑 Test Accounts
+
+### Create These Test Users:
+
+#### School Manager
+- **Role:** SM
+- **Email:** manager@kageyo.edu
+- **Password:** manager123
+- **Dashboard:** Full oversight with all department reports
+
+#### Dean of Studies
+- **Role:** DOS
+- **Email:** dos@kageyo.edu
+- **Password:** dos123
+- **Dashboard:** Academic management, marks, classes
+
+#### Dean of Discipline
+- **Role:** DOD
+- **Email:** dod@kageyo.edu
+- **Password:** dod123
+- **Dashboard:** Discipline, conduct (40 max)
+
+#### IT Technician
+- **Role:** IT
+- **Email:** it@kageyo.edu
+- **Password:** it123
+- **Dashboard:** Full system access
+
+#### Librarian
+- **Role:** Librarian
+- **Email:** librarian@kageyo.edu
+- **Password:** lib123
+- **Dashboard:** Books, borrowing, overdue (7 days)
+
+#### Bursar
+- **Role:** Bursar
+- **Email:** bursar@kageyo.edu
+- **Password:** bursar123
+- **Dashboard:** Fees, payments, reports
+
+#### Teacher
+- **Role:** Teacher
+- **Email:** teacher@kageyo.edu
+- **Password:** teacher123
+- **Dashboard:** Classes, marks entry
+
+---
+
+## 👥 Student/Parent Login
+
+### For Students:
+- No registration needed (admin creates accounts)
+- **Login with:**
+  - Student ID
+  - Full Name
+- **Access:** Own marks, conduct, claims
+
+### For Parents:
+- No registration needed
+- **Login with:**
+  - Student ID
+  - Student Full Name
+  - Student Class
+  - Parent Name
+- **Access:** Child's performance, discipline, fees
+
+---
+
+## 📊 What Each Role Can Do
+
+### SM (School Manager)
+✅ View all department reports  
+✅ Register students  
+✅ System oversight  
+
+### DOS (Dean of Studies)
+✅ Manage students & teachers  
+✅ Create classes  
+✅ Manage marks (add/edit/publish)  
+✅ Performance analysis  
+✅ Export reports to PDF  
+✅ Sort by: >90%, 80%, 70%, 60%, 50%, <50%  
+
+### DOD (Dean of Discipline)
+✅ Create faults  
+✅ Reduce conduct (40 max → can go down to 0)  
+✅ Track low conduct (<20)  
+✅ Publish reports to DOS & SM  
+
+### Librarian
+✅ Add books  
+✅ Track borrowing  
+✅ Monitor overdue (>7 days)  
+✅ Most borrowed statistics  
+
+### Bursar
+✅ Record payments  
+✅ Track paid/unpaid  
+✅ Financial reports  
+✅ Balance tracking  
+
+---
+
+## 🎯 Key Features
+
+### ✅ Implemented:
+- 11 user roles with specific permissions
+- Unified login system
+- Role-based dashboards
+- Student/parent portals
+- Backend API with all routes
+- Frontend SPA (app.js)
+- Responsive design
+- Secure authentication
+
+### 📦 Included:
+- All database models
+- All API routes
+- All dashboard UIs
+- Login/Registration flows
+- Documentation
+
+---
+
+## 📱 Access URLs
+
+### Public Pages
+```
+/#/                 - Home
+/#/about            - About (with history)
+/#/academics        - Programs & calendar
+/#/trainers         - Staff directory
+/#/news             - News & updates
+/#/contact          - Contact info
 ```
 
-Create `.env` file:
-```env
-DB_HOST=localhost
-DB_NAME=kageyo_tvet
-DB_USER=postgres
-DB_PASSWORD=your_password
-DB_DIALECT=postgres
-JWT_SECRET=change_this_secret_key
-PORT=5000
+### Authentication
+```
+/#/login            - Login page
+/#/register         - Registration page
 ```
 
-Initialize and seed:
-```bash
-node scripts/initDatabase.js
-node scripts/seedData.js
-npm start
+### Dashboards (Auto-routed by role)
+```
+/#/dashboard        - Role-based dashboard
+/#/student-portal   - Student portal
+/#/parent-portal    - Parent portal
 ```
 
-### 2. Frontend Setup (1 minute)
-```bash
-# In project root
-npx http-server -p 8000
-```
+---
 
-Open: `http://localhost:8000/admin-dashboard.html`
+## 🛠️ Technologies Used
 
-### 3. Login (1 minute)
-**Admin:** admin / admin123
+### Backend
+- Node.js + Express
+- MongoDB + Mongoose
+- JWT Authentication
+- bcrypt (password hashing)
 
-## 🎯 Quick Tasks
+### Frontend
+- Vanilla JavaScript (SPA)
+- Tailwind CSS
+- Axios (API calls)
+- Font Awesome icons
 
-### Task 1: Assign Teacher to Class (Admin)
-1. Login as admin
-2. Go to "Classes"
-3. Select "Advanced Software Development Year 1"
-4. Click "Assign Teacher"
-5. Select teacher1 and "Backend Application Development"
-6. Save
+---
 
-### Task 2: Enter Marks (Teacher)
-1. Logout and login as teacher1 / teacher123
-2. Go to "Enter Marks"
-3. Select class: "Advanced Software Development Year 1"
-4. Select subject: "Backend Application Development"
-5. Select module: "REST API Design" (optional)
-6. Select assessment: "Midterm 1"
-7. Select term: "Term 1"
-8. Click "Load Students"
-9. Enter marks for students
-10. Click "Save All Marks"
+## 📝 Important Notes
 
-### Task 3: Publish Marks (Dean of Studies)
-1. Logout and login as dean_studies / dean123
-2. Go to "Publish Marks"
-3. Filter by class and subject
-4. Click "Load Unpublished Marks"
-5. Select marks to publish
-6. Click "Publish Selected"
+1. **Conduct Marks:** Each student has 40 conduct marks. DOD can reduce based on faults.
+2. **Book Borrowing:** Students have 7 days to return books before it's overdue.
+3. **Student Login:** No password needed, just ID + Name for security.
+4. **Parent Login:** 4-field verification (ID + Name + Class + Parent Name).
+5. **Role Selection:** Choose correct role during registration.
 
-### Task 4: View Statistics (Dean of Studies)
-1. While logged in as dean_studies
-2. Go to "Statistics"
-3. Select class and subject
-4. Click "Load Statistics"
-5. View charts and analytics
+---
 
-## 📊 Sample Accounts
-
-| Role | Username | Password | Access |
-|------|----------|----------|--------|
-| Admin | admin | admin123 | Everything |
-| Dean of Studies | dean_studies | dean123 | Publish & Stats |
-| Dean of Discipline | dean_discipline | dean123 | Discipline |
-| Teacher | teacher1 | teacher123 | Assigned Classes |
-| Teacher | teacher2 | teacher123 | Assigned Classes |
-
-## 🎓 Pre-loaded Data
-
-### Subjects (Software Development):
-- Backend Application Development (4 modules)
-- Window Server Administration (4 modules)
-- PHP Programming (4 modules)
-- Networking (4 modules)
-- Database Development (4 modules)
-
-### Classes:
-- Advanced Software Development Year 1 & 2
-- Advanced Accounting Year 1 & 2
-- Ordinary Level Year 1 & 2
-
-## 🔑 Key API Endpoints
+## 🎓 System Flow
 
 ```
-POST   /api/auth/login              - Login
-GET    /api/marks                   - Get marks
-POST   /api/marks                   - Create mark
-POST   /api/marks/bulk              - Bulk create
-PUT    /api/marks/publish-bulk      - Publish marks
-GET    /api/marks/statistics        - Get stats
-GET    /api/subjects                - Get subjects
-GET    /api/modules                 - Get modules
-GET    /api/classes                 - Get classes
-POST   /api/classes/:id/assign-teacher - Assign teacher
+Registration → Select Role → Create Account
+                    ↓
+            Role-Based Dashboard
+                    ↓
+┌──────────────┬───────────────┬──────────────┬──────────────┐
+│   SM         │   DOS         │   DOD        │   IT         │
+│ (Oversight)  │ (Academic)    │ (Discipline) │ (System)     │
+└──────────────┴───────────────┴──────────────┴──────────────┘
+┌──────────────┬───────────────┬──────────────┬──────────────┐
+│ Librarian    │   Bursar      │  Teacher     │ Student      │
+│ (Library)    │ (Fees)        │ (Teaching)   │ (Portal)     │
+└──────────────┴───────────────┴──────────────┴──────────────┘
 ```
 
-## ✅ Verification Steps
+---
 
-1. ✅ Backend running on port 5000
-2. ✅ Can login as admin
-3. ✅ Can see dashboard
-4. ✅ Can assign teacher to class
-5. ✅ Teacher can see assigned class
-6. ✅ Teacher can enter marks
-7. ✅ Dean can publish marks
-8. ✅ Statistics calculate correctly
+## ✅ System Ready!
 
-## 🐛 Troubleshooting
+Your complete school management system is ready to use!
 
-**Can't connect to database?**
-- Check PostgreSQL is running
-- Verify credentials in `.env`
-- Ensure database exists
+1. ✅ All 11 roles configured
+2. ✅ Backend API ready
+3. ✅ Frontend dashboards ready
+4. ✅ Student/Parent portals ready
+5. ✅ Documentation complete
 
-**Login not working?**
-- Clear browser localStorage
-- Check backend is running
-- Verify credentials
+**Next:** Start the backend and begin testing!
 
-**Marks not saving?**
-- Ensure teacher is assigned to class
-- Check all required fields are filled
-- Verify marks are 0-100
+---
 
-**Statistics showing 0?**
-- Ensure marks are published
-- Check filters are set correctly
-- Verify data exists for selection
+**Questions?** Check:
+- `ROLES_GUIDE.md` - Detailed role permissions
+- `BACKEND_SETUP_GUIDE.md` - API documentation
+- `SYSTEM_COMPLETE.md` - Full system overview
 
-## 📚 Full Documentation
-
-- `SETUP_INSTRUCTIONS.md` - Complete setup guide
-- `ROLE_BASED_DASHBOARD_GUIDE.md` - Feature documentation
-- `IMPLEMENTATION_SUMMARY.md` - Technical details
-
-## 🎉 You're Ready!
-
-The system is now configured with:
-- ✅ 3 roles (Admin, Dean of Studies, Teachers)
-- ✅ 15 subjects across 3 programs
-- ✅ 20 modules for Software Development
-- ✅ 6 classes ready for students
-- ✅ Complete marks management system
-- ✅ Publishing workflow
-- ✅ Statistics and analytics
-
-**Start by assigning teachers to classes, then let them enter marks!**
+**Kageyo TVET School Management System**  
+*Work - Courage - Solidarity* 🎓

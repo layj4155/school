@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kageyo TVET School</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+</head>
+<body class="bg-gray-50">
+    <!-- Header -->
+    <header class="bg-white shadow-md sticky top-0 z-40">
+        <div class="bg-gradient-to-r from-blue-600 to-blue-800 text-white py-2">
+            <div class="container mx-auto px-4 text-center text-sm">
+                <span>📞 +250 738266603 | 📧 kageyotvet@gmail.com</span>
+            </div>
+        </div>
+        
+        <nav class="container mx-auto px-4 py-3">
+            <div class="flex items-center justify-between">
+                <a href="#/" class="flex items-center space-x-2">
+                    <img src="logo.jpg" alt="Logo" class="w-10 h-10 rounded-full">
+                    <div>
+                        <h1 class="text-sm md:text-base font-bold text-blue-600">KAGEYO TSS</h1>
+                        <p class="text-xs text-gray-500 hidden md:block">WORK - COURAGE - SOLIDARITY</p>
+                    </div>
+                </a>
+                
+                <div class="hidden md:flex items-center space-x-4 text-sm">
+                    <a href="#/" class="text-gray-700 hover:text-blue-600 px-3 py-2 rounded">Home</a>
+                    <a href="#/about" class="text-gray-700 hover:text-blue-600 px-3 py-2 rounded">About</a>
+                    <a href="#/academics" class="text-gray-700 hover:text-blue-600 px-3 py-2 rounded">Academics</a>
+                    <a href="#/admissions" class="text-gray-700 hover:text-blue-600 px-3 py-2 rounded">Admissions</a>
+                    <a href="#/trainers" class="text-gray-700 hover:text-blue-600 px-3 py-2 rounded">Trainers</a>
+                    <a href="#/news" class="text-gray-700 hover:text-blue-600 px-3 py-2 rounded">News</a>
+                    <a href="#/contact" class="text-gray-700 hover:text-blue-600 px-3 py-2 rounded">Contact</a>
+                    <a href="#/login" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Login</a>
+                </div>
+                
+                <button id="mobile-menu-btn" class="md:hidden bg-blue-600 text-white p-2 rounded">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Main Content -->
+    <main id="main-content" class="min-h-screen">
+        <div class="container mx-auto px-4 py-8 text-center">
+            <p class="text-gray-500">Loading...</p>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gradient-to-r from-blue-900 to-blue-800 text-white py-8 text-center">
+        <p>&copy; 2025 Kageyo TVET School. All rights reserved.</p>
+    </footer>
+
+    <script src="app.js"></script>
+    <script>
+        console.log('App loaded!');
+        console.log('Current hash:', window.location.hash);
+    </script>
+</body>
+</html>

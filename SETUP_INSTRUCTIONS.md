@@ -56,7 +56,7 @@ npm start
 npm run dev
 ```
 
-The backend API will be available at: `http://localhost:5000`
+The backend API will be available at: `http://localhost:5002`
 
 ## Step 2: Frontend Setup
 
@@ -64,7 +64,7 @@ The backend API will be available at: `http://localhost:5000`
 Open `js/api.js` and ensure the baseURL points to your backend:
 ```javascript
 const API_CONFIG = {
-    baseURL: 'http://localhost:5000/api',
+    baseURL: 'http://localhost:5002/api',
     timeout: 10000
 };
 ```

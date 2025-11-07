@@ -46,11 +46,11 @@ npm run init-db
 npm run dev
 ```
 
-Server runs on: **http://localhost:5000**
+Server runs on: **http://localhost:5002**
 
 ### Step 2: Test the Connection
 
-Open in browser: **http://localhost:5000/api/health**
+Open in browser: **http://localhost:5002/api/health**
 
 You should see:
 ```json

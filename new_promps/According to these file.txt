@@ -1,0 +1,80 @@
+According to these file 
+1. admin-dashboard.html
+2. student-registration.html
+3. library.html
+4. student-data.html
+
+I want to change them accordingly with this new information am about to give you and integrate them in their respected file without changing the respected colors and each individual should have a Home button to go back to the website. All files are part of the Kageyo TSS School management system
+
+1. Add MongoBD using nodeJs database name: "KTSS"
+2. Use framework expressjs
+3. For student-registration.html file let user create their account using these role: 1. SM for School Manager
+      2. DOS for Dean of Studies
+      3. DOD for Dean of Discipline
+      4. IT for IT Technician
+      5. Librarian
+      6. Bursar
+      7. Patron
+      8. Matron
+      9. Teacher
+and they should have one login page after login as one of those 
+
+for School manager will see these: 
+      1. On his dashboard he or she will see Overall reports, reports from DOS, DOD, Librarian, And Bursar
+     she can click on each department and see information for each department 
+      2. She can register a new student
+
+for Dean of Studies will see these:
+1. Dashboard for all registered students, And teachers, sees the recorded marks from every teacher for 1 term(average marks from assessment done), 2nd term(average marks from assessment done), and 3rd term (average marks from assessment done).
+2. register a new student
+3. Student management 
+4. Classes management(create class, add students to that class, generate student list for each class)
+5. Marks management(add marks for each class, edit, refill, publish marks to student, parent and to all other parties like back to the teachers, Discipline department and School manager)
+6. He can see discipline report from Dean of Discipline
+7. Final report for marks for each class and their behavior from discipline reports
+8. can export result to pdf and publish the marks to every student accounts to view their performance
+9. Performance analysis for each class and see for the whole school and sort out for those who are above 90%, 80%, 70%, 60%, 50% and below 50%
+10. Can see Overall result for every class 
+
+for DOD Dean of Discipline/ Patron and Matron 
+1. They should access Dashboard for all student in school
+2. Discipline management, they should create a fault and it total reduction for that fault 
+3. They should be able to redact student conduct total conduct marks is 40 for each student after reduction that 40 reduces according to the fault
+4. They should see student has low conduct bellow 20, for every class and in the whole school 
+5. Final report and publish them to DOS(dean of Studies), And SM(School manager)
+
+for IT will be able :
+1. See the dashboard for all students, Staff, and teacher
+2. Register a student
+3. Manage Staff, Teacher, and Students
+4. Manage the whole website both frontend and backend 
+
+for Librarian we be able to:
+1. Access all student per class
+2. Add books,
+3. Mange the borrowing and returned book for borrowers,
+4. See the overdue for student cos every student has a week to rent a book and return it over that is overdue 
+5. Manages the books, and see the most borrowed book 
+6. View reports for registered books, Borrowed books, returned one, overdue, most borrowed one, and student who have those books,
+
+for bursar will be able to see 
+1. All student and their respected class
+2. Can record school fees paid by every student 
+3. Can see those who paid and not yet paid, and the difference in total paid from total school fees supposed to pay
+
+
+for SM (School Manager)
+1. Overall Report from DOS, DOS, Librarian, and Bursar 
+
+for Both student and Parent should have their own login form where their first choose if it's either a student or a parent: 
+
+for Students will be able to: 
+1. Login using their studentID, and Full name only
+2. Access their marks from DOS after logging in and the behaviors according to the total reduction from conducts form DOD.
+3. Claim on their marks both academic and behaviors
+
+for Parent will be able to:
+1. Login using StudentID, Student name, student class, And parent name if matches what we have in Database then sees student information, Academic performance from DOS, behavior from DOD, and Payment report from bursar for his or her student
+
+Other things is that every class should be a table
+

@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kageyo TVET School - Management System</title>
+    <link rel="icon" type="image/png" href="download.jpg">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="app.css">
+</head>
+<body class="bg-gray-50">
+    <!-- Preloader -->
+    <div id="preloader" class="fixed inset-0 bg-gradient-to-br from-blue-600 via-blue-700 to-blue-900 flex items-center justify-center z-50">
+        <div class="text-center">
+            <img src="logo.jpg" alt="Logo" class="w-32 h-32 mx-auto mb-4 rounded-full animate-bounce">
+            <p class="text-white text-2xl font-bold">KAGEYO TSS</p>
+            <div class="mt-4 w-48 h-1 bg-white bg-opacity-30 rounded mx-auto overflow-hidden">
+                <div class="h-full bg-white rounded animate-progress"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading Screen (for route changes) -->
+    <div id="loading-screen" class="fixed inset-0 bg-white bg-opacity-90 flex items-center justify-center z-40 hidden">
+        <div class="text-center">
+            <i class="fas fa-spinner fa-spin text-5xl text-blue-600 mb-4"></i>
+            <p class="text-gray-700 text-lg">Loading...</p>
+        </div>
+    </div>
+
+    <!-- Main App Container -->
+    <div id="app" class="min-h-screen">
+        <!-- Header -->
+        <header id="app-header" class="bg-white shadow-md sticky top-0 z-40">
+            <div class="bg-gradient-to-r from-blue-600 to-blue-800 text-white py-2">
+                <div class="container mx-auto px-4 flex justify-between items-center text-sm">
+                    <div class="flex items-center space-x-4">
+                        <a href="tel:+250738266603" class="hover:underline">
+                            <i class="fas fa-phone mr-1"></i>+250 738266603
+                        </a>
+                        <a href="mailto:kageyotvet@gmail.com" class="hover:underline hidden md:inline">
+                            <i class="fas fa-envelope mr-1"></i>kageyotvet@gmail.com
+                        </a>
+                    </div>
+                    <a href="https://wa.me/250738266603" target="_blank" class="hover:underline">
+                        <i class="fab fa-whatsapp mr-2"></i>Join WhatsApp
+                    </a>
+                </div>
+            </div>
+            
+            <nav class="container mx-auto px-4 py-2">
+                <div class="flex items-center justify-between">
+                    <!-- Logo and Branding -->
+                    <a href="#/" class="flex items-center space-x-2">
+                        <img src="logo.jpg" alt="Kageyo TVET School Logo" class="w-12 h-12 rounded-full border-2 border-blue-100">
+                        <div>
+                            <h1 class="text-base md:text-lg font-bold bg-gradient-to-r from-blue-600 to-blue-800 bg-clip-text text-transparent">
+                                KAGEYO TVET SCHOOL
+                            </h1>
+                            <p class="text-xs text-gray-500 font-medium hidden md:block">WORK - COURAGE - SOLIDARITY</p>
+                        </div>
+                    </a>
+                    
+                    <!-- Desktop Navigation -->
+                    <div class="hidden lg:flex items-center space-x-1" id="desktop-nav">
+                        <a href="#/" class="nav-link px-4 py-2 text-gray-700 hover:text-blue-600 rounded-lg hover:bg-blue-50 transition">Home</a>
+                        <a href="#/about" class="nav-link px-4 py-2 text-gray-700 hover:text-blue-600 rounded-lg hover:bg-blue-50 transition">About</a>
+                        <a href="#/academics" class="nav-link px-4 py-2 text-gray-700 hover:text-blue-600 rounded-lg hover:bg-blue-50 transition">Academics</a>
+                        <a href="#/admissions" class="nav-link px-4 py-2 text-gray-700 hover:text-blue-600 rounded-lg hover:bg-blue-50 transition">Admissions</a>
+                        <a href="#/trainers" class="nav-link px-4 py-2 text-gray-700 hover:text-blue-600 rounded-lg hover:bg-blue-50 transition">Trainers</a>
+                        <a href="#/news" class="nav-link px-4 py-2 text-gray-700 hover:text-blue-600 rounded-lg hover:bg-blue-50 transition">News</a>
+                        <a href="#/contact" class="nav-link px-4 py-2 text-gray-700 hover:text-blue-600 rounded-lg hover:bg-blue-50 transition">Contact</a>
+                        <a href="#/login" class="bg-gradient-to-r from-blue-600 to-blue-700 text-white px-6 py-2 rounded-lg hover:shadow-lg transition" id="login-btn">Login</a>
+                        <button id="logout-btn" class="bg-gradient-to-r from-red-600 to-red-700 text-white px-6 py-2 rounded-lg hover:shadow-lg transition hidden">Logout</button>
+                    </div>
+                    
+                    <!-- Mobile Menu Button -->
+                    <button id="mobile-menu-btn" class="lg:hidden bg-blue-600 text-white p-2 rounded-lg">
+                        <i class="fas fa-bars text-xl"></i>
+                    </button>
+                </div>
+                
+                <!-- Mobile Navigation -->
+                <div id="mobile-nav" class="hidden lg:hidden mt-4 bg-white rounded-lg shadow-lg p-4 space-y-2">
+                    <a href="#/" class="block py-3 px-4 text-gray-700 hover:bg-blue-50 hover:text-blue-600 rounded-lg transition">Home</a>
+                    <a href="#/about" class="block py-3 px-4 text-gray-700 hover:bg-blue-50 hover:text-blue-600 rounded-lg transition">About</a>
+                    <a href="#/academics" class="block py-3 px-4 text-gray-700 hover:bg-blue-50 hover:text-blue-600 rounded-lg transition">Academics</a>
+                    <a href="#/admissions" class="block py-3 px-4 text-gray-700 hover:bg-blue-50 hover:text-blue-600 rounded-lg transition">Admissions</a>
+                    <a href="#/trainers" class="block py-3 px-4 text-gray-700 hover:bg-blue-50 hover:text-blue-600 rounded-lg transition">Trainers</a>
+                    <a href="#/news" class="block py-3 px-4 text-gray-700 hover:bg-blue-50 hover:text-blue-600 rounded-lg transition">News</a>
+                    <a href="#/announcements" class="block py-3 px-4 text-gray-700 hover:bg-blue-50 hover:text-blue-600 rounded-lg transition">Announcements</a>
+                    <a href="#/best-performers" class="block py-3 px-4 text-gray-700 hover:bg-blue-50 hover:text-blue-600 rounded-lg transition">Best Performers</a>
+                    <a href="#/contact" class="block py-3 px-4 text-gray-700 hover:bg-blue-50 hover:text-blue-600 rounded-lg transition">Contact</a>
+                    <a href="#/login" class="block py-3 px-4 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-lg text-center font-semibold">Login</a>
+                </div>
+            </nav>
+        </header>
+
+        <!-- Main Content Area -->
+        <main id="main-content" class="min-h-screen">
+            <!-- Content will be dynamically loaded here -->
+        </main>
+
+        <!-- Footer -->
+        <footer class="bg-gradient-to-br from-blue-900 via-blue-800 to-blue-900 text-white py-12 mt-16">
+            <div class="container mx-auto px-4">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                    <!-- About Section -->
+                    <div>
+                        <div class="flex items-center space-x-3 mb-4">
+                            <img src="logo.jpg" alt="Logo" class="w-12 h-12 rounded-full">
+                            <div>
+                                <h3 class="text-lg font-bold">KAGEYO TVET</h3>
+                                <p class="text-xs text-blue-200">Excellence in Education</p>
+                            </div>
+                        </div>
+                        <p class="text-sm text-blue-100 leading-relaxed">
+                            Kageyo TVET School is located in Gicumbi district, Kaniga sector near Kageyo tea factory and is a public TVET school committed to excellence.
+                        </p>
+                    </div>
+                    
+                    <!-- Quick Links -->
+                    <div>
+                        <h3 class="text-lg font-bold mb-4 border-b-2 border-blue-600 pb-2 inline-block">Quick Links</h3>
+                        <ul class="space-y-2 text-sm">
+                            <li><a href="#/" class="text-blue-100 hover:text-white hover:pl-2 transition-all"><i class="fas fa-chevron-right mr-2 text-xs"></i>Home</a></li>
+                            <li><a href="#/about" class="text-blue-100 hover:text-white hover:pl-2 transition-all"><i class="fas fa-chevron-right mr-2 text-xs"></i>About Us</a></li>
+                            <li><a href="#/academics" class="text-blue-100 hover:text-white hover:pl-2 transition-all"><i class="fas fa-chevron-right mr-2 text-xs"></i>Academics</a></li>
+                            <li><a href="#/admissions" class="text-blue-100 hover:text-white hover:pl-2 transition-all"><i class="fas fa-chevron-right mr-2 text-xs"></i>Admissions</a></li>
+                            <li><a href="#/trainers" class="text-blue-100 hover:text-white hover:pl-2 transition-all"><i class="fas fa-chevron-right mr-2 text-xs"></i>Trainers</a></li>
+                            <li><a href="#/contact" class="text-blue-100 hover:text-white hover:pl-2 transition-all"><i class="fas fa-chevron-right mr-2 text-xs"></i>Contact</a></li>
+                        </ul>
+                    </div>
+                    
+                    <!-- School Information -->
+                    <div>
+                        <h3 class="text-lg font-bold mb-4 border-b-2 border-blue-600 pb-2 inline-block">School Info</h3>
+                        <ul class="space-y-2 text-sm">
+                            <li><a href="#/news" class="text-blue-100 hover:text-white hover:pl-2 transition-all"><i class="fas fa-chevron-right mr-2 text-xs"></i>News</a></li>
+                            <li><a href="#/announcements" class="text-blue-100 hover:text-white hover:pl-2 transition-all"><i class="fas fa-chevron-right mr-2 text-xs"></i>Announcements</a></li>
+                            <li><a href="#/employee-of-year" class="text-blue-100 hover:text-white hover:pl-2 transition-all"><i class="fas fa-chevron-right mr-2 text-xs"></i>Employee of the Year</a></li>
+                            <li><a href="#/best-performers" class="text-blue-100 hover:text-white hover:pl-2 transition-all"><i class="fas fa-chevron-right mr-2 text-xs"></i>Best Performers</a></li>
+                            <li><a href="#/developers" class="text-blue-100 hover:text-white hover:pl-2 transition-all"><i class="fas fa-chevron-right mr-2 text-xs"></i>Developers</a></li>
+                        </ul>
+                    </div>
+                    
+                    <!-- Contact & Social -->
+                    <div>
+                        <h3 class="text-lg font-bold mb-4 border-b-2 border-blue-600 pb-2 inline-block">Contact Us</h3>
+                        <div class="space-y-3 text-sm">
+                            <p class="flex items-start text-blue-100">
+                                <i class="fas fa-map-marker-alt mt-1 mr-3 text-blue-400"></i>
+                                <span>Gicumbi District, Kaniga Sector<br>Near Kageyo Tea Factory</span>
+                            </p>
+                            <p class="text-blue-100">
+                                <i class="fas fa-phone mr-3 text-blue-400"></i>+250 738266603
+                            </p>
+                            <p class="text-blue-100">
+                                <i class="fas fa-envelope mr-3 text-blue-400"></i>kageyotvet@gmail.com
+                            </p>
+                            <div class="flex space-x-3 pt-3">
+                                <a href="https://facebook.com" target="_blank" class="w-10 h-10 bg-blue-700 hover:bg-white hover:text-blue-600 rounded-full flex items-center justify-center transition">
+                                    <i class="fab fa-facebook-f"></i>
+                                </a>
+                                <a href="https://twitter.com" target="_blank" class="w-10 h-10 bg-blue-700 hover:bg-white hover:text-blue-600 rounded-full flex items-center justify-center transition">
+                                    <i class="fab fa-twitter"></i>
+                                </a>
+                                <a href="https://instagram.com" target="_blank" class="w-10 h-10 bg-blue-700 hover:bg-white hover:text-blue-600 rounded-full flex items-center justify-center transition">
+                                    <i class="fab fa-instagram"></i>
+                                </a>
+                                <a href="https://linkedin.com" target="_blank" class="w-10 h-10 bg-blue-700 hover:bg-white hover:text-blue-600 rounded-full flex items-center justify-center transition">
+                                    <i class="fab fa-linkedin-in"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="border-t border-blue-700 mt-8 pt-6 text-center text-sm text-blue-200">
+                    <p>&copy; 2025 Kageyo TVET School. All rights reserved. | Designed with ❤️ by <a href="#/developers" class="hover:text-white underline">Our Development Team</a></p>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Floating Action Buttons -->
+    <div class="fixed bottom-6 right-6 flex flex-col gap-3 z-30">
+        <!-- Scroll to Top -->
+        <button id="scroll-top-btn" class="w-12 h-12 bg-gradient-to-br from-blue-600 to-blue-700 text-white rounded-full shadow-lg hover:shadow-xl hover:scale-110 transition hidden">
+            <i class="fas fa-arrow-up"></i>
+        </button>
+        
+        <!-- Chatbot Toggle -->
+        <button id="chatbot-toggle-btn" class="w-14 h-14 bg-gradient-to-br from-green-500 to-green-600 text-white rounded-full shadow-lg hover:shadow-xl hover:scale-110 transition animate-pulse">
+            <i class="fas fa-comments text-xl"></i>
+        </button>
+    </div>
+
+    <!-- Load App JavaScript -->
+    <script src="app.js"></script>
+</body>
+</html>
