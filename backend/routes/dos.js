@@ -78,4 +78,23 @@ router.get('/teachers', async (req, res) => {
     }
 });
 
+router.get('/my-classes/:teacherId', async (req, res) => {
+    try {
+        const Class = require('../models/Class');
+        const classes = await Class.find({ classTeacher: req.params.teacherId })
+            .populate('students', 'firstName lastName studentID');
+        
+        res.status(200).json({
+            success: true,
+            count: classes.length,
+            data: classes
+        });
+    } catch (error) {
+        res.status(400).json({
+            success: false,
+            error: error.message
+        });
+    }
+});
+
 module.exports = router;

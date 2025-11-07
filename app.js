@@ -1768,6 +1768,9 @@ window.showRegisterStudentModal = async function() {
 
 async function renderMarks() {
     const mainContent = document.getElementById('main-content');
+    const isTeacher = currentUser && currentUser.role === 'Teacher';
+    const isDOS = currentUser && currentUser.role === 'DOS';
+    
     mainContent.innerHTML = `
         <div class="bg-purple-600 text-white py-12 text-center">
             <h1 class="text-4xl font-bold mb-4">Marks Management</h1>
@@ -1775,9 +1778,9 @@ async function renderMarks() {
                 <button onclick="showAddMarksModal()" class="bg-white text-purple-600 px-6 py-2 rounded-lg hover:bg-gray-100 transition">
                     <i class="fas fa-plus mr-2"></i>Add Marks
                 </button>
-                <button onclick="showPublishMarksModal()" class="bg-green-500 text-white px-6 py-2 rounded-lg hover:bg-green-600 transition">
+                ${isDOS ? `<button onclick="showPublishMarksModal()" class="bg-green-500 text-white px-6 py-2 rounded-lg hover:bg-green-600 transition">
                     <i class="fas fa-paper-plane mr-2"></i>Publish Marks
-                </button>
+                </button>` : ''}
             </div>
         </div>
         <div class="container mx-auto px-4 py-16">
@@ -1816,8 +1819,13 @@ async function renderMarks() {
         </div>
     `;
     
-    // Load classes for filter
-    const classesResult = await API.get('/dos/classes');
+    // Load classes for filter (teacher's classes only if teacher)
+    let classEndpoint = '/dos/classes';
+    if (isTeacher && currentUser.id) {
+        classEndpoint = `/dos/my-classes/${currentUser.id}`;
+    }
+    
+    const classesResult = await API.get(classEndpoint);
     if (classesResult.success) {
         const filterClass = document.getElementById('filter-class');
         filterClass.innerHTML = '<option value="">All Classes</option>' + 
@@ -1858,7 +1866,13 @@ window.filterMarks = function() {
 };
 
 window.showAddMarksModal = async function() {
-    const classesResult = await API.get('/dos/classes');
+    const isTeacher = currentUser && currentUser.role === 'Teacher';
+    let classEndpoint = '/dos/classes';
+    if (isTeacher && currentUser.id) {
+        classEndpoint = `/dos/my-classes/${currentUser.id}`;
+    }
+    
+    const classesResult = await API.get(classEndpoint);
     
     const modal = document.createElement('div');
     modal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 overflow-y-auto';
@@ -2377,12 +2391,15 @@ window.showPublishBestPerformersModal = async function() {
 
 async function renderClasses() {
     const mainContent = document.getElementById('main-content');
+    const isTeacher = currentUser && currentUser.role === 'Teacher';
+    const isDOS = currentUser && currentUser.role === 'DOS';
+    
     mainContent.innerHTML = `
         <div class="bg-blue-600 text-white py-12 text-center">
-            <h1 class="text-4xl font-bold mb-4">Classes</h1>
-            <button onclick="showCreateClassModal()" class="bg-white text-blue-600 px-6 py-2 rounded-lg hover:bg-gray-100 transition mt-4">
+            <h1 class="text-4xl font-bold mb-4">${isTeacher ? 'My Classes' : 'Classes'}</h1>
+            ${isDOS ? `<button onclick="showCreateClassModal()" class="bg-white text-blue-600 px-6 py-2 rounded-lg hover:bg-gray-100 transition mt-4">
                 <i class="fas fa-plus mr-2"></i>Create New Class
-            </button>
+            </button>` : ''}
         </div>
         <div class="container mx-auto px-4 py-16">
             <div id="classes-list" class="text-center">
@@ -2392,7 +2409,12 @@ async function renderClasses() {
         </div>
     `;
     
-    const result = await API.get('/dos/classes');
+    let endpoint = '/dos/classes';
+    if (isTeacher && currentUser.id) {
+        endpoint = `/dos/my-classes/${currentUser.id}`;
+    }
+    
+    const result = await API.get(endpoint);
     const classesList = document.getElementById('classes-list');
     
     if (result.success && result.data.data) {

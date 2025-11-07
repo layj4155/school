@@ -1,0 +1,17 @@
+DOD
+
+1. for total Student he will see all the student registered in the system
+2. In discipline management he will be able to 
+a. create fault so we will have fault name, and point to deduct every fault created will be in total fault management where he can edit, update, or delete the fault.
+
+b. And also manage conducts and class conducts
+
+c. In here also he can see the statistics of student and faults that statistic is what will show him or her what students are doing much in other to avoid or take precautions 
+
+2. In Reduce conduct Marks here is where he can deduct marks to student, class or all student 
+a. if he select the students he will be able to select a student by names and he can select more than one student from All student registered, select Fault, after selecting fault it will display Points of deduction and add comment the after cancel or Deduct, if he click on Deduct button the points are removed from total points (40) and remember each term a student starts with 40 marks
+b. if he chooses to deduct from Class he will be able to select or choose a class from all class we have, select fault after points of deduction are displayed then add a comment and deduct after clicking deduct all student within that class point of deduction are removed from their remaining points
+
+3. In Low Conduct Alert here he can see student who has low conducts less than 20 points so he can contact their parent about their behavior so he will see those student and each student will be displayed here with his parent information so to contact their parent will be easy 
+
+4. In Publish Report he will be able to send all the information he has to students account and parents account, DOS and SM so they can see the behaviors of the students 
