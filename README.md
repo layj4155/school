@@ -1,4 +1,4 @@
-# 🎓 Kageyo TVET School Management System
+# 🎓 Kageyo TSS Management System
 
 > A comprehensive school management system with role-based access control for administrators, teachers, students, and parents.
 
