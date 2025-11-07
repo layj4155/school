@@ -890,11 +890,10 @@ async function renderRegister() {
                             <optgroup label="Teaching Staff">
                                 <option value="Teacher">Teacher</option>
                             </optgroup>
-                            <optgroup label="Students & Parents">
-                                <option value="Student">Student</option>
-                                <option value="Parent">Parent</option>
-                            </optgroup>
                         </select>
+                        <p class="text-xs text-gray-500 mt-2">
+                            <i class="fas fa-info-circle mr-1"></i>Students & Parents don't need to register - login with your Student ID
+                        </p>
                     </div>
                     
                     <button type="submit" 
