@@ -223,6 +223,14 @@ const routes = {
     '/best-performers': renderBestPerformers,
     '/student-portal': renderStudentPortal,
     '/parent-portal': renderParentPortal,
+    '/dod-faults': renderDODFaults,
+    '/dod-deduct': renderDODDeduct,
+    '/dod-alerts': renderDODAlerts,
+    '/dod-publish': renderDODPublish,
+    '/lib-books': renderLibBooks,
+    '/lib-borrow': renderLibBorrow,
+    '/lib-overdue': renderLibOverdue,
+    '/lib-reports': renderLibReports,
 };
 
 function navigateTo(path) {
@@ -1209,22 +1217,22 @@ async function renderDODDashboard() {
             </div>
             
             <div class="grid md:grid-cols-2 gap-6">
-                <button onclick="navigateTo('/discipline')" class="bg-red-600 text-white p-6 rounded-lg hover:bg-red-700 transition text-left">
+                <button onclick="navigateTo('/dod-faults')" class="bg-red-600 text-white p-6 rounded-lg hover:bg-red-700 transition text-left">
                     <i class="fas fa-clipboard-list text-3xl mb-3"></i>
                     <h3 class="text-xl font-bold mb-2">Discipline Management</h3>
                     <p class="text-sm">Create faults and manage conduct (40 max)</p>
                 </button>
-                <button class="bg-orange-600 text-white p-6 rounded-lg hover:bg-orange-700 transition text-left">
+                <button onclick="navigateTo('/dod-deduct')" class="bg-orange-600 text-white p-6 rounded-lg hover:bg-orange-700 transition text-left">
                     <i class="fas fa-user-minus text-3xl mb-3"></i>
                     <h3 class="text-xl font-bold mb-2">Reduce Conduct Marks</h3>
                     <p class="text-sm">Deduct marks for student faults</p>
                 </button>
-                <button class="bg-yellow-600 text-white p-6 rounded-lg hover:bg-yellow-700 transition text-left">
+                <button onclick="navigateTo('/dod-alerts')" class="bg-yellow-600 text-white p-6 rounded-lg hover:bg-yellow-700 transition text-left">
                     <i class="fas fa-exclamation-circle text-3xl mb-3"></i>
                     <h3 class="text-xl font-bold mb-2">Low Conduct Alert</h3>
                     <p class="text-sm">Students below 20 conduct marks</p>
                 </button>
-                <button class="bg-indigo-600 text-white p-6 rounded-lg hover:bg-indigo-700 transition text-left">
+                <button onclick="navigateTo('/dod-publish')" class="bg-indigo-600 text-white p-6 rounded-lg hover:bg-indigo-700 transition text-left">
                     <i class="fas fa-file-alt text-3xl mb-3"></i>
                     <h3 class="text-xl font-bold mb-2">Publish Reports</h3>
                     <p class="text-sm">Send reports to DOS and SM</p>
@@ -1342,27 +1350,27 @@ async function renderLibrarianDashboard() {
             </div>
             
             <div class="grid md:grid-cols-3 gap-6">
-                <button onclick="navigateTo('/library')" class="bg-purple-600 text-white p-6 rounded-lg hover:bg-purple-700 transition text-left">
+                <button onclick="navigateTo('/lib-books')" class="bg-purple-600 text-white p-6 rounded-lg hover:bg-purple-700 transition text-left">
                     <i class="fas fa-plus-circle text-3xl mb-3"></i>
-                    <h3 class="text-xl font-bold mb-2">Add Books</h3>
-                    <p class="text-sm">Register new books to library</p>
+                    <h3 class="text-xl font-bold mb-2">Book Management</h3>
+                    <p class="text-sm">Add and manage library books</p>
                 </button>
-                <button class="bg-blue-600 text-white p-6 rounded-lg hover:bg-blue-700 transition text-left">
+                <button onclick="navigateTo('/lib-borrow')" class="bg-blue-600 text-white p-6 rounded-lg hover:bg-blue-700 transition text-left">
                     <i class="fas fa-hand-holding text-3xl mb-3"></i>
                     <h3 class="text-xl font-bold mb-2">Borrow/Return</h3>
                     <p class="text-sm">Manage borrowing and returns</p>
                 </button>
-                <button class="bg-red-600 text-white p-6 rounded-lg hover:bg-red-700 transition text-left">
+                <button onclick="navigateTo('/lib-overdue')" class="bg-red-600 text-white p-6 rounded-lg hover:bg-red-700 transition text-left">
                     <i class="fas fa-exclamation-triangle text-3xl mb-3"></i>
                     <h3 class="text-xl font-bold mb-2">Overdue Tracking</h3>
                     <p class="text-sm">Monitor overdue books</p>
                 </button>
-                <button class="bg-green-600 text-white p-6 rounded-lg hover:bg-green-700 transition text-left">
+                <button onclick="navigateTo('/lib-reports')" class="bg-green-600 text-white p-6 rounded-lg hover:bg-green-700 transition text-left">
                     <i class="fas fa-chart-pie text-3xl mb-3"></i>
                     <h3 class="text-xl font-bold mb-2">Library Reports</h3>
-                    <p class="text-sm">View comprehensive reports</p>
+                    <p class="text-sm">View comprehensive statistics</p>
                 </button>
-                <button class="bg-orange-600 text-white p-6 rounded-lg hover:bg-orange-700 transition text-left">
+                <button onclick="navigateTo('/lib-reports')" class="bg-orange-600 text-white p-6 rounded-lg hover:bg-orange-700 transition text-left">
                     <i class="fas fa-trophy text-3xl mb-3"></i>
                     <h3 class="text-xl font-bold mb-2">Most Borrowed</h3>
                     <p class="text-sm">Popular books statistics</p>
@@ -1508,7 +1516,10 @@ async function renderStudents() {
     const mainContent = document.getElementById('main-content');
     mainContent.innerHTML = `
         <div class="bg-blue-600 text-white py-12 text-center">
-            <h1 class="text-4xl font-bold mb-4">Students</h1>
+            <h1 class="text-4xl font-bold mb-4">Student Management</h1>
+            <button onclick="showRegisterStudentModal()" class="bg-white text-blue-600 px-6 py-2 rounded-lg hover:bg-gray-100 transition mt-4">
+                <i class="fas fa-user-plus mr-2"></i>Register New Student
+            </button>
         </div>
         <div class="container mx-auto px-4 py-16">
             <div id="students-list" class="text-center">
@@ -1518,34 +1529,64 @@ async function renderStudents() {
         </div>
     `;
     
-    const result = await API.get('/students');
+    const result = await API.get('/dos/students');
     const studentsList = document.getElementById('students-list');
     
     if (result.success && result.data.data) {
-        studentsList.innerHTML = `
-            <div class="bg-white rounded-lg shadow overflow-hidden">
-                <table class="min-w-full">
-                    <thead class="bg-blue-600 text-white">
-                        <tr>
-                            <th class="px-6 py-3 text-left">Name</th>
-                            <th class="px-6 py-3 text-left">Email</th>
-                            <th class="px-6 py-3 text-left">Program</th>
-                            <th class="px-6 py-3 text-left">Class</th>
-                        </tr>
-                    </thead>
-                    <tbody class="divide-y">
-                        ${result.data.data.map(student => `
-                            <tr class="hover:bg-gray-50">
-                                <td class="px-6 py-4">${student.name}</td>
-                                <td class="px-6 py-4">${student.email}</td>
-                                <td class="px-6 py-4">${student.program || 'N/A'}</td>
-                                <td class="px-6 py-4">${student.class || 'N/A'}</td>
+        if (result.data.data.length === 0) {
+            studentsList.innerHTML = `
+                <div class="text-gray-600">
+                    <i class="fas fa-info-circle text-4xl mb-4"></i>
+                    <p class="text-lg">No students found. Register your first student!</p>
+                </div>
+            `;
+        } else {
+            studentsList.innerHTML = `
+                <div class="bg-white rounded-lg shadow overflow-hidden">
+                    <table class="min-w-full">
+                        <thead class="bg-blue-600 text-white">
+                            <tr>
+                                <th class="px-6 py-3 text-left">Student ID</th>
+                                <th class="px-6 py-3 text-left">Name</th>
+                                <th class="px-6 py-3 text-left">Gender</th>
+                                <th class="px-6 py-3 text-left">Age</th>
+                                <th class="px-6 py-3 text-left">Class</th>
+                                <th class="px-6 py-3 text-left">Parent</th>
+                                <th class="px-6 py-3 text-left">Actions</th>
                             </tr>
-                        `).join('')}
-                    </tbody>
-                </table>
-            </div>
-        `;
+                        </thead>
+                        <tbody class="divide-y">
+                            ${result.data.data.map(student => `
+                                <tr class="hover:bg-gray-50">
+                                    <td class="px-6 py-4 font-mono text-sm">${student.studentID}</td>
+                                    <td class="px-6 py-4">${student.firstName} ${student.lastName}</td>
+                                    <td class="px-6 py-4">${student.gender}</td>
+                                    <td class="px-6 py-4">${student.age || 'N/A'}</td>
+                                    <td class="px-6 py-4">${student.class?.classID || 'N/A'}</td>
+                                    <td class="px-6 py-4">
+                                        <div class="text-sm">
+                                            <div>${student.parentName}</div>
+                                            <div class="text-gray-500">${student.parentPhone}</div>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4">
+                                        <button onclick="viewStudent('${student._id}')" class="text-blue-600 hover:text-blue-800 mr-3">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                        <button onclick="editStudent('${student._id}')" class="text-green-600 hover:text-green-800 mr-3">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                        <button onclick="deleteStudent('${student._id}')" class="text-red-600 hover:text-red-800">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                </div>
+            `;
+        }
     } else {
         studentsList.innerHTML = `
             <div class="text-red-600">
@@ -1556,17 +1597,478 @@ async function renderStudents() {
     }
 }
 
+// Register Student Modal
+window.showRegisterStudentModal = async function() {
+    const classesResult = await API.get('/dos/classes');
+    const locationsResult = await API.get('/locations/all');
+    
+    const modal = document.createElement('div');
+    modal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 overflow-y-auto';
+    modal.innerHTML = `
+        <div class="bg-white rounded-lg p-8 max-w-3xl w-full mx-4 my-8">
+            <h2 class="text-2xl font-bold mb-6 text-blue-600">Register New Student</h2>
+            <form id="register-student-form" class="space-y-6">
+                <!-- Personal Information -->
+                <div class="border-b pb-4">
+                    <h3 class="text-lg font-bold text-gray-700 mb-4">Personal Information</h3>
+                    <div class="grid md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-gray-700 font-bold mb-2">First Name *</label>
+                            <input type="text" name="firstName" required class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        </div>
+                        <div>
+                            <label class="block text-gray-700 font-bold mb-2">Last Name *</label>
+                            <input type="text" name="lastName" required class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        </div>
+                        <div>
+                            <label class="block text-gray-700 font-bold mb-2">Gender *</label>
+                            <select name="gender" required class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                <option value="">Select Gender</option>
+                                <option value="Male">Male</option>
+                                <option value="Female">Female</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-gray-700 font-bold mb-2">Date of Birth *</label>
+                            <input type="date" name="dateOfBirth" required class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        </div>
+                        <div>
+                            <label class="block text-gray-700 font-bold mb-2">Class *</label>
+                            <select name="classId" required class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                <option value="">Select Class</option>
+                                ${classesResult.success ? classesResult.data.data.map(cls => 
+                                    `<option value="${cls._id}">${cls.classID} - ${cls.name}</option>`
+                                ).join('') : ''}
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Parent/Guardian Information -->
+                <div class="border-b pb-4">
+                    <h3 class="text-lg font-bold text-gray-700 mb-4">Parent/Guardian Information</h3>
+                    <div class="grid md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-gray-700 font-bold mb-2">Parent/Guardian Name *</label>
+                            <input type="text" name="parentName" required class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        </div>
+                        <div>
+                            <label class="block text-gray-700 font-bold mb-2">Phone Number *</label>
+                            <input type="tel" name="parentPhone" required class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="0788123456">
+                        </div>
+                        <div>
+                            <label class="block text-gray-700 font-bold mb-2">Relationship *</label>
+                            <select name="relationship" required class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                <option value="">Select Relationship</option>
+                                <option value="Father">Father</option>
+                                <option value="Mother">Mother</option>
+                                <option value="Guardian">Guardian</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-gray-700 font-bold mb-2">Email (Optional)</label>
+                            <input type="email" name="parentEmail" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Address Information -->
+                <div class="border-b pb-4">
+                    <h3 class="text-lg font-bold text-gray-700 mb-4">Address Information</h3>
+                    <div class="grid md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-gray-700 font-bold mb-2">Province *</label>
+                            <select name="province" required id="province-select" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" onchange="loadDistricts(this.value)">
+                                <option value="">Select Province</option>
+                                ${locationsResult.success ? Object.keys(locationsResult.data.data).map(province => 
+                                    `<option value="${province}">${province}</option>`
+                                ).join('') : ''}
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-gray-700 font-bold mb-2">District *</label>
+                            <select name="district" required id="district-select" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                <option value="">Select District</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-gray-700 font-bold mb-2">Sector *</label>
+                            <input type="text" name="sector" required class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        </div>
+                        <div>
+                            <label class="block text-gray-700 font-bold mb-2">Cell *</label>
+                            <input type="text" name="cell" required class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        </div>
+                        <div>
+                            <label class="block text-gray-700 font-bold mb-2">Village *</label>
+                            <input type="text" name="village" required class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex gap-4">
+                    <button type="submit" class="flex-1 bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 font-bold">
+                        <i class="fas fa-user-plus mr-2"></i>Register Student
+                    </button>
+                    <button type="button" onclick="this.closest('.fixed').remove()" class="flex-1 bg-gray-400 text-white px-6 py-3 rounded-lg hover:bg-gray-500 font-bold">
+                        Cancel
+                    </button>
+                </div>
+            </form>
+        </div>
+    `;
+    document.body.appendChild(modal);
+
+    // Store locations data globally for district loading
+    window.locationsData = locationsResult.success ? locationsResult.data.data : {};
+
+    window.loadDistricts = function(province) {
+        const districtSelect = document.getElementById('district-select');
+        districtSelect.innerHTML = '<option value="">Select District</option>';
+        
+        if (province && window.locationsData[province]) {
+            const districts = window.locationsData[province].districts;
+            districtSelect.innerHTML += districts.map(d => `<option value="${d}">${d}</option>`).join('');
+        }
+    };
+
+    document.getElementById('register-student-form').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const formData = new FormData(e.target);
+        const data = {
+            firstName: formData.get('firstName'),
+            lastName: formData.get('lastName'),
+            gender: formData.get('gender'),
+            dateOfBirth: formData.get('dateOfBirth'),
+            classId: formData.get('classId'),
+            parentName: formData.get('parentName'),
+            parentPhone: formData.get('parentPhone'),
+            relationship: formData.get('relationship'),
+            parentEmail: formData.get('parentEmail'),
+            address: {
+                province: formData.get('province'),
+                district: formData.get('district'),
+                sector: formData.get('sector'),
+                cell: formData.get('cell'),
+                village: formData.get('village')
+            }
+        };
+        
+        const result = await API.post('/dos/students', data);
+        
+        if (result.success) {
+            showNotification(`Student registered successfully! Student ID: ${result.data.data.studentID}`, 'success');
+            modal.remove();
+            renderStudents();
+        } else {
+            showNotification('Failed to register student: ' + result.message, 'error');
+        }
+    });
+}
+
 async function renderMarks() {
     const mainContent = document.getElementById('main-content');
     mainContent.innerHTML = `
-        <div class="bg-blue-600 text-white py-12 text-center">
+        <div class="bg-purple-600 text-white py-12 text-center">
             <h1 class="text-4xl font-bold mb-4">Marks Management</h1>
+            <div class="flex gap-4 justify-center mt-4">
+                <button onclick="showAddMarksModal()" class="bg-white text-purple-600 px-6 py-2 rounded-lg hover:bg-gray-100 transition">
+                    <i class="fas fa-plus mr-2"></i>Add Marks
+                </button>
+                <button onclick="showPublishMarksModal()" class="bg-green-500 text-white px-6 py-2 rounded-lg hover:bg-green-600 transition">
+                    <i class="fas fa-paper-plane mr-2"></i>Publish Marks
+                </button>
+            </div>
         </div>
         <div class="container mx-auto px-4 py-16">
-            <p class="text-center text-gray-600">Marks management system - Connect to backend for data</p>
+            <!-- Filter Section -->
+            <div class="bg-white p-6 rounded-lg shadow-lg mb-8">
+                <h3 class="text-xl font-bold mb-4 text-purple-600">Filter Marks</h3>
+                <div class="grid md:grid-cols-4 gap-4">
+                    <select id="filter-class" class="px-4 py-2 border rounded-lg">
+                        <option value="">All Classes</option>
+                    </select>
+                    <select id="filter-term" class="px-4 py-2 border rounded-lg">
+                        <option value="">All Terms</option>
+                        <option value="Term 1">Term 1</option>
+                        <option value="Term 2">Term 2</option>
+                        <option value="Term 3">Term 3</option>
+                    </select>
+                    <select id="filter-assessment" class="px-4 py-2 border rounded-lg">
+                        <option value="">All Assessment Types</option>
+                        <option value="Midterm Exam">Midterm Exam</option>
+                        <option value="Formative Assessment">Formative Assessment</option>
+                        <option value="End of Unity">End of Unity</option>
+                        <option value="Summative Exam">Summative Exam</option>
+                        <option value="Integrated Assessment">Integrated Assessment</option>
+                        <option value="Final Exam">Final Exam</option>
+                    </select>
+                    <button onclick="filterMarks()" class="bg-purple-600 text-white px-6 py-2 rounded-lg hover:bg-purple-700">
+                        <i class="fas fa-filter mr-2"></i>Filter
+                    </button>
+                </div>
+            </div>
+
+            <div id="marks-list" class="text-center">
+                <i class="fas fa-spinner fa-spin text-4xl text-purple-600"></i>
+                <p class="mt-4">Loading marks...</p>
+            </div>
+        </div>
+    `;
+    
+    // Load classes for filter
+    const classesResult = await API.get('/dos/classes');
+    if (classesResult.success) {
+        const filterClass = document.getElementById('filter-class');
+        filterClass.innerHTML = '<option value="">All Classes</option>' + 
+            classesResult.data.data.map(cls => `<option value="${cls._id}">${cls.classID}</option>`).join('');
+    }
+    
+    loadMarks();
+}
+
+async function loadMarks(classId = '', term = '', assessmentType = '') {
+    const marksList = document.getElementById('marks-list');
+    if (!marksList) return;
+
+    let query = '';
+    if (classId) query += `?classId=${classId}`;
+    if (term) query += (query ? '&' : '?') + `term=${term}`;
+    if (assessmentType) query += (query ? '&' : '?') + `assessmentType=${assessmentType}`;
+
+    marksList.innerHTML = `
+        <i class="fas fa-spinner fa-spin text-4xl text-purple-600"></i>
+        <p class="mt-4">Loading marks...</p>
+    `;
+
+    // For now, show placeholder since we need to query by class
+    marksList.innerHTML = `
+        <div class="text-gray-600">
+            <i class="fas fa-info-circle text-4xl mb-4"></i>
+            <p class="text-lg">Select a class to view marks or add new marks</p>
         </div>
     `;
 }
+
+window.filterMarks = function() {
+    const classId = document.getElementById('filter-class').value;
+    const term = document.getElementById('filter-term').value;
+    const assessment = document.getElementById('filter-assessment').value;
+    loadMarks(classId, term, assessment);
+};
+
+window.showAddMarksModal = async function() {
+    const classesResult = await API.get('/dos/classes');
+    
+    const modal = document.createElement('div');
+    modal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 overflow-y-auto';
+    modal.innerHTML = `
+        <div class="bg-white rounded-lg p-8 max-w-4xl w-full mx-4 my-8">
+            <h2 class="text-2xl font-bold mb-6 text-purple-600">Add Marks</h2>
+            <form id="add-marks-form">
+                <div class="grid md:grid-cols-2 gap-4 mb-6">
+                    <div>
+                        <label class="block text-gray-700 font-bold mb-2">Class *</label>
+                        <select name="classId" required id="marks-class-select" class="w-full px-4 py-2 border rounded-lg" onchange="loadClassStudents(this.value)">
+                            <option value="">Select Class</option>
+                            ${classesResult.success ? classesResult.data.data.map(cls => 
+                                `<option value="${cls._id}">${cls.classID} - ${cls.name}</option>`
+                            ).join('') : ''}
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-gray-700 font-bold mb-2">Assessment Type *</label>
+                        <select name="assessmentType" required class="w-full px-4 py-2 border rounded-lg">
+                            <option value="">Select Type</option>
+                            <option value="Midterm Exam">Midterm Exam</option>
+                            <option value="Formative Assessment">Formative Assessment</option>
+                            <option value="End of Unity">End of Unity</option>
+                            <option value="Summative Exam">Summative Exam</option>
+                            <option value="Integrated Assessment">Integrated Assessment</option>
+                            <option value="Final Exam">Final Exam</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-gray-700 font-bold mb-2">Term *</label>
+                        <select name="term" required class="w-full px-4 py-2 border rounded-lg">
+                            <option value="">Select Term</option>
+                            <option value="Term 1">Term 1</option>
+                            <option value="Term 2">Term 2</option>
+                            <option value="Term 3">Term 3</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-gray-700 font-bold mb-2">Academic Year *</label>
+                        <input type="text" name="academicYear" required class="w-full px-4 py-2 border rounded-lg" value="2024-2025">
+                    </div>
+                </div>
+
+                <div id="students-marks-container" class="mb-6">
+                    <p class="text-gray-500 text-center">Select a class to add marks</p>
+                </div>
+
+                <div class="flex gap-4">
+                    <button type="submit" class="flex-1 bg-purple-600 text-white px-6 py-3 rounded-lg hover:bg-purple-700 font-bold">
+                        <i class="fas fa-save mr-2"></i>Save Marks
+                    </button>
+                    <button type="button" onclick="this.closest('.fixed').remove()" class="flex-1 bg-gray-400 text-white px-6 py-3 rounded-lg hover:bg-gray-500 font-bold">
+                        Cancel
+                    </button>
+                </div>
+            </form>
+        </div>
+    `;
+    document.body.appendChild(modal);
+
+    window.loadClassStudents = async function(classId) {
+        const container = document.getElementById('students-marks-container');
+        if (!classId) {
+            container.innerHTML = '<p class="text-gray-500 text-center">Select a class to add marks</p>';
+            return;
+        }
+
+        const result = await API.get(`/dos/students/class/${classId}`);
+        if (result.success && result.data.data) {
+            container.innerHTML = `
+                <h3 class="text-lg font-bold mb-4">Enter Marks for Students</h3>
+                <div class="max-h-96 overflow-y-auto space-y-4">
+                    ${result.data.data.map((student, index) => `
+                        <div class="border p-4 rounded-lg">
+                            <div class="flex items-center justify-between mb-3">
+                                <div>
+                                    <p class="font-bold">${student.firstName} ${student.lastName}</p>
+                                    <p class="text-sm text-gray-500">${student.studentID}</p>
+                                </div>
+                            </div>
+                            <input type="hidden" name="students[${index}][studentId]" value="${student._id}">
+                            <div class="grid md:grid-cols-2 gap-3">
+                                <div>
+                                    <label class="block text-sm text-gray-700 mb-1">Subject *</label>
+                                    <input type="text" name="students[${index}][subject]" required class="w-full px-3 py-2 border rounded text-sm" placeholder="e.g., Mathematics">
+                                </div>
+                                <div>
+                                    <label class="block text-sm text-gray-700 mb-1">Score (0-100) *</label>
+                                    <input type="number" name="students[${index}][score]" required min="0" max="100" class="w-full px-3 py-2 border rounded text-sm">
+                                </div>
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+        }
+    };
+
+    document.getElementById('add-marks-form').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const formData = new FormData(e.target);
+        
+        const marks = [];
+        let index = 0;
+        while (formData.get(`students[${index}][studentId]`)) {
+            marks.push({
+                studentId: formData.get(`students[${index}][studentId]`),
+                subject: formData.get(`students[${index}][subject]`),
+                score: parseFloat(formData.get(`students[${index}][score]`))
+            });
+            index++;
+        }
+
+        const data = {
+            classId: formData.get('classId'),
+            assessmentType: formData.get('assessmentType'),
+            term: formData.get('term'),
+            academicYear: formData.get('academicYear'),
+            marks
+        };
+        
+        const result = await API.post('/dos/marks', data);
+        
+        if (result.success) {
+            showNotification(`Marks added successfully for ${result.data.count} students!`, 'success');
+            modal.remove();
+            renderMarks();
+        } else {
+            showNotification('Failed to add marks: ' + result.message, 'error');
+        }
+    });
+};
+
+window.showPublishMarksModal = async function() {
+    const classesResult = await API.get('/dos/classes');
+    
+    const modal = document.createElement('div');
+    modal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50';
+    modal.innerHTML = `
+        <div class="bg-white rounded-lg p-8 max-w-md w-full mx-4">
+            <h2 class="text-2xl font-bold mb-6 text-green-600">Publish Marks</h2>
+            <p class="text-gray-600 mb-6">Publishing marks will make them visible to students and parents.</p>
+            <form id="publish-marks-form">
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-gray-700 font-bold mb-2">Class *</label>
+                        <select name="classId" required class="w-full px-4 py-2 border rounded-lg">
+                            <option value="">Select Class</option>
+                            ${classesResult.success ? classesResult.data.data.map(cls => 
+                                `<option value="${cls._id}">${cls.classID} - ${cls.name}</option>`
+                            ).join('') : ''}
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-gray-700 font-bold mb-2">Assessment Type *</label>
+                        <select name="assessmentType" required class="w-full px-4 py-2 border rounded-lg">
+                            <option value="">Select Type</option>
+                            <option value="Midterm Exam">Midterm Exam</option>
+                            <option value="Formative Assessment">Formative Assessment</option>
+                            <option value="End of Unity">End of Unity</option>
+                            <option value="Summative Exam">Summative Exam</option>
+                            <option value="Integrated Assessment">Integrated Assessment</option>
+                            <option value="Final Exam">Final Exam</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-gray-700 font-bold mb-2">Term *</label>
+                        <select name="term" required class="w-full px-4 py-2 border rounded-lg">
+                            <option value="">Select Term</option>
+                            <option value="Term 1">Term 1</option>
+                            <option value="Term 2">Term 2</option>
+                            <option value="Term 3">Term 3</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-gray-700 font-bold mb-2">Academic Year *</label>
+                        <input type="text" name="academicYear" required class="w-full px-4 py-2 border rounded-lg" value="2024-2025">
+                    </div>
+                </div>
+
+                <div class="flex gap-4 mt-6">
+                    <button type="submit" class="flex-1 bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 font-bold">
+                        <i class="fas fa-paper-plane mr-2"></i>Publish
+                    </button>
+                    <button type="button" onclick="this.closest('.fixed').remove()" class="flex-1 bg-gray-400 text-white px-6 py-3 rounded-lg hover:bg-gray-500 font-bold">
+                        Cancel
+                    </button>
+                </div>
+            </form>
+        </div>
+    `;
+    document.body.appendChild(modal);
+
+    document.getElementById('publish-marks-form').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const formData = new FormData(e.target);
+        const data = Object.fromEntries(formData);
+        
+        const result = await API.post('/dos/marks/publish', data);
+        
+        if (result.success) {
+            showNotification('Marks published successfully!', 'success');
+            modal.remove();
+            renderMarks();
+        } else {
+            showNotification('Failed to publish marks: ' + result.message, 'error');
+        }
+    });
+};
 
 async function renderLibrary() {
     const mainContent = document.getElementById('main-content');
@@ -1584,31 +2086,303 @@ async function renderDiscipline() {
     const mainContent = document.getElementById('main-content');
     mainContent.innerHTML = `
         <div class="bg-red-600 text-white py-12 text-center">
-            <h1 class="text-4xl font-bold mb-4">Discipline</h1>
+            <h1 class="text-4xl font-bold mb-4">Discipline Reports (From DOD)</h1>
+            <p class="text-xl">View discipline reports published by Director of Discipline</p>
         </div>
         <div class="container mx-auto px-4 py-16">
-            <p class="text-center text-gray-600">Discipline management system - Connect to backend for data</p>
+            <div class="bg-white p-6 rounded-lg shadow-lg mb-8">
+                <h3 class="text-xl font-bold mb-4 text-red-600">Filter Reports</h3>
+                <div class="grid md:grid-cols-3 gap-4">
+                    <select id="disc-term" class="px-4 py-2 border rounded-lg">
+                        <option value="">All Terms</option>
+                        <option value="Term 1">Term 1</option>
+                        <option value="Term 2">Term 2</option>
+                        <option value="Term 3">Term 3</option>
+                    </select>
+                    <select id="disc-student" class="px-4 py-2 border rounded-lg">
+                        <option value="">All Students</option>
+                    </select>
+                    <button onclick="loadDisciplineReports()" class="bg-red-600 text-white px-6 py-2 rounded-lg hover:bg-red-700">
+                        <i class="fas fa-search mr-2"></i>Search
+                    </button>
+                </div>
+            </div>
+
+            <div id="discipline-reports" class="text-center">
+                <i class="fas fa-spinner fa-spin text-4xl text-red-600"></i>
+                <p class="mt-4">Loading discipline reports...</p>
+            </div>
         </div>
     `;
+    
+    loadDisciplineReports();
 }
+
+window.loadDisciplineReports = async function() {
+    const term = document.getElementById('disc-term')?.value || '';
+    const studentId = document.getElementById('disc-student')?.value || '';
+    const reportsContainer = document.getElementById('discipline-reports');
+
+    if (!reportsContainer) return;
+
+    reportsContainer.innerHTML = `
+        <i class="fas fa-spinner fa-spin text-4xl text-red-600"></i>
+        <p class="mt-4">Loading discipline reports...</p>
+    `;
+
+    let query = '';
+    if (term) query += `?term=${term}`;
+    if (studentId) query += (query ? '&' : '?') + `studentId=${studentId}`;
+
+    const result = await API.get(`/dod/published${query}`);
+
+    if (result.success && result.data.data) {
+        if (result.data.data.length === 0) {
+            reportsContainer.innerHTML = `
+                <div class="text-gray-600">
+                    <i class="fas fa-info-circle text-4xl mb-4"></i>
+                    <p class="text-lg">No discipline reports found</p>
+                </div>
+            `;
+        } else {
+            reportsContainer.innerHTML = `
+                <div class="grid md:grid-cols-2 gap-6">
+                    ${result.data.data.map(report => `
+                        <div class="bg-white rounded-lg shadow-lg p-6 text-left">
+                            <div class="flex items-start justify-between mb-4">
+                                <div>
+                                    <h3 class="text-xl font-bold text-red-600">${report.student?.firstName} ${report.student?.lastName}</h3>
+                                    <p class="text-sm text-gray-500">${report.student?.studentID}</p>
+                                </div>
+                                <div class="text-right">
+                                    <p class="text-3xl font-bold ${report.conductScore >= 30 ? 'text-green-600' : report.conductScore >= 20 ? 'text-yellow-600' : 'text-red-600'}">${report.conductScore}/40</p>
+                                    <p class="text-xs text-gray-500">${report.term}</p>
+                                </div>
+                            </div>
+                            <div class="border-t pt-4">
+                                <div class="flex justify-between mb-2">
+                                    <span class="text-gray-600">Total Deductions:</span>
+                                    <span class="font-bold">${report.totalReductions}</span>
+                                </div>
+                                <div class="flex justify-between mb-2">
+                                    <span class="text-gray-600">Published:</span>
+                                    <span class="text-sm">${new Date(report.publishedAt).toLocaleDateString()}</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">Status:</span>
+                                    <span class="font-bold ${report.conductScore >= 30 ? 'text-green-600' : report.conductScore >= 20 ? 'text-yellow-600' : 'text-red-600'}">
+                                        ${report.conductScore >= 30 ? 'Good' : report.conductScore >= 20 ? 'Warning' : 'Critical'}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+        }
+    } else {
+        reportsContainer.innerHTML = `
+            <div class="text-red-600">
+                <i class="fas fa-exclamation-triangle text-4xl mb-4"></i>
+                <p>Unable to load discipline reports</p>
+            </div>
+        `;
+    }
+};
 
 async function renderPerformance() {
     const mainContent = document.getElementById('main-content');
     mainContent.innerHTML = `
-        <div class="bg-purple-600 text-white py-12 text-center">
+        <div class="bg-orange-600 text-white py-12 text-center">
             <h1 class="text-4xl font-bold mb-4">Performance Analytics</h1>
+            <button onclick="showPublishBestPerformersModal()" class="bg-white text-orange-600 px-6 py-2 rounded-lg hover:bg-gray-100 transition mt-4">
+                <i class="fas fa-trophy mr-2"></i>Publish Best Performers
+            </button>
         </div>
         <div class="container mx-auto px-4 py-16">
-            <p class="text-center text-gray-600">Performance analytics - Connect to backend for data</p>
+            <!-- Filter Section -->
+            <div class="bg-white p-6 rounded-lg shadow-lg mb-8">
+                <h3 class="text-xl font-bold mb-4 text-orange-600">View Performance</h3>
+                <div class="grid md:grid-cols-3 gap-4">
+                    <select id="perf-type" class="px-4 py-2 border rounded-lg">
+                        <option value="school">School Performance</option>
+                        <option value="class">Class Performance</option>
+                    </select>
+                    <select id="perf-class" class="px-4 py-2 border rounded-lg" style="display:none;">
+                        <option value="">Select Class</option>
+                    </select>
+                    <button onclick="loadPerformance()" class="bg-orange-600 text-white px-6 py-2 rounded-lg hover:bg-orange-700">
+                        <i class="fas fa-chart-bar mr-2"></i>View Performance
+                    </button>
+                </div>
+            </div>
+
+            <div id="performance-data" class="text-center">
+                <i class="fas fa-info-circle text-4xl text-orange-600 mb-4"></i>
+                <p class="text-lg text-gray-600">Select options above to view performance data</p>
+            </div>
         </div>
     `;
+
+    // Load classes
+    const classesResult = await API.get('/dos/classes');
+    if (classesResult.success) {
+        const perfClass = document.getElementById('perf-class');
+        perfClass.innerHTML = '<option value="">Select Class</option>' + 
+            classesResult.data.data.map(cls => `<option value="${cls._id}">${cls.classID}</option>`).join('');
+    }
+
+    document.getElementById('perf-type').addEventListener('change', function() {
+        document.getElementById('perf-class').style.display = this.value === 'class' ? 'block' : 'none';
+    });
 }
+
+window.loadPerformance = async function() {
+    const type = document.getElementById('perf-type').value;
+    const classId = document.getElementById('perf-class').value;
+    const perfData = document.getElementById('performance-data');
+
+    perfData.innerHTML = `
+        <i class="fas fa-spinner fa-spin text-4xl text-orange-600"></i>
+        <p class="mt-4">Loading performance data...</p>
+    `;
+
+    let endpoint = '';
+    if (type === 'school') {
+        endpoint = '/dos/performance/school';
+    } else if (type === 'class' && classId) {
+        endpoint = `/dos/performance/class/${classId}`;
+    } else {
+        perfData.innerHTML = `
+            <i class="fas fa-exclamation-circle text-4xl text-yellow-600 mb-4"></i>
+            <p class="text-lg text-gray-600">Please select a class</p>
+        `;
+        return;
+    }
+
+    const result = await API.get(endpoint);
+
+    if (result.success && result.data.data) {
+        const data = result.data.data;
+        
+        perfData.innerHTML = `
+            <div class="bg-white rounded-lg shadow-lg p-8">
+                ${data.class ? `<h2 class="text-2xl font-bold mb-6 text-orange-600">${data.class.classID} - ${data.class.name}</h2>` : 
+                    '<h2 class="text-2xl font-bold mb-6 text-orange-600">School-Wide Performance</h2>'}
+                
+                <!-- Best Performer -->
+                ${data.bestPerformer ? `
+                    <div class="bg-gradient-to-r from-yellow-100 to-orange-100 p-6 rounded-lg mb-6">
+                        <h3 class="text-xl font-bold mb-3 text-orange-700"><i class="fas fa-trophy mr-2"></i>Best Performer</h3>
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-lg font-bold">${data.bestPerformer.student.firstName} ${data.bestPerformer.student.lastName}</p>
+                                <p class="text-sm text-gray-600">${data.bestPerformer.student.studentID}</p>
+                            </div>
+                            <div class="text-right">
+                                <p class="text-4xl font-bold text-orange-600">${data.bestPerformer.average}%</p>
+                                <p class="text-sm text-gray-600">${data.bestPerformer.category}</p>
+                            </div>
+                        </div>
+                    </div>
+                ` : ''}
+
+                <!-- Performance Categories -->
+                <div class="grid md:grid-cols-3 gap-4 mb-6">
+                    ${Object.entries(data.categoryCounts).map(([category, count]) => `
+                        <div class="bg-gray-50 p-4 rounded-lg">
+                            <p class="text-sm text-gray-600">${category}</p>
+                            <p class="text-3xl font-bold text-gray-800">${count}</p>
+                            <p class="text-xs text-gray-500">students</p>
+                        </div>
+                    `).join('')}
+                </div>
+
+                <!-- Total Students -->
+                <div class="text-center mt-6">
+                    <p class="text-gray-600">Total Students: <span class="font-bold text-2xl text-orange-600">${data.totalStudents || data.performanceData.length}</span></p>
+                </div>
+            </div>
+        `;
+    } else {
+        perfData.innerHTML = `
+            <div class="text-red-600">
+                <i class="fas fa-exclamation-triangle text-4xl mb-4"></i>
+                <p>No performance data available. Make sure marks have been published.</p>
+            </div>
+        `;
+    }
+};
+
+window.showPublishBestPerformersModal = async function() {
+    const modal = document.createElement('div');
+    modal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50';
+    modal.innerHTML = `
+        <div class="bg-white rounded-lg p-8 max-w-md w-full mx-4">
+            <h2 class="text-2xl font-bold mb-6 text-orange-600">Publish Best Performers</h2>
+            <p class="text-gray-600 mb-6">This will publish students with 84% or above to the news section.</p>
+            <form id="publish-best-form">
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-gray-700 font-bold mb-2">Term *</label>
+                        <select name="term" required class="w-full px-4 py-2 border rounded-lg">
+                            <option value="">Select Term</option>
+                            <option value="Term 1">Term 1</option>
+                            <option value="Term 2">Term 2</option>
+                            <option value="Term 3">Term 3</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-gray-700 font-bold mb-2">Academic Year *</label>
+                        <input type="text" name="academicYear" required class="w-full px-4 py-2 border rounded-lg" value="2024-2025">
+                    </div>
+                    <div>
+                        <label class="block text-gray-700 font-bold mb-2">Assessment Type (Optional)</label>
+                        <select name="assessmentType" class="w-full px-4 py-2 border rounded-lg">
+                            <option value="">All Assessments</option>
+                            <option value="Midterm Exam">Midterm Exam</option>
+                            <option value="Final Exam">Final Exam</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="flex gap-4 mt-6">
+                    <button type="submit" class="flex-1 bg-orange-600 text-white px-6 py-3 rounded-lg hover:bg-orange-700 font-bold">
+                        <i class="fas fa-trophy mr-2"></i>Publish to News
+                    </button>
+                    <button type="button" onclick="this.closest('.fixed').remove()" class="flex-1 bg-gray-400 text-white px-6 py-3 rounded-lg hover:bg-gray-500 font-bold">
+                        Cancel
+                    </button>
+                </div>
+            </form>
+        </div>
+    `;
+    document.body.appendChild(modal);
+
+    document.getElementById('publish-best-form').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const formData = new FormData(e.target);
+        const data = Object.fromEntries(formData);
+        
+        const result = await API.post('/dos/performance/publish-best', data);
+        
+        if (result.success) {
+            showNotification(`Published ${result.data.bestPerformers?.length || 0} best performers to news!`, 'success');
+            modal.remove();
+        } else {
+            showNotification('Failed to publish: ' + result.message, 'error');
+        }
+    });
+};
 
 async function renderClasses() {
     const mainContent = document.getElementById('main-content');
     mainContent.innerHTML = `
         <div class="bg-blue-600 text-white py-12 text-center">
             <h1 class="text-4xl font-bold mb-4">Classes</h1>
+            <button onclick="showCreateClassModal()" class="bg-white text-blue-600 px-6 py-2 rounded-lg hover:bg-gray-100 transition mt-4">
+                <i class="fas fa-plus mr-2"></i>Create New Class
+            </button>
         </div>
         <div class="container mx-auto px-4 py-16">
             <div id="classes-list" class="text-center">
@@ -1618,21 +2392,41 @@ async function renderClasses() {
         </div>
     `;
     
-    const result = await API.get('/classes');
+    const result = await API.get('/dos/classes');
     const classesList = document.getElementById('classes-list');
     
     if (result.success && result.data.data) {
-        classesList.innerHTML = `
-            <div class="grid md:grid-cols-3 gap-6">
-                ${result.data.data.map(cls => `
-                    <div class="bg-white p-6 rounded-lg shadow-lg">
-                        <h3 class="text-xl font-bold mb-2 text-blue-600">${cls.name}</h3>
-                        <p class="text-gray-600">Program: ${cls.program || 'N/A'}</p>
-                        <p class="text-gray-600">Students: ${cls.studentCount || 0}</p>
-                    </div>
-                `).join('')}
-            </div>
-        `;
+        if (result.data.data.length === 0) {
+            classesList.innerHTML = `
+                <div class="text-gray-600">
+                    <i class="fas fa-info-circle text-4xl mb-4"></i>
+                    <p class="text-lg">No classes found. Create your first class!</p>
+                </div>
+            `;
+        } else {
+            classesList.innerHTML = `
+                <div class="grid md:grid-cols-3 gap-6">
+                    ${result.data.data.map(cls => `
+                        <div class="bg-white p-6 rounded-lg shadow-lg hover:shadow-xl transition">
+                            <h3 class="text-2xl font-bold mb-3 text-blue-600">${cls.classID}</h3>
+                            <p class="text-gray-700 mb-2"><strong>Name:</strong> ${cls.name}</p>
+                            <p class="text-gray-600 mb-2"><strong>Level:</strong> ${cls.level}</p>
+                            <p class="text-gray-600 mb-2"><strong>Grade:</strong> ${cls.grade} ${cls.section}</p>
+                            ${cls.trade !== 'None' ? `<p class="text-gray-600 mb-2"><strong>Trade:</strong> ${cls.trade}</p>` : ''}
+                            <p class="text-gray-600 mb-4"><strong>Students:</strong> ${cls.students?.length || 0}</p>
+                            <div class="flex gap-2">
+                                <button onclick="viewClass('${cls._id}')" class="flex-1 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 text-sm">
+                                    <i class="fas fa-eye mr-1"></i>View
+                                </button>
+                                <button onclick="editClass('${cls._id}')" class="flex-1 bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 text-sm">
+                                    <i class="fas fa-edit mr-1"></i>Edit
+                                </button>
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+        }
     } else {
         classesList.innerHTML = `
             <div class="text-red-600">
@@ -1641,6 +2435,109 @@ async function renderClasses() {
             </div>
         `;
     }
+}
+
+// Create Class Modal
+window.showCreateClassModal = async function() {
+    const teachersResult = await API.get('/dos/teachers');
+    
+    const modal = document.createElement('div');
+    modal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 overflow-y-auto';
+    modal.innerHTML = `
+        <div class="bg-white rounded-lg p-8 max-w-md w-full mx-4 my-8">
+            <h2 class="text-2xl font-bold mb-6 text-blue-600">Create New Class</h2>
+            <p class="text-sm text-gray-600 mb-4">Class name will be auto-generated based on your selections</p>
+            <form id="create-class-form">
+                <div class="mb-4">
+                    <label class="block text-gray-700 font-bold mb-2">Level *</label>
+                    <select name="level" required class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" onchange="handleLevelChange(this.value)">
+                        <option value="">Select Level</option>
+                        <option value="O-Level">O-Level</option>
+                        <option value="A-Level">A-Level</option>
+                    </select>
+                </div>
+                <div class="mb-4">
+                    <label class="block text-gray-700 font-bold mb-2">Grade *</label>
+                    <select name="grade" required id="grade-select" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <option value="">Select Grade</option>
+                    </select>
+                </div>
+                <div class="mb-4" id="trade-div" style="display:none;">
+                    <label class="block text-gray-700 font-bold mb-2">Trade *</label>
+                    <select name="trade" id="trade-select" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <option value="None">None</option>
+                        <option value="SOD">Software Development (SOD)</option>
+                        <option value="ACC">Accounting Profession (ACC)</option>
+                    </select>
+                </div>
+                <div class="mb-4">
+                    <label class="block text-gray-700 font-bold mb-2">Section (Optional)</label>
+                    <input type="text" name="section" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" maxlength="1" placeholder="A, B, C, etc. (Leave empty if no section)">
+                </div>
+                <div class="mb-6">
+                    <label class="block text-gray-700 font-bold mb-2">Class Teacher (Optional)</label>
+                    <select name="classTeacher" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <option value="">Select Teacher</option>
+                        ${teachersResult.success ? teachersResult.data.data.map(teacher => 
+                            `<option value="${teacher._id}">${teacher.name}</option>`
+                        ).join('') : ''}
+                    </select>
+                </div>
+                <div class="flex gap-4">
+                    <button type="submit" class="flex-1 bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 font-bold">
+                        <i class="fas fa-plus mr-2"></i>Create
+                    </button>
+                    <button type="button" onclick="this.closest('.fixed').remove()" class="flex-1 bg-gray-400 text-white px-6 py-3 rounded-lg hover:bg-gray-500 font-bold">
+                        Cancel
+                    </button>
+                </div>
+            </form>
+        </div>
+    `;
+    document.body.appendChild(modal);
+
+    window.handleLevelChange = function(level) {
+        const gradeSelect = document.getElementById('grade-select');
+        const tradeDiv = document.getElementById('trade-div');
+        const tradeSelect = document.getElementById('trade-select');
+        
+        gradeSelect.innerHTML = '<option value="">Select Grade</option>';
+        
+        if (level === 'O-Level') {
+            gradeSelect.innerHTML += '<option value="S1">S1</option><option value="S2">S2</option><option value="S3">S3</option>';
+            tradeDiv.style.display = 'none';
+            tradeSelect.value = 'None';
+        } else if (level === 'A-Level') {
+            gradeSelect.innerHTML += '<option value="S4">S4</option><option value="S5">S5</option><option value="S6">S6</option><option value="L3">L3</option><option value="L4">L4</option><option value="L5">L5</option>';
+            tradeDiv.style.display = 'block';
+        }
+    };
+
+    document.getElementById('create-class-form').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const formData = new FormData(e.target);
+        const data = Object.fromEntries(formData);
+        
+        // Remove empty section
+        if (!data.section || data.section.trim() === '') {
+            delete data.section;
+        }
+        
+        // Remove empty classTeacher
+        if (!data.classTeacher || data.classTeacher === '') {
+            delete data.classTeacher;
+        }
+        
+        const result = await API.post('/dos/classes', data);
+        
+        if (result.success) {
+            showNotification(`Class created: ${result.data.data.classID}`, 'success');
+            modal.remove();
+            renderClasses();
+        } else {
+            showNotification('Failed to create class: ' + result.message, 'error');
+        }
+    });
 }
 
 async function renderTrainers() {
@@ -2159,6 +3056,1161 @@ async function renderParentPortal() {
             </div>
         `;
     }, 1000);
+}
+
+// ============================================
+// DOD (Director of Discipline) FEATURES
+// ============================================
+
+async function renderDODFaults() {
+    const mainContent = document.getElementById('main-content');
+    mainContent.innerHTML = `
+        <div class="bg-red-600 text-white py-12 text-center">
+            <h1 class="text-4xl font-bold mb-4">Fault Management</h1>
+            <button onclick="showCreateFaultModal()" class="bg-white text-red-600 px-6 py-2 rounded-lg hover:bg-gray-100 transition mt-4">
+                <i class="fas fa-plus mr-2"></i>Create New Fault
+            </button>
+        </div>
+        <div class="container mx-auto px-4 py-16">
+            <div id="faults-list" class="text-center">
+                <i class="fas fa-spinner fa-spin text-4xl text-red-600"></i>
+                <p class="mt-4">Loading faults...</p>
+            </div>
+        </div>
+    `;
+    
+    loadFaults();
+}
+
+async function loadFaults() {
+    const faultsList = document.getElementById('faults-list');
+    if (!faultsList) return;
+
+    const result = await API.get('/dod/faults');
+    
+    if (result.success && result.data.data) {
+        if (result.data.data.length === 0) {
+            faultsList.innerHTML = `
+                <div class="text-gray-600">
+                    <i class="fas fa-info-circle text-4xl mb-4"></i>
+                    <p class="text-lg">No faults found. Create your first fault!</p>
+                </div>
+            `;
+        } else {
+            faultsList.innerHTML = `
+                <div class="grid md:grid-cols-3 gap-6">
+                    ${result.data.data.map(fault => `
+                        <div class="bg-white p-6 rounded-lg shadow-lg hover:shadow-xl transition">
+                            <h3 class="text-xl font-bold mb-3 text-red-600">${fault.name}</h3>
+                            <div class="text-center mb-4">
+                                <p class="text-4xl font-bold text-gray-800">-${fault.pointsToDeduct}</p>
+                                <p class="text-sm text-gray-500">points</p>
+                            </div>
+                            ${fault.description ? `<p class="text-gray-600 mb-4 text-sm">${fault.description}</p>` : ''}
+                            <div class="flex gap-2">
+                                <button onclick="editFault('${fault._id}')" class="flex-1 bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 text-sm">
+                                    <i class="fas fa-edit mr-1"></i>Edit
+                                </button>
+                                <button onclick="deleteFault('${fault._id}')" class="flex-1 bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700 text-sm">
+                                    <i class="fas fa-trash mr-1"></i>Delete
+                                </button>
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+        }
+    } else {
+        faultsList.innerHTML = `
+            <div class="text-red-600">
+                <i class="fas fa-exclamation-triangle text-4xl mb-4"></i>
+                <p>Unable to load faults</p>
+            </div>
+        `;
+    }
+}
+
+window.showCreateFaultModal = function() {
+    const modal = document.createElement('div');
+    modal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50';
+    modal.innerHTML = `
+        <div class="bg-white rounded-lg p-8 max-w-md w-full mx-4">
+            <h2 class="text-2xl font-bold mb-6 text-red-600">Create New Fault</h2>
+            <form id="create-fault-form">
+                <div class="mb-4">
+                    <label class="block text-gray-700 font-bold mb-2">Fault Name *</label>
+                    <input type="text" name="name" required class="w-full px-4 py-2 border rounded-lg" placeholder="e.g., Late to class">
+                </div>
+                <div class="mb-4">
+                    <label class="block text-gray-700 font-bold mb-2">Points to Deduct (1-40) *</label>
+                    <input type="number" name="pointsToDeduct" required min="1" max="40" class="w-full px-4 py-2 border rounded-lg">
+                </div>
+                <div class="mb-6">
+                    <label class="block text-gray-700 font-bold mb-2">Description (Optional)</label>
+                    <textarea name="description" class="w-full px-4 py-2 border rounded-lg" rows="3"></textarea>
+                </div>
+                <div class="flex gap-4">
+                    <button type="submit" class="flex-1 bg-red-600 text-white px-6 py-3 rounded-lg hover:bg-red-700 font-bold">
+                        <i class="fas fa-plus mr-2"></i>Create
+                    </button>
+                    <button type="button" onclick="this.closest('.fixed').remove()" class="flex-1 bg-gray-400 text-white px-6 py-3 rounded-lg hover:bg-gray-500 font-bold">
+                        Cancel
+                    </button>
+                </div>
+            </form>
+        </div>
+    `;
+    document.body.appendChild(modal);
+
+    document.getElementById('create-fault-form').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const formData = new FormData(e.target);
+        const data = Object.fromEntries(formData);
+        
+        const result = await API.post('/dod/faults', data);
+        
+        if (result.success) {
+            showNotification('Fault created successfully!', 'success');
+            modal.remove();
+            loadFaults();
+        } else {
+            showNotification('Failed to create fault: ' + result.message, 'error');
+        }
+    });
+};
+
+window.deleteFault = async function(faultId) {
+    if (!confirm('Are you sure you want to delete this fault?')) return;
+    
+    const result = await API.delete(`/dod/faults/${faultId}`);
+    
+    if (result.success) {
+        showNotification('Fault deleted successfully!', 'success');
+        loadFaults();
+    } else {
+        showNotification('Failed to delete fault: ' + result.message, 'error');
+    }
+};
+
+async function renderDODDeduct() {
+    const mainContent = document.getElementById('main-content');
+    mainContent.innerHTML = `
+        <div class="bg-orange-600 text-white py-12 text-center">
+            <h1 class="text-4xl font-bold mb-4">Reduce Conduct Marks</h1>
+            <p class="text-xl">Deduct points from students for misconduct</p>
+        </div>
+        <div class="container mx-auto px-4 py-16">
+            <div class="grid md:grid-cols-2 gap-6 mb-8">
+                <button onclick="showDeductFromStudentsModal()" class="bg-blue-600 text-white p-8 rounded-lg hover:bg-blue-700 transition text-left">
+                    <i class="fas fa-user text-4xl mb-4"></i>
+                    <h3 class="text-2xl font-bold mb-2">Deduct from Individual Students</h3>
+                    <p>Select one or more students to deduct conduct points</p>
+                </button>
+                <button onclick="showDeductFromClassModal()" class="bg-purple-600 text-white p-8 rounded-lg hover:bg-purple-700 transition text-left">
+                    <i class="fas fa-users text-4xl mb-4"></i>
+                    <h3 class="text-2xl font-bold mb-2">Deduct from Entire Class</h3>
+                    <p>Apply deduction to all students in a class</p>
+                </button>
+            </div>
+
+            <div class="bg-blue-50 border-l-4 border-blue-500 p-6 rounded-lg">
+                <h4 class="font-bold text-blue-800 mb-2"><i class="fas fa-info-circle mr-2"></i>Conduct Point System</h4>
+                <ul class="text-blue-700 space-y-1 text-sm">
+                    <li>• Each student starts with <strong>40 points</strong> per term</li>
+                    <li>• <strong>30-40 points:</strong> Good Conduct</li>
+                    <li>• <strong>20-29 points:</strong> Warning Status</li>
+                    <li>• <strong>Below 20 points:</strong> Critical (Parent Alert)</li>
+                </ul>
+            </div>
+        </div>
+    `;
+}
+
+window.showDeductFromStudentsModal = async function() {
+    const studentsResult = await API.get('/dod/students');
+    const faultsResult = await API.get('/dod/faults');
+    
+    const modal = document.createElement('div');
+    modal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 overflow-y-auto';
+    modal.innerHTML = `
+        <div class="bg-white rounded-lg p-8 max-w-2xl w-full mx-4 my-8">
+            <h2 class="text-2xl font-bold mb-6 text-orange-600">Deduct from Students</h2>
+            <form id="deduct-students-form">
+                <div class="mb-4">
+                    <label class="block text-gray-700 font-bold mb-2">Select Students *</label>
+                    <div class="border rounded-lg p-4 max-h-48 overflow-y-auto">
+                        ${studentsResult.success ? studentsResult.data.data.map(student => `
+                            <label class="flex items-center p-2 hover:bg-gray-50 rounded cursor-pointer">
+                                <input type="checkbox" name="studentIds" value="${student._id}" class="mr-3">
+                                <div>
+                                    <p class="font-semibold">${student.firstName} ${student.lastName}</p>
+                                    <p class="text-xs text-gray-500">${student.studentID} - ${student.class?.classID || 'N/A'}</p>
+                                </div>
+                            </label>
+                        `).join('') : '<p class="text-gray-500">No students found</p>'}
+                    </div>
+                </div>
+                <div class="grid md:grid-cols-2 gap-4 mb-4">
+                    <div>
+                        <label class="block text-gray-700 font-bold mb-2">Select Fault *</label>
+                        <select name="faultId" required id="fault-select" class="w-full px-4 py-2 border rounded-lg" onchange="updateDeductionPoints(this.value)">
+                            <option value="">Select Fault</option>
+                            ${faultsResult.success ? faultsResult.data.data.map(fault => 
+                                `<option value="${fault._id}" data-points="${fault.pointsToDeduct}">${fault.name} (-${fault.pointsToDeduct} pts)</option>`
+                            ).join('') : ''}
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-gray-700 font-bold mb-2">Points to Deduct</label>
+                        <input type="number" id="points-display" readonly class="w-full px-4 py-2 border rounded-lg bg-gray-100" value="0">
+                    </div>
+                </div>
+                <div class="grid md:grid-cols-2 gap-4 mb-6">
+                    <div>
+                        <label class="block text-gray-700 font-bold mb-2">Term *</label>
+                        <select name="term" required class="w-full px-4 py-2 border rounded-lg">
+                            <option value="">Select Term</option>
+                            <option value="Term 1">Term 1</option>
+                            <option value="Term 2">Term 2</option>
+                            <option value="Term 3">Term 3</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-gray-700 font-bold mb-2">Academic Year *</label>
+                        <input type="text" name="academicYear" required class="w-full px-4 py-2 border rounded-lg" value="2024-2025">
+                    </div>
+                </div>
+                <div class="mb-6">
+                    <label class="block text-gray-700 font-bold mb-2">Comment *</label>
+                    <textarea name="comment" required class="w-full px-4 py-2 border rounded-lg" rows="3" placeholder="Describe the incident..."></textarea>
+                </div>
+                <div class="flex gap-4">
+                    <button type="submit" class="flex-1 bg-orange-600 text-white px-6 py-3 rounded-lg hover:bg-orange-700 font-bold">
+                        <i class="fas fa-minus-circle mr-2"></i>Deduct Points
+                    </button>
+                    <button type="button" onclick="this.closest('.fixed').remove()" class="flex-1 bg-gray-400 text-white px-6 py-3 rounded-lg hover:bg-gray-500 font-bold">
+                        Cancel
+                    </button>
+                </div>
+            </form>
+        </div>
+    `;
+    document.body.appendChild(modal);
+
+    window.updateDeductionPoints = function(faultId) {
+        const select = document.getElementById('fault-select');
+        const option = select.options[select.selectedIndex];
+        const points = option.getAttribute('data-points') || 0;
+        document.getElementById('points-display').value = points;
+    };
+
+    document.getElementById('deduct-students-form').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const formData = new FormData(e.target);
+        const studentIds = formData.getAll('studentIds');
+        
+        if (studentIds.length === 0) {
+            showNotification('Please select at least one student', 'error');
+            return;
+        }
+
+        const data = {
+            studentIds,
+            faultId: formData.get('faultId'),
+            term: formData.get('term'),
+            academicYear: formData.get('academicYear'),
+            comment: formData.get('comment')
+        };
+        
+        const result = await API.post('/dod/deduct/students', data);
+        
+        if (result.success) {
+            showNotification(`Points deducted from ${result.data.count} students!`, 'success');
+            modal.remove();
+        } else {
+            showNotification('Failed to deduct points: ' + result.message, 'error');
+        }
+    });
+};
+
+window.showDeductFromClassModal = async function() {
+    const classesResult = await API.get('/dos/classes');
+    const faultsResult = await API.get('/dod/faults');
+    
+    const modal = document.createElement('div');
+    modal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50';
+    modal.innerHTML = `
+        <div class="bg-white rounded-lg p-8 max-w-md w-full mx-4">
+            <h2 class="text-2xl font-bold mb-6 text-purple-600">Deduct from Entire Class</h2>
+            <form id="deduct-class-form">
+                <div class="mb-4">
+                    <label class="block text-gray-700 font-bold mb-2">Select Class *</label>
+                    <select name="classId" required class="w-full px-4 py-2 border rounded-lg">
+                        <option value="">Select Class</option>
+                        ${classesResult.success ? classesResult.data.data.map(cls => 
+                            `<option value="${cls._id}">${cls.classID} - ${cls.name}</option>`
+                        ).join('') : ''}
+                    </select>
+                </div>
+                <div class="grid md:grid-cols-2 gap-4 mb-4">
+                    <div>
+                        <label class="block text-gray-700 font-bold mb-2">Select Fault *</label>
+                        <select name="faultId" required id="class-fault-select" class="w-full px-4 py-2 border rounded-lg" onchange="updateClassDeductionPoints(this.value)">
+                            <option value="">Select Fault</option>
+                            ${faultsResult.success ? faultsResult.data.data.map(fault => 
+                                `<option value="${fault._id}" data-points="${fault.pointsToDeduct}">${fault.name} (-${fault.pointsToDeduct} pts)</option>`
+                            ).join('') : ''}
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-gray-700 font-bold mb-2">Points to Deduct</label>
+                        <input type="number" id="class-points-display" readonly class="w-full px-4 py-2 border rounded-lg bg-gray-100" value="0">
+                    </div>
+                </div>
+                <div class="grid md:grid-cols-2 gap-4 mb-4">
+                    <div>
+                        <label class="block text-gray-700 font-bold mb-2">Term *</label>
+                        <select name="term" required class="w-full px-4 py-2 border rounded-lg">
+                            <option value="">Select Term</option>
+                            <option value="Term 1">Term 1</option>
+                            <option value="Term 2">Term 2</option>
+                            <option value="Term 3">Term 3</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-gray-700 font-bold mb-2">Academic Year *</label>
+                        <input type="text" name="academicYear" required class="w-full px-4 py-2 border rounded-lg" value="2024-2025">
+                    </div>
+                </div>
+                <div class="mb-6">
+                    <label class="block text-gray-700 font-bold mb-2">Comment *</label>
+                    <textarea name="comment" required class="w-full px-4 py-2 border rounded-lg" rows="3" placeholder="Describe what the class did..."></textarea>
+                </div>
+                <div class="flex gap-4">
+                    <button type="submit" class="flex-1 bg-purple-600 text-white px-6 py-3 rounded-lg hover:bg-purple-700 font-bold">
+                        <i class="fas fa-minus-circle mr-2"></i>Deduct from Class
+                    </button>
+                    <button type="button" onclick="this.closest('.fixed').remove()" class="flex-1 bg-gray-400 text-white px-6 py-3 rounded-lg hover:bg-gray-500 font-bold">
+                        Cancel
+                    </button>
+                </div>
+            </form>
+        </div>
+    `;
+    document.body.appendChild(modal);
+
+    window.updateClassDeductionPoints = function(faultId) {
+        const select = document.getElementById('class-fault-select');
+        const option = select.options[select.selectedIndex];
+        const points = option.getAttribute('data-points') || 0;
+        document.getElementById('class-points-display').value = points;
+    };
+
+    document.getElementById('deduct-class-form').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const formData = new FormData(e.target);
+        const data = Object.fromEntries(formData);
+        
+        const result = await API.post('/dod/deduct/class', data);
+        
+        if (result.success) {
+            showNotification(result.data.message, 'success');
+            modal.remove();
+        } else {
+            showNotification('Failed to deduct points: ' + result.message, 'error');
+        }
+    });
+};
+
+async function renderDODAlerts() {
+    const mainContent = document.getElementById('main-content');
+    mainContent.innerHTML = `
+        <div class="bg-yellow-600 text-white py-12 text-center">
+            <h1 class="text-4xl font-bold mb-4">Low Conduct Alerts</h1>
+            <p class="text-xl">Students with less than 20 conduct points</p>
+        </div>
+        <div class="container mx-auto px-4 py-16">
+            <div id="alerts-list" class="text-center">
+                <i class="fas fa-spinner fa-spin text-4xl text-yellow-600"></i>
+                <p class="mt-4">Loading alerts...</p>
+            </div>
+        </div>
+    `;
+    
+    loadAlerts();
+}
+
+async function loadAlerts() {
+    const alertsList = document.getElementById('alerts-list');
+    if (!alertsList) return;
+
+    const result = await API.get('/dod/conducts/alerts');
+    
+    if (result.success && result.data.data) {
+        if (result.data.data.length === 0) {
+            alertsList.innerHTML = `
+                <div class="text-green-600">
+                    <i class="fas fa-check-circle text-4xl mb-4"></i>
+                    <p class="text-lg">No low conduct alerts! All students are doing well.</p>
+                </div>
+            `;
+        } else {
+            alertsList.innerHTML = `
+                <div class="grid md:grid-cols-2 gap-6">
+                    ${result.data.data.map(conduct => `
+                        <div class="bg-white rounded-lg shadow-lg p-6 text-left border-l-4 ${
+                            conduct.remainingPoints < 10 ? 'border-red-600' : 'border-yellow-600'
+                        }">
+                            <div class="flex items-start justify-between mb-4">
+                                <div>
+                                    <h3 class="text-xl font-bold ${conduct.remainingPoints < 10 ? 'text-red-600' : 'text-yellow-600'}">
+                                        ${conduct.student?.firstName} ${conduct.student?.lastName}
+                                    </h3>
+                                    <p class="text-sm text-gray-500">${conduct.student?.studentID}</p>
+                                    <p class="text-sm text-gray-600">${conduct.student?.class?.classID || 'N/A'}</p>
+                                </div>
+                                <div class="text-right">
+                                    <p class="text-4xl font-bold ${conduct.remainingPoints < 10 ? 'text-red-600' : 'text-yellow-600'}">
+                                        ${conduct.remainingPoints}/40
+                                    </p>
+                                    <p class="text-xs text-gray-500">${conduct.term}</p>
+                                </div>
+                            </div>
+                            
+                            <div class="bg-gray-50 p-4 rounded-lg mb-4">
+                                <h4 class="font-bold text-gray-700 mb-2">Parent Contact Information</h4>
+                                <p class="text-sm text-gray-700"><i class="fas fa-user mr-2"></i>${conduct.student?.parentName}</p>
+                                <p class="text-sm text-gray-700"><i class="fas fa-phone mr-2"></i>${conduct.student?.parentPhone}</p>
+                                ${conduct.student?.parentEmail ? `<p class="text-sm text-gray-700"><i class="fas fa-envelope mr-2"></i>${conduct.student?.parentEmail}</p>` : ''}
+                                <p class="text-sm text-gray-500"><i class="fas fa-user-tag mr-2"></i>${conduct.student?.relationship}</p>
+                            </div>
+
+                            <div class="flex justify-between text-sm">
+                                <span class="text-gray-600">Total Deductions:</span>
+                                <span class="font-bold">${conduct.deductionsCount}</span>
+                            </div>
+                            <div class="flex justify-between text-sm">
+                                <span class="text-gray-600">Points Lost:</span>
+                                <span class="font-bold text-red-600">${40 - conduct.remainingPoints}</span>
+                            </div>
+                            
+                            <div class="mt-4 pt-4 border-t">
+                                <a href="tel:${conduct.student?.parentPhone}" class="inline-block bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 text-sm w-full text-center">
+                                    <i class="fas fa-phone mr-2"></i>Call Parent
+                                </a>
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+        }
+    } else {
+        alertsList.innerHTML = `
+            <div class="text-red-600">
+                <i class="fas fa-exclamation-triangle text-4xl mb-4"></i>
+                <p>Unable to load alerts</p>
+            </div>
+        `;
+    }
+}
+
+async function renderDODPublish() {
+    const mainContent = document.getElementById('main-content');
+    mainContent.innerHTML = `
+        <div class="bg-indigo-600 text-white py-12 text-center">
+            <h1 class="text-4xl font-bold mb-4">Publish Discipline Reports</h1>
+            <p class="text-xl">Send conduct reports to students, parents, DOS, and SM</p>
+            <button onclick="showPublishReportModal()" class="bg-white text-indigo-600 px-6 py-2 rounded-lg hover:bg-gray-100 transition mt-4">
+                <i class="fas fa-paper-plane mr-2"></i>Publish Reports
+            </button>
+        </div>
+        <div class="container mx-auto px-4 py-16">
+            <div class="bg-blue-50 border-l-4 border-blue-500 p-6 rounded-lg mb-8">
+                <h4 class="font-bold text-blue-800 mb-2"><i class="fas fa-info-circle mr-2"></i>About Publishing</h4>
+                <p class="text-blue-700">Publishing reports will make conduct information visible to:</p>
+                <ul class="text-blue-700 mt-2 space-y-1">
+                    <li>• <strong>Students:</strong> Can view their own conduct scores</li>
+                    <li>• <strong>Parents:</strong> Can monitor their child's behavior</li>
+                    <li>• <strong>DOS:</strong> For academic correlation</li>
+                    <li>• <strong>School Manager:</strong> For oversight</li>
+                </ul>
+            </div>
+
+            <div id="published-reports" class="text-center">
+                <i class="fas fa-spinner fa-spin text-4xl text-indigo-600"></i>
+                <p class="mt-4">Loading published reports...</p>
+            </div>
+        </div>
+    `;
+    
+    loadPublishedReports();
+}
+
+async function loadPublishedReports() {
+    const reportsList = document.getElementById('published-reports');
+    if (!reportsList) return;
+
+    const result = await API.get('/dod/published');
+    
+    if (result.success && result.data.data) {
+        if (result.data.data.length === 0) {
+            reportsList.innerHTML = `
+                <div class="text-gray-600">
+                    <i class="fas fa-info-circle text-4xl mb-4"></i>
+                    <p class="text-lg">No reports published yet</p>
+                </div>
+            `;
+        } else {
+            reportsList.innerHTML = `
+                <div class="bg-white rounded-lg shadow-lg overflow-hidden">
+                    <table class="min-w-full">
+                        <thead class="bg-indigo-600 text-white">
+                            <tr>
+                                <th class="px-6 py-3 text-left">Student</th>
+                                <th class="px-6 py-3 text-left">Term</th>
+                                <th class="px-6 py-3 text-left">Conduct Score</th>
+                                <th class="px-6 py-3 text-left">Deductions</th>
+                                <th class="px-6 py-3 text-left">Published</th>
+                                <th class="px-6 py-3 text-left">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y">
+                            ${result.data.data.map(report => `
+                                <tr class="hover:bg-gray-50">
+                                    <td class="px-6 py-4">
+                                        <div>
+                                            <p class="font-semibold">${report.student?.firstName} ${report.student?.lastName}</p>
+                                            <p class="text-xs text-gray-500">${report.student?.studentID}</p>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4">${report.term}</td>
+                                    <td class="px-6 py-4">
+                                        <span class="text-2xl font-bold ${
+                                            report.conductScore >= 30 ? 'text-green-600' : 
+                                            report.conductScore >= 20 ? 'text-yellow-600' : 'text-red-600'
+                                        }">${report.conductScore}/40</span>
+                                    </td>
+                                    <td class="px-6 py-4">${report.totalReductions}</td>
+                                    <td class="px-6 py-4 text-sm">${new Date(report.publishedAt).toLocaleDateString()}</td>
+                                    <td class="px-6 py-4">
+                                        <span class="px-3 py-1 rounded-full text-xs font-bold ${
+                                            report.conductScore >= 30 ? 'bg-green-100 text-green-800' : 
+                                            report.conductScore >= 20 ? 'bg-yellow-100 text-yellow-800' : 'bg-red-100 text-red-800'
+                                        }">
+                                            ${report.conductScore >= 30 ? 'Good' : report.conductScore >= 20 ? 'Warning' : 'Critical'}
+                                        </span>
+                                    </td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                </div>
+            `;
+        }
+    } else {
+        reportsList.innerHTML = `
+            <div class="text-red-600">
+                <i class="fas fa-exclamation-triangle text-4xl mb-4"></i>
+                <p>Unable to load published reports</p>
+            </div>
+        `;
+    }
+}
+
+window.showPublishReportModal = function() {
+    const modal = document.createElement('div');
+    modal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50';
+    modal.innerHTML = `
+        <div class="bg-white rounded-lg p-8 max-w-md w-full mx-4">
+            <h2 class="text-2xl font-bold mb-6 text-indigo-600">Publish Discipline Reports</h2>
+            <p class="text-gray-600 mb-6">This will publish conduct reports to students, parents, DOS, and SM.</p>
+            <form id="publish-report-form">
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-gray-700 font-bold mb-2">Term *</label>
+                        <select name="term" required class="w-full px-4 py-2 border rounded-lg">
+                            <option value="">Select Term</option>
+                            <option value="Term 1">Term 1</option>
+                            <option value="Term 2">Term 2</option>
+                            <option value="Term 3">Term 3</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-gray-700 font-bold mb-2">Academic Year *</label>
+                        <input type="text" name="academicYear" required class="w-full px-4 py-2 border rounded-lg" value="2024-2025">
+                    </div>
+                </div>
+
+                <div class="flex gap-4 mt-6">
+                    <button type="submit" class="flex-1 bg-indigo-600 text-white px-6 py-3 rounded-lg hover:bg-indigo-700 font-bold">
+                        <i class="fas fa-paper-plane mr-2"></i>Publish
+                    </button>
+                    <button type="button" onclick="this.closest('.fixed').remove()" class="flex-1 bg-gray-400 text-white px-6 py-3 rounded-lg hover:bg-gray-500 font-bold">
+                        Cancel
+                    </button>
+                </div>
+            </form>
+        </div>
+    `;
+    document.body.appendChild(modal);
+
+    document.getElementById('publish-report-form').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const formData = new FormData(e.target);
+        const data = Object.fromEntries(formData);
+        
+        const result = await API.post('/dod/publish', data);
+        
+        if (result.success) {
+            showNotification(result.data.message, 'success');
+            modal.remove();
+            loadPublishedReports();
+        } else {
+            showNotification('Failed to publish reports: ' + result.message, 'error');
+        }
+    });
+};
+
+// ============================================
+// LIBRARIAN FEATURES
+// ============================================
+
+async function renderLibBooks() {
+    const mainContent = document.getElementById('main-content');
+    mainContent.innerHTML = `
+        <div class="bg-purple-600 text-white py-12 text-center">
+            <h1 class="text-4xl font-bold mb-4">Book Management</h1>
+            <button onclick="showAddBookModal()" class="bg-white text-purple-600 px-6 py-2 rounded-lg hover:bg-gray-100 transition mt-4">
+                <i class="fas fa-plus mr-2"></i>Add New Book
+            </button>
+        </div>
+        <div class="container mx-auto px-4 py-16">
+            <div id="books-list" class="text-center">
+                <i class="fas fa-spinner fa-spin text-4xl text-purple-600"></i>
+                <p class="mt-4">Loading books...</p>
+            </div>
+        </div>
+    `;
+    
+    loadBooks();
+}
+
+async function loadBooks() {
+    const booksList = document.getElementById('books-list');
+    if (!booksList) return;
+
+    const result = await API.get('/librarian/books');
+    
+    if (result.success && result.data.data) {
+        if (result.data.data.length === 0) {
+            booksList.innerHTML = `
+                <div class="text-gray-600">
+                    <i class="fas fa-info-circle text-4xl mb-4"></i>
+                    <p class="text-lg">No books found. Add your first book!</p>
+                </div>
+            `;
+        } else {
+            booksList.innerHTML = `
+                <div class="grid md:grid-cols-4 gap-6">
+                    ${result.data.data.map(book => `
+                        <div class="bg-white p-6 rounded-lg shadow-lg hover:shadow-xl transition">
+                            <div class="flex items-start justify-between mb-3">
+                                <i class="fas fa-book text-3xl text-purple-600"></i>
+                                <span class="px-2 py-1 text-xs font-bold rounded ${
+                                    book.status === 'Available' ? 'bg-green-100 text-green-800' :
+                                    book.status === 'Borrowed' ? 'bg-blue-100 text-blue-800' :
+                                    'bg-red-100 text-red-800'
+                                }">${book.status}</span>
+                            </div>
+                            <h3 class="text-lg font-bold mb-2 text-gray-800">${book.title}</h3>
+                            <p class="text-sm text-gray-600 mb-1">By ${book.author}</p>
+                            <p class="text-xs text-gray-500 mb-3">${book.category}</p>
+                            <div class="flex justify-between text-sm mb-3">
+                                <span class="text-gray-600">Available:</span>
+                                <span class="font-bold">${book.availableQuantity}/${book.quantity}</span>
+                            </div>
+                            <div class="flex justify-between text-sm mb-4">
+                                <span class="text-gray-600">Borrowed:</span>
+                                <span class="font-bold text-blue-600">${book.borrowCount} times</span>
+                            </div>
+                            <div class="flex gap-2">
+                                <button onclick="editBook('${book._id}')" class="flex-1 bg-green-600 text-white px-3 py-2 rounded hover:bg-green-700 text-xs">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button onclick="deleteBook('${book._id}')" class="flex-1 bg-red-600 text-white px-3 py-2 rounded hover:bg-red-700 text-xs">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+        }
+    } else {
+        booksList.innerHTML = `
+            <div class="text-red-600">
+                <i class="fas fa-exclamation-triangle text-4xl mb-4"></i>
+                <p>Unable to load books</p>
+            </div>
+        `;
+    }
+}
+
+window.showAddBookModal = function() {
+    const modal = document.createElement('div');
+    modal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50';
+    modal.innerHTML = `
+        <div class="bg-white rounded-lg p-8 max-w-md w-full mx-4">
+            <h2 class="text-2xl font-bold mb-6 text-purple-600">Add New Book</h2>
+            <form id="add-book-form">
+                <div class="mb-4">
+                    <label class="block text-gray-700 font-bold mb-2">Title *</label>
+                    <input type="text" name="title" required class="w-full px-4 py-2 border rounded-lg">
+                </div>
+                <div class="mb-4">
+                    <label class="block text-gray-700 font-bold mb-2">Author *</label>
+                    <input type="text" name="author" required class="w-full px-4 py-2 border rounded-lg">
+                </div>
+                <div class="mb-4">
+                    <label class="block text-gray-700 font-bold mb-2">ISBN (Optional)</label>
+                    <input type="text" name="isbn" class="w-full px-4 py-2 border rounded-lg">
+                </div>
+                <div class="mb-4">
+                    <label class="block text-gray-700 font-bold mb-2">Category *</label>
+                    <input type="text" name="category" required class="w-full px-4 py-2 border rounded-lg" placeholder="e.g., Science, Literature">
+                </div>
+                <div class="mb-6">
+                    <label class="block text-gray-700 font-bold mb-2">Quantity *</label>
+                    <input type="number" name="quantity" required min="1" class="w-full px-4 py-2 border rounded-lg" value="1">
+                </div>
+                <div class="flex gap-4">
+                    <button type="submit" class="flex-1 bg-purple-600 text-white px-6 py-3 rounded-lg hover:bg-purple-700 font-bold">
+                        <i class="fas fa-plus mr-2"></i>Add Book
+                    </button>
+                    <button type="button" onclick="this.closest('.fixed').remove()" class="flex-1 bg-gray-400 text-white px-6 py-3 rounded-lg hover:bg-gray-500 font-bold">
+                        Cancel
+                    </button>
+                </div>
+            </form>
+        </div>
+    `;
+    document.body.appendChild(modal);
+
+    document.getElementById('add-book-form').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const formData = new FormData(e.target);
+        const data = Object.fromEntries(formData);
+        data.availableQuantity = data.quantity;
+        
+        const result = await API.post('/librarian/books', data);
+        
+        if (result.success) {
+            showNotification('Book added successfully!', 'success');
+            modal.remove();
+            loadBooks();
+        } else {
+            showNotification('Failed to add book: ' + result.message, 'error');
+        }
+    });
+};
+
+window.deleteBook = async function(bookId) {
+    if (!confirm('Are you sure you want to delete this book?')) return;
+    
+    const result = await API.delete(`/librarian/books/${bookId}`);
+    
+    if (result.success) {
+        showNotification('Book deleted successfully!', 'success');
+        loadBooks();
+    } else {
+        showNotification('Failed to delete book: ' + result.message, 'error');
+    }
+};
+
+async function renderLibBorrow() {
+    const mainContent = document.getElementById('main-content');
+    mainContent.innerHTML = `
+        <div class="bg-blue-600 text-white py-12 text-center">
+            <h1 class="text-4xl font-bold mb-4">Borrow / Return Books</h1>
+            <button onclick="showBorrowBookModal()" class="bg-white text-blue-600 px-6 py-2 rounded-lg hover:bg-gray-100 transition mt-4">
+                <i class="fas fa-hand-holding mr-2"></i>Borrow Book
+            </button>
+        </div>
+        <div class="container mx-auto px-4 py-16">
+            <div class="bg-white p-6 rounded-lg shadow-lg mb-8">
+                <h3 class="text-xl font-bold mb-4 text-blue-600">Filter Records</h3>
+                <div class="grid md:grid-cols-3 gap-4">
+                    <select id="borrow-status" class="px-4 py-2 border rounded-lg">
+                        <option value="">All Status</option>
+                        <option value="Borrowed">Borrowed</option>
+                        <option value="Returned">Returned</option>
+                        <option value="Overdue">Overdue</option>
+                    </select>
+                    <button onclick="loadBorrowRecords()" class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700">
+                        <i class="fas fa-filter mr-2"></i>Filter
+                    </button>
+                </div>
+            </div>
+
+            <div id="borrow-records" class="text-center">
+                <i class="fas fa-spinner fa-spin text-4xl text-blue-600"></i>
+                <p class="mt-4">Loading records...</p>
+            </div>
+        </div>
+    `;
+    
+    loadBorrowRecords();
+}
+
+async function loadBorrowRecords() {
+    const recordsList = document.getElementById('borrow-records');
+    if (!recordsList) return;
+
+    const status = document.getElementById('borrow-status')?.value || '';
+    let query = status ? `?status=${status}` : '';
+
+    const result = await API.get(`/librarian/records${query}`);
+    
+    if (result.success && result.data.data) {
+        if (result.data.data.length === 0) {
+            recordsList.innerHTML = `
+                <div class="text-gray-600">
+                    <i class="fas fa-info-circle text-4xl mb-4"></i>
+                    <p class="text-lg">No borrow records found</p>
+                </div>
+            `;
+        } else {
+            recordsList.innerHTML = `
+                <div class="bg-white rounded-lg shadow-lg overflow-hidden">
+                    <table class="min-w-full">
+                        <thead class="bg-blue-600 text-white">
+                            <tr>
+                                <th class="px-6 py-3 text-left">Student</th>
+                                <th class="px-6 py-3 text-left">Book</th>
+                                <th class="px-6 py-3 text-left">Borrow Date</th>
+                                <th class="px-6 py-3 text-left">Due Date</th>
+                                <th class="px-6 py-3 text-left">Status</th>
+                                <th class="px-6 py-3 text-left">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y">
+                            ${result.data.data.map(record => `
+                                <tr class="hover:bg-gray-50">
+                                    <td class="px-6 py-4">
+                                        <div>
+                                            <p class="font-semibold">${record.student?.firstName} ${record.student?.lastName}</p>
+                                            <p class="text-xs text-gray-500">${record.student?.studentID}</p>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4">
+                                        <div>
+                                            <p class="font-semibold">${record.book?.title}</p>
+                                            <p class="text-xs text-gray-500">${record.book?.author}</p>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4 text-sm">${new Date(record.borrowDate).toLocaleDateString()}</td>
+                                    <td class="px-6 py-4 text-sm">${new Date(record.dueDate).toLocaleDateString()}</td>
+                                    <td class="px-6 py-4">
+                                        <span class="px-3 py-1 rounded-full text-xs font-bold ${
+                                            record.status === 'Borrowed' ? 'bg-blue-100 text-blue-800' :
+                                            record.status === 'Returned' ? 'bg-green-100 text-green-800' :
+                                            'bg-red-100 text-red-800'
+                                        }">${record.status}</span>
+                                    </td>
+                                    <td class="px-6 py-4">
+                                        ${record.status === 'Borrowed' || record.status === 'Overdue' ? 
+                                            `<button onclick="returnBook('${record._id}')" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 text-sm">
+                                                <i class="fas fa-undo mr-1"></i>Return
+                                            </button>` : 
+                                            '<span class="text-gray-400 text-sm">Returned</span>'
+                                        }
+                                    </td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                </div>
+            `;
+        }
+    } else {
+        recordsList.innerHTML = `
+            <div class="text-red-600">
+                <i class="fas fa-exclamation-triangle text-4xl mb-4"></i>
+                <p>Unable to load records</p>
+            </div>
+        `;
+    }
+}
+
+window.showBorrowBookModal = async function() {
+    const booksResult = await API.get('/librarian/books');
+    const studentsResult = await API.get('/dos/students');
+    
+    const modal = document.createElement('div');
+    modal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 overflow-y-auto';
+    modal.innerHTML = `
+        <div class="bg-white rounded-lg p-8 max-w-md w-full mx-4">
+            <h2 class="text-2xl font-bold mb-6 text-blue-600">Borrow Book</h2>
+            <form id="borrow-book-form">
+                <div class="mb-4">
+                    <label class="block text-gray-700 font-bold mb-2">Select Student *</label>
+                    <select name="studentId" required class="w-full px-4 py-2 border rounded-lg">
+                        <option value="">Select Student</option>
+                        ${studentsResult.success ? studentsResult.data.data.map(student => 
+                            `<option value="${student._id}">${student.firstName} ${student.lastName} (${student.studentID})</option>`
+                        ).join('') : ''}
+                    </select>
+                </div>
+                <div class="mb-4">
+                    <label class="block text-gray-700 font-bold mb-2">Select Book *</label>
+                    <select name="bookId" required class="w-full px-4 py-2 border rounded-lg">
+                        <option value="">Select Book</option>
+                        ${booksResult.success ? booksResult.data.data.filter(b => b.availableQuantity > 0).map(book => 
+                            `<option value="${book._id}">${book.title} - ${book.author} (${book.availableQuantity} available)</option>`
+                        ).join('') : ''}
+                    </select>
+                </div>
+                <div class="mb-6">
+                    <label class="block text-gray-700 font-bold mb-2">Due Date *</label>
+                    <input type="date" name="dueDate" required class="w-full px-4 py-2 border rounded-lg" 
+                        value="${new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]}">
+                </div>
+                <div class="flex gap-4">
+                    <button type="submit" class="flex-1 bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 font-bold">
+                        <i class="fas fa-hand-holding mr-2"></i>Borrow
+                    </button>
+                    <button type="button" onclick="this.closest('.fixed').remove()" class="flex-1 bg-gray-400 text-white px-6 py-3 rounded-lg hover:bg-gray-500 font-bold">
+                        Cancel
+                    </button>
+                </div>
+            </form>
+        </div>
+    `;
+    document.body.appendChild(modal);
+
+    document.getElementById('borrow-book-form').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const formData = new FormData(e.target);
+        const data = Object.fromEntries(formData);
+        
+        const result = await API.post('/librarian/borrow', data);
+        
+        if (result.success) {
+            showNotification('Book borrowed successfully!', 'success');
+            modal.remove();
+            loadBorrowRecords();
+        } else {
+            showNotification('Failed to borrow book: ' + result.message, 'error');
+        }
+    });
+};
+
+window.returnBook = async function(recordId) {
+    if (!confirm('Confirm book return?')) return;
+    
+    const result = await API.put(`/librarian/return/${recordId}`);
+    
+    if (result.success) {
+        if (result.data.data.fine > 0) {
+            showNotification(`Book returned. Fine: ${result.data.data.fine} RWF`, 'info');
+        } else {
+            showNotification('Book returned successfully!', 'success');
+        }
+        loadBorrowRecords();
+    } else {
+        showNotification('Failed to return book: ' + result.message, 'error');
+    }
+};
+
+async function renderLibOverdue() {
+    const mainContent = document.getElementById('main-content');
+    mainContent.innerHTML = `
+        <div class="bg-red-600 text-white py-12 text-center">
+            <h1 class="text-4xl font-bold mb-4">Overdue Books Tracking</h1>
+            <p class="text-xl">Monitor and manage overdue returns</p>
+        </div>
+        <div class="container mx-auto px-4 py-16">
+            <div id="overdue-list" class="text-center">
+                <i class="fas fa-spinner fa-spin text-4xl text-red-600"></i>
+                <p class="mt-4">Loading overdue books...</p>
+            </div>
+        </div>
+    `;
+    
+    loadOverdueBooks();
+}
+
+async function loadOverdueBooks() {
+    const overdueList = document.getElementById('overdue-list');
+    if (!overdueList) return;
+
+    const result = await API.get('/librarian/overdue');
+    
+    if (result.success && result.data.data) {
+        if (result.data.data.length === 0) {
+            overdueList.innerHTML = `
+                <div class="text-green-600">
+                    <i class="fas fa-check-circle text-4xl mb-4"></i>
+                    <p class="text-lg">No overdue books! All returns are on time.</p>
+                </div>
+            `;
+        } else {
+            overdueList.innerHTML = `
+                <div class="grid md:grid-cols-2 gap-6">
+                    ${result.data.data.map(record => {
+                        const daysOverdue = Math.ceil((new Date() - new Date(record.dueDate)) / (1000 * 60 * 60 * 24));
+                        const fine = daysOverdue * 100;
+                        return `
+                            <div class="bg-white rounded-lg shadow-lg p-6 text-left border-l-4 border-red-600">
+                                <div class="flex items-start justify-between mb-4">
+                                    <div>
+                                        <h3 class="text-xl font-bold text-red-600">${record.student?.firstName} ${record.student?.lastName}</h3>
+                                        <p class="text-sm text-gray-500">${record.student?.studentID}</p>
+                                    </div>
+                                    <div class="text-right">
+                                        <p class="text-2xl font-bold text-red-600">${daysOverdue}</p>
+                                        <p class="text-xs text-gray-500">days late</p>
+                                    </div>
+                                </div>
+                                
+                                <div class="bg-gray-50 p-4 rounded-lg mb-4">
+                                    <p class="font-bold text-gray-700 mb-2">${record.book?.title}</p>
+                                    <p class="text-sm text-gray-600">By ${record.book?.author}</p>
+                                    <p class="text-xs text-gray-500 mt-2">Due: ${new Date(record.dueDate).toLocaleDateString()}</p>
+                                </div>
+
+                                <div class="bg-red-50 p-3 rounded-lg mb-4">
+                                    <div class="flex justify-between items-center">
+                                        <span class="text-sm text-gray-700">Estimated Fine:</span>
+                                        <span class="text-lg font-bold text-red-600">${fine} RWF</span>
+                                    </div>
+                                    <p class="text-xs text-gray-500 mt-1">100 RWF per day overdue</p>
+                                </div>
+
+                                <div class="bg-blue-50 p-3 rounded-lg mb-4">
+                                    <p class="text-sm font-semibold text-gray-700 mb-1">Parent Contact:</p>
+                                    <p class="text-sm text-gray-600">${record.student?.parentName}</p>
+                                    <p class="text-sm text-gray-600">${record.student?.parentPhone}</p>
+                                </div>
+                                
+                                <button onclick="returnBook('${record._id}')" class="w-full bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">
+                                    <i class="fas fa-undo mr-2"></i>Process Return
+                                </button>
+                            </div>
+                        `;
+                    }).join('')}
+                </div>
+            `;
+        }
+    } else {
+        overdueList.innerHTML = `
+            <div class="text-red-600">
+                <i class="fas fa-exclamation-triangle text-4xl mb-4"></i>
+                <p>Unable to load overdue books</p>
+            </div>
+        `;
+    }
+}
+
+async function renderLibReports() {
+    const mainContent = document.getElementById('main-content');
+    mainContent.innerHTML = `
+        <div class="bg-green-600 text-white py-12 text-center">
+            <h1 class="text-4xl font-bold mb-4">Library Reports & Statistics</h1>
+            <p class="text-xl">Comprehensive library analytics</p>
+        </div>
+        <div class="container mx-auto px-4 py-16">
+            <!-- Stats Cards -->
+            <div id="library-stats" class="grid md:grid-cols-4 gap-6 mb-8">
+                <div class="bg-white p-6 rounded-lg shadow-lg text-center">
+                    <i class="fas fa-spinner fa-spin text-3xl text-green-600"></i>
+                </div>
+            </div>
+
+            <!-- Most Borrowed Books -->
+            <div class="bg-white rounded-lg shadow-lg p-8 mb-8">
+                <h3 class="text-2xl font-bold mb-6 text-orange-600"><i class="fas fa-trophy mr-2"></i>Top 10 Most Borrowed Books</h3>
+                <div id="most-borrowed" class="text-center">
+                    <i class="fas fa-spinner fa-spin text-4xl text-orange-600"></i>
+                    <p class="mt-4">Loading...</p>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    loadLibraryStats();
+    loadMostBorrowed();
+}
+
+async function loadLibraryStats() {
+    const statsContainer = document.getElementById('library-stats');
+    if (!statsContainer) return;
+
+    const result = await API.get('/librarian/stats');
+    
+    if (result.success && result.data.data) {
+        const stats = result.data.data;
+        statsContainer.innerHTML = `
+            <div class="bg-white p-6 rounded-lg shadow-lg">
+                <i class="fas fa-book text-3xl text-purple-600 mb-3"></i>
+                <h3 class="text-3xl font-bold">${stats.totalBooks}</h3>
+                <p class="text-gray-600">Total Books</p>
+            </div>
+            <div class="bg-white p-6 rounded-lg shadow-lg">
+                <i class="fas fa-check-circle text-3xl text-green-600 mb-3"></i>
+                <h3 class="text-3xl font-bold">${stats.availableBooks}</h3>
+                <p class="text-gray-600">Available</p>
+            </div>
+            <div class="bg-white p-6 rounded-lg shadow-lg">
+                <i class="fas fa-book-open text-3xl text-blue-600 mb-3"></i>
+                <h3 class="text-3xl font-bold">${stats.borrowedBooks}</h3>
+                <p class="text-gray-600">Borrowed</p>
+            </div>
+            <div class="bg-white p-6 rounded-lg shadow-lg border-t-4 border-red-500">
+                <i class="fas fa-exclamation-triangle text-3xl text-red-600 mb-3"></i>
+                <h3 class="text-3xl font-bold">${stats.overdueBooks}</h3>
+                <p class="text-gray-600">Overdue</p>
+            </div>
+        `;
+    }
+}
+
+async function loadMostBorrowed() {
+    const container = document.getElementById('most-borrowed');
+    if (!container) return;
+
+    const result = await API.get('/librarian/most-borrowed');
+    
+    if (result.success && result.data.data) {
+        if (result.data.data.length === 0) {
+            container.innerHTML = `
+                <p class="text-gray-600">No borrowing history yet</p>
+            `;
+        } else {
+            container.innerHTML = `
+                <div class="space-y-4">
+                    ${result.data.data.map((book, index) => `
+                        <div class="flex items-center justify-between p-4 bg-gradient-to-r from-orange-50 to-yellow-50 rounded-lg">
+                            <div class="flex items-center gap-4">
+                                <div class="w-12 h-12 rounded-full bg-orange-600 text-white flex items-center justify-center font-bold text-xl">
+                                    ${index + 1}
+                                </div>
+                                <div class="text-left">
+                                    <p class="font-bold text-gray-800">${book.title}</p>
+                                    <p class="text-sm text-gray-600">${book.author}</p>
+                                    <p class="text-xs text-gray-500">${book.category}</p>
+                                </div>
+                            </div>
+                            <div class="text-right">
+                                <p class="text-2xl font-bold text-orange-600">${book.borrowCount}</p>
+                                <p class="text-xs text-gray-500">times borrowed</p>
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+        }
+    }
 }
 
 // ============================================

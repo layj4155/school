@@ -23,6 +23,10 @@ const trainers = require('./routes/trainers');
 const programs = require('./routes/programs');
 const news = require('./routes/news');
 const fees = require('./routes/fees');
+const dos = require('./routes/dos');
+const dod = require('./routes/dod');
+const librarian = require('./routes/librarian');
+const locations = require('./routes/locations');
 
 const app = express();
 
@@ -45,6 +49,10 @@ app.use('/api/trainers', trainers);
 app.use('/api/programs', programs);
 app.use('/api/news', news);
 app.use('/api/fees', fees);
+app.use('/api/dos', dos);
+app.use('/api/dod', dod);
+app.use('/api/librarian', librarian);
+app.use('/api/locations', locations);
 
 app.use(errorHandler);
 

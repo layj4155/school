@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Librarian Test</title>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+</head>
+<body>
+    <h1>Librarian API Test</h1>
+    <button onclick="testBooks()">Test Get Books</button>
+    <button onclick="testStudents()">Test Get Students</button>
+    <div id="result"></div>
+
+    <script>
+        const API_URL = 'http://localhost:5002/api';
+
+        async function testBooks() {
+            try {
+                const response = await axios.get(`${API_URL}/librarian/books`);
+                document.getElementById('result').innerHTML = '<pre>' + JSON.stringify(response.data, null, 2) + '</pre>';
+            } catch (error) {
+                document.getElementById('result').innerHTML = '<p style="color:red">Error: ' + error.message + '</p>';
+                console.error(error);
+            }
+        }
+
+        async function testStudents() {
+            try {
+                const response = await axios.get(`${API_URL}/dos/students`);
+                document.getElementById('result').innerHTML = '<pre>' + JSON.stringify(response.data, null, 2) + '</pre>';
+            } catch (error) {
+                document.getElementById('result').innerHTML = '<p style="color:red">Error: ' + error.message + '</p>';
+                console.error(error);
+            }
+        }
+    </script>
+</body>
+</html>
