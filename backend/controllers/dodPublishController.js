@@ -7,6 +7,13 @@ exports.publishDisciplineReport = async (req, res) => {
     try {
         const { term, academicYear, studentIds } = req.body;
 
+        if (!term || !academicYear) {
+            return res.status(400).json({
+                success: false,
+                error: 'Please provide term and academic year'
+            });
+        }
+
         let query = { term, academicYear };
         
         if (studentIds && studentIds.length > 0) {
@@ -19,27 +26,51 @@ exports.publishDisciplineReport = async (req, res) => {
                 select: 'firstName lastName studentID parentUserAccount userAccount'
             });
 
+        if (conducts.length === 0) {
+            return res.status(404).json({
+                success: false,
+                error: 'No conduct records found for the specified criteria'
+            });
+        }
+
         const publishedReports = [];
 
         for (const conduct of conducts) {
-            const deductions = await ConductDeduction.find({
-                conduct: conduct._id
-            }).populate('fault', 'name pointsToDeduct');
-
-            const summary = await DisciplineSummary.create({
-                student: conduct.student.userAccount || conduct.student._id,
+            // Check if already published
+            const existingSummary = await DisciplineSummary.findOne({
+                student: conduct.student._id,
                 term: conduct.term,
-                totalReductions: conduct.deductionsCount,
-                conductScore: conduct.remainingPoints,
-                publishedBy: req.user ? req.user.id : null,
-                publishedTo: ['Student', 'Parent', 'DOS', 'SM']
+                academicYear: conduct.academicYear
             });
 
-            publishedReports.push({
-                student: conduct.student,
-                summary,
-                deductions
-            });
+            if (existingSummary) {
+                // Update existing summary
+                existingSummary.totalReductions = conduct.deductionsCount;
+                existingSummary.conductScore = conduct.remainingPoints;
+                existingSummary.publishedAt = Date.now();
+                if (req.user) {
+                    existingSummary.publishedBy = req.user.id;
+                }
+                await existingSummary.save();
+                publishedReports.push(existingSummary);
+            } else {
+                // Create new summary
+                const summaryData = {
+                    student: conduct.student._id,
+                    term: conduct.term,
+                    academicYear: conduct.academicYear,
+                    totalReductions: conduct.deductionsCount,
+                    conductScore: conduct.remainingPoints,
+                    publishedTo: ['Student', 'Parent', 'DOS', 'SM']
+                };
+
+                if (req.user && req.user.id) {
+                    summaryData.publishedBy = req.user.id;
+                }
+
+                const summary = await DisciplineSummary.create(summaryData);
+                publishedReports.push(summary);
+            }
         }
 
         res.status(201).json({

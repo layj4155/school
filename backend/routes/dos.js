@@ -36,6 +36,16 @@ const {
     publishBestPerformers
 } = require('../controllers/dosPerformanceController');
 
+const {
+    createSubject,
+    getSubjects,
+    getTeacherSubjects,
+    getSubject,
+    updateSubject,
+    deleteSubject,
+    syncSubjectStudents
+} = require('../controllers/subjectController');
+
 router.post('/classes', createClass);
 router.get('/classes', getAllClasses);
 router.get('/classes/:id', getClass);
@@ -51,6 +61,27 @@ router.put('/students/:id', updateStudent);
 router.delete('/students/:id', deleteStudent);
 router.get('/students/class/:classId', getStudentsByClass);
 
+router.get('/marks', async (req, res) => {
+    try {
+        const Mark = require('../models/Mark');
+        const marks = await Mark.find()
+            .populate('student', 'firstName lastName studentID')
+            .populate('class', 'classID name')
+            .populate('createdBy', 'name email')
+            .sort({ createdAt: -1 });
+        
+        res.status(200).json({
+            success: true,
+            count: marks.length,
+            data: marks
+        });
+    } catch (error) {
+        res.status(400).json({
+            success: false,
+            error: error.message
+        });
+    }
+});
 router.post('/marks', addMarks);
 router.put('/marks/:id', updateMark);
 router.delete('/marks/:id', deleteMark);
@@ -96,5 +127,14 @@ router.get('/my-classes/:teacherId', async (req, res) => {
         });
     }
 });
+
+// Subject routes
+router.post('/subjects', createSubject);
+router.get('/subjects', getSubjects);
+router.get('/subjects/teacher/:teacherId', getTeacherSubjects);
+router.get('/subjects/:id', getSubject);
+router.put('/subjects/:id', updateSubject);
+router.delete('/subjects/:id', deleteSubject);
+router.post('/subjects/:id/sync-students', syncSubjectStudents);
 
 module.exports = router;

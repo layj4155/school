@@ -210,6 +210,7 @@ const routes = {
     '/register': renderRegister,
     '/dashboard': renderDashboard,
     '/students': renderStudents,
+    '/subjects': renderSubjects,
     '/marks': renderMarks,
     '/library': renderLibrary,
     '/discipline': renderDiscipline,
@@ -673,22 +674,31 @@ async function renderLogin() {
                     
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-2">Student ID</label>
-                        <input type="text" id="student-id" required 
+                        <input type="text" id="student-id" required placeholder="e.g., 2025SOD001"
                             class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
                     </div>
                     
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Student Full Name</label>
-                        <input type="text" id="student-name" required 
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Class</label>
+                        <select id="student-class-select" required 
+                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                            <option value="">Select Your Class</option>
+                        </select>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">First Name</label>
+                        <input type="text" id="student-firstname" required placeholder="e.g., MUNYANA"
+                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Last Name</label>
+                        <input type="text" id="student-lastname" required placeholder="e.g., Celine"
                             class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
                     </div>
                     
                     <div id="parent-fields" class="hidden space-y-4">
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Student Class</label>
-                            <input type="text" id="student-class" 
-                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
-                        </div>
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-2">Parent Name</label>
                             <input type="text" id="parent-name" 
@@ -709,21 +719,21 @@ async function renderLogin() {
         </div>
     `;
     
+    // Load classes for student login
+    loadClassesForStudentLogin();
+    
     // Show/hide parent fields based on user type selection
     const userTypeRadios = document.querySelectorAll('input[name="user-type"]');
     userTypeRadios.forEach(radio => {
         radio.addEventListener('change', (e) => {
             const parentFields = document.getElementById('parent-fields');
-            const studentClassField = document.getElementById('student-class');
             const parentNameField = document.getElementById('parent-name');
             
             if (e.target.value === 'parent') {
                 parentFields.classList.remove('hidden');
-                studentClassField.required = true;
                 parentNameField.required = true;
             } else {
                 parentFields.classList.add('hidden');
-                studentClassField.required = false;
                 parentNameField.required = false;
             }
         });
@@ -748,44 +758,59 @@ async function renderLogin() {
     document.getElementById('student-parent-login-form').addEventListener('submit', async (e) => {
         e.preventDefault();
         const userType = document.querySelector('input[name="user-type"]:checked').value;
-        const studentId = document.getElementById('student-id').value;
-        const studentName = document.getElementById('student-name').value;
+        const studentId = document.getElementById('student-id').value.trim();
+        const classId = document.getElementById('student-class-select').value;
+        const firstName = document.getElementById('student-firstname').value.trim();
+        const lastName = document.getElementById('student-lastname').value.trim();
         
         if (userType === 'parent') {
-            const studentClass = document.getElementById('student-class').value;
-            const parentName = document.getElementById('parent-name').value;
+            const parentName = document.getElementById('parent-name').value.trim();
             
             // Parent login - verify all details match
             const result = await API.post('/students/parent-login', {
                 studentId,
-                studentName,
-                studentClass,
+                classId,
+                firstName,
+                lastName,
                 parentName
             });
             
-            if (result.success) {
+            if (result.success && result.data.data) {
                 showNotification('Welcome! Access granted.', 'success');
-                currentUser = { role: 'Parent', studentId, studentName };
+                currentUser = { role: 'Parent', studentId, studentName: `${firstName} ${lastName}`, studentData: result.data.data.student };
                 navigateTo('/parent-portal');
             } else {
-                showNotification('Invalid credentials. Please check all details.', 'error');
+                console.error('Parent login failed:', result);
+                showNotification(result.message || 'Invalid credentials. Please verify:\n- Student ID matches exactly\n- Class is correct\n- Names are spelled correctly\n- Parent name matches registration\n\nContact Dean of Studies if needed.', 'error');
             }
         } else {
-            // Student login - verify ID and name
+            // Student login - verify ID, class, and names
             const result = await API.post('/students/student-login', {
                 studentId,
-                studentName
+                classId,
+                firstName,
+                lastName
             });
             
-            if (result.success) {
+            if (result.success && result.data.data) {
                 showNotification('Welcome back!', 'success');
-                currentUser = { role: 'Student', studentId, studentName };
+                currentUser = { role: 'Student', studentId, studentName: `${firstName} ${lastName}`, studentData: result.data.data.student };
                 navigateTo('/student-portal');
             } else {
-                showNotification('Invalid Student ID or Name.', 'error');
+                showNotification(result.message || 'Invalid Student ID or Name. Please contact the Dean of Studies if you believe this is an error.', 'error');
             }
         }
     });
+    
+    async function loadClassesForStudentLogin() {
+        const classSelect = document.getElementById('student-class-select');
+        const result = await API.get('/dos/classes');
+        
+        if (result.success && result.data.data) {
+            classSelect.innerHTML = '<option value="">Select Your Class</option>' +
+                result.data.data.map(cls => `<option value="${cls._id}">${cls.classID} - ${cls.name}</option>`).join('');
+        }
+    }
     
     // Global functions for login type switching
     window.showStaffLogin = function() {
@@ -1201,17 +1226,17 @@ async function renderDODDashboard() {
             <div class="grid md:grid-cols-3 gap-6 mb-12">
                 <div class="bg-white p-6 rounded-lg shadow-lg">
                     <i class="fas fa-users text-3xl text-blue-600 mb-3"></i>
-                    <h3 class="text-2xl font-bold" id="dod-students">...</h3>
+                    <h3 class="text-2xl font-bold" id="dod-students"><i class="fas fa-spinner fa-spin"></i></h3>
                     <p class="text-gray-600">Total Students</p>
                 </div>
                 <div class="bg-white p-6 rounded-lg shadow-lg border-t-4 border-yellow-500">
                     <i class="fas fa-exclamation-triangle text-3xl text-yellow-600 mb-3"></i>
-                    <h3 class="text-2xl font-bold" id="low-conduct">...</h3>
+                    <h3 class="text-2xl font-bold" id="low-conduct"><i class="fas fa-spinner fa-spin"></i></h3>
                     <p class="text-gray-600">Low Conduct (&lt;20)</p>
                 </div>
                 <div class="bg-white p-6 rounded-lg shadow-lg">
                     <i class="fas fa-clipboard-list text-3xl text-red-600 mb-3"></i>
-                    <h3 class="text-2xl font-bold" id="total-faults">...</h3>
+                    <h3 class="text-2xl font-bold" id="total-faults"><i class="fas fa-spinner fa-spin"></i></h3>
                     <p class="text-gray-600">Total Faults</p>
                 </div>
             </div>
@@ -1240,6 +1265,40 @@ async function renderDODDashboard() {
             </div>
         </div>
     `;
+    
+    // Load statistics
+    loadDODStatistics();
+}
+
+async function loadDODStatistics() {
+    const studentsCount = document.getElementById('dod-students');
+    const lowConductCount = document.getElementById('low-conduct');
+    const faultsCount = document.getElementById('total-faults');
+    
+    // Get conduct statistics
+    const statsResult = await API.get('/dod/conducts/statistics');
+    
+    if (statsResult.success && statsResult.data.data) {
+        const stats = statsResult.data.data;
+        
+        // Total students with conduct records
+        studentsCount.textContent = stats.totalStudents || 0;
+        
+        // Low conduct (<20)
+        const criticalStatus = stats.statusCounts.find(s => s._id === 'Critical');
+        lowConductCount.textContent = criticalStatus ? criticalStatus.count : 0;
+    } else {
+        studentsCount.textContent = '0';
+        lowConductCount.textContent = '0';
+    }
+    
+    // Get total faults
+    const faultsResult = await API.get('/dod/faults');
+    if (faultsResult.success && faultsResult.data.data) {
+        faultsCount.textContent = faultsResult.data.data.length;
+    } else {
+        faultsCount.textContent = '0';
+    }
 }
 
 // IT Dashboard
@@ -1471,22 +1530,27 @@ async function renderTeacherDashboard() {
             <div class="grid md:grid-cols-3 gap-6 mb-12">
                 <div class="bg-white p-6 rounded-lg shadow-lg">
                     <i class="fas fa-school text-3xl text-teal-600 mb-3"></i>
-                    <h3 class="text-2xl font-bold">3</h3>
+                    <h3 class="text-2xl font-bold" id="assigned-classes-count"><i class="fas fa-spinner fa-spin"></i></h3>
                     <p class="text-gray-600">Assigned Classes</p>
                 </div>
                 <div class="bg-white p-6 rounded-lg shadow-lg">
                     <i class="fas fa-users text-3xl text-blue-600 mb-3"></i>
-                    <h3 class="text-2xl font-bold">120</h3>
+                    <h3 class="text-2xl font-bold" id="total-students-count"><i class="fas fa-spinner fa-spin"></i></h3>
                     <p class="text-gray-600">Total Students</p>
                 </div>
                 <div class="bg-white p-6 rounded-lg shadow-lg">
                     <i class="fas fa-clipboard-check text-3xl text-green-600 mb-3"></i>
-                    <h3 class="text-2xl font-bold">45</h3>
+                    <h3 class="text-2xl font-bold" id="marks-recorded-count"><i class="fas fa-spinner fa-spin"></i></h3>
                     <p class="text-gray-600">Marks Recorded</p>
                 </div>
             </div>
             
             <div class="grid md:grid-cols-2 gap-6">
+                <button onclick="navigateTo('/subjects')" class="bg-indigo-600 text-white p-6 rounded-lg hover:bg-indigo-700 transition text-left">
+                    <i class="fas fa-book-open text-3xl mb-3"></i>
+                    <h3 class="text-xl font-bold mb-2">Subject Management</h3>
+                    <p class="text-sm">Create and manage subjects</p>
+                </button>
                 <button onclick="navigateTo('/marks')" class="bg-teal-600 text-white p-6 rounded-lg hover:bg-teal-700 transition text-left">
                     <i class="fas fa-edit text-3xl mb-3"></i>
                     <h3 class="text-xl font-bold mb-2">Record Marks</h3>
@@ -1510,6 +1574,47 @@ async function renderTeacherDashboard() {
             </div>
         </div>
     `;
+    
+    // Fetch and display real data
+    if (currentUser) {
+        const userId = currentUser._id || currentUser.id;
+        // Get teacher's assigned classes
+        const classesResult = await API.get(`/dos/my-classes/${userId}`);
+        const assignedClassesCount = document.getElementById('assigned-classes-count');
+        const totalStudentsCount = document.getElementById('total-students-count');
+        const marksRecordedCount = document.getElementById('marks-recorded-count');
+        
+        if (classesResult.success && classesResult.data.data) {
+            const classes = classesResult.data.data;
+            const classCount = classes.length;
+            
+            // Calculate total students
+            let totalStudents = 0;
+            const classIds = [];
+            classes.forEach(cls => {
+                totalStudents += cls.students?.length || 0;
+                classIds.push(cls._id);
+            });
+            
+            assignedClassesCount.textContent = classCount;
+            totalStudentsCount.textContent = totalStudents;
+            
+            // Get marks recorded by this teacher
+            const marksResult = await API.get('/dos/marks');
+            if (marksResult.success && marksResult.data.data) {
+                const teacherMarks = marksResult.data.data.filter(mark => 
+                    mark.createdBy === userId || classIds.includes(mark.class?._id || mark.class)
+                );
+                marksRecordedCount.textContent = teacherMarks.length;
+            } else {
+                marksRecordedCount.textContent = 0;
+            }
+        } else {
+            assignedClassesCount.textContent = 0;
+            totalStudentsCount.textContent = 0;
+            marksRecordedCount.textContent = 0;
+        }
+    }
 }
 
 async function renderStudents() {
@@ -1821,8 +1926,9 @@ async function renderMarks() {
     
     // Load classes for filter (teacher's classes only if teacher)
     let classEndpoint = '/dos/classes';
-    if (isTeacher && currentUser.id) {
-        classEndpoint = `/dos/my-classes/${currentUser.id}`;
+    if (isTeacher && currentUser) {
+        const userId = currentUser._id || currentUser.id;
+        classEndpoint = `/dos/my-classes/${userId}`;
     }
     
     const classesResult = await API.get(classEndpoint);
@@ -1839,23 +1945,145 @@ async function loadMarks(classId = '', term = '', assessmentType = '') {
     const marksList = document.getElementById('marks-list');
     if (!marksList) return;
 
-    let query = '';
-    if (classId) query += `?classId=${classId}`;
-    if (term) query += (query ? '&' : '?') + `term=${term}`;
-    if (assessmentType) query += (query ? '&' : '?') + `assessmentType=${assessmentType}`;
-
     marksList.innerHTML = `
         <i class="fas fa-spinner fa-spin text-4xl text-purple-600"></i>
         <p class="mt-4">Loading marks...</p>
     `;
 
-    // For now, show placeholder since we need to query by class
+    // Fetch all marks
+    const result = await API.get('/dos/marks');
+    
+    if (!result.success || !result.data.data) {
+        marksList.innerHTML = `
+            <div class="text-red-600">
+                <i class="fas fa-exclamation-triangle text-4xl mb-4"></i>
+                <p>Unable to load marks</p>
+            </div>
+        `;
+        return;
+    }
+    
+    let marks = result.data.data;
+    
+    // Apply filters
+    if (classId) {
+        marks = marks.filter(mark => mark.class && (mark.class._id === classId || mark.class === classId));
+    }
+    if (term) {
+        marks = marks.filter(mark => mark.term === term);
+    }
+    if (assessmentType) {
+        marks = marks.filter(mark => mark.assessmentType === assessmentType);
+    }
+    
+    if (marks.length === 0) {
+        marksList.innerHTML = `
+            <div class="text-gray-600">
+                <i class="fas fa-info-circle text-4xl mb-4"></i>
+                <p class="text-lg">No marks found matching your filters</p>
+                <p class="text-sm text-gray-500 mt-2">Try adjusting the filters or add new marks</p>
+            </div>
+        `;
+        return;
+    }
+    
+    // Group marks by class and subject
+    const groupedMarks = {};
+    marks.forEach(mark => {
+        const classKey = mark.class?.classID || 'Unknown Class';
+        if (!groupedMarks[classKey]) {
+            groupedMarks[classKey] = {};
+        }
+        const subjectKey = mark.subject || 'Unknown Subject';
+        if (!groupedMarks[classKey][subjectKey]) {
+            groupedMarks[classKey][subjectKey] = [];
+        }
+        groupedMarks[classKey][subjectKey].push(mark);
+    });
+    
     marksList.innerHTML = `
-        <div class="text-gray-600">
-            <i class="fas fa-info-circle text-4xl mb-4"></i>
-            <p class="text-lg">Select a class to view marks or add new marks</p>
+        <div class="space-y-6">
+            ${Object.entries(groupedMarks).map(([className, subjects]) => `
+                <div class="bg-white rounded-lg shadow-lg overflow-hidden">
+                    <div class="bg-purple-600 text-white px-6 py-3">
+                        <h3 class="text-xl font-bold">${className}</h3>
+                    </div>
+                    <div class="p-6 space-y-4">
+                        ${Object.entries(subjects).map(([subjectName, subjectMarks]) => `
+                            <div class="border-l-4 border-purple-500 pl-4">
+                                <h4 class="font-bold text-lg text-gray-800 mb-3">${subjectName}</h4>
+                                <div class="overflow-x-auto">
+                                    <table class="min-w-full">
+                                        <thead class="bg-gray-50">
+                                            <tr>
+                                                <th class="px-4 py-2 text-left text-xs font-semibold text-gray-600">Student</th>
+                                                <th class="px-4 py-2 text-left text-xs font-semibold text-gray-600">Term</th>
+                                                <th class="px-4 py-2 text-left text-xs font-semibold text-gray-600">Assessment</th>
+                                                <th class="px-4 py-2 text-left text-xs font-semibold text-gray-600">Score</th>
+                                                <th class="px-4 py-2 text-left text-xs font-semibold text-gray-600">Status</th>
+                                                <th class="px-4 py-2 text-left text-xs font-semibold text-gray-600">Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody class="divide-y divide-gray-200">
+                                            ${subjectMarks.map(mark => `
+                                                <tr class="hover:bg-gray-50">
+                                                    <td class="px-4 py-2 text-sm">
+                                                        ${mark.student?.firstName || 'N/A'} ${mark.student?.lastName || ''}
+                                                        <div class="text-xs text-gray-500">${mark.student?.studentID || ''}</div>
+                                                    </td>
+                                                    <td class="px-4 py-2 text-sm">${mark.term}</td>
+                                                    <td class="px-4 py-2 text-sm">${mark.assessmentType}</td>
+                                                    <td class="px-4 py-2">
+                                                        <span class="text-lg font-bold ${mark.marks >= 70 ? 'text-green-600' : mark.marks >= 50 ? 'text-yellow-600' : 'text-red-600'}">
+                                                            ${mark.marks}%
+                                                        </span>
+                                                    </td>
+                                                    <td class="px-4 py-2">
+                                                        <span class="px-2 py-1 text-xs font-semibold rounded ${mark.published ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}">
+                                                            ${mark.published ? 'Published' : 'Draft'}
+                                                        </span>
+                                                    </td>
+                                                    <td class="px-4 py-2">
+                                                        <button onclick="deleteMark('${mark._id}')" class="text-red-600 hover:text-red-800 text-sm">
+                                                            <i class="fas fa-trash"></i>
+                                                        </button>
+                                                    </td>
+                                                </tr>
+                                            `).join('')}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `).join('')}
+        </div>
+        
+        <div class="mt-6 bg-blue-50 border border-blue-200 rounded-lg p-4">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="font-semibold text-blue-800">Total Marks: ${marks.length}</p>
+                    <p class="text-sm text-blue-700">Published: ${marks.filter(m => m.published).length} | Draft: ${marks.filter(m => !m.published).length}</p>
+                </div>
+            </div>
         </div>
     `;
+}
+
+window.deleteMark = async function(markId) {
+    if (!confirm('Are you sure you want to delete this mark?')) return;
+    
+    const result = await API.delete(`/dos/marks/${markId}`);
+    if (result.success) {
+        showNotification('Mark deleted successfully', 'success');
+        const classId = document.getElementById('filter-class').value;
+        const term = document.getElementById('filter-term').value;
+        const assessment = document.getElementById('filter-assessment').value;
+        loadMarks(classId, term, assessment);
+    } else {
+        showNotification('Failed to delete mark', 'error');
+    }
 }
 
 window.filterMarks = function() {
@@ -1868,8 +2096,9 @@ window.filterMarks = function() {
 window.showAddMarksModal = async function() {
     const isTeacher = currentUser && currentUser.role === 'Teacher';
     let classEndpoint = '/dos/classes';
-    if (isTeacher && currentUser.id) {
-        classEndpoint = `/dos/my-classes/${currentUser.id}`;
+    if (isTeacher && currentUser) {
+        const userId = currentUser._id || currentUser.id;
+        classEndpoint = `/dos/my-classes/${userId}`;
     }
     
     const classesResult = await API.get(classEndpoint);
@@ -1883,11 +2112,17 @@ window.showAddMarksModal = async function() {
                 <div class="grid md:grid-cols-2 gap-4 mb-6">
                     <div>
                         <label class="block text-gray-700 font-bold mb-2">Class *</label>
-                        <select name="classId" required id="marks-class-select" class="w-full px-4 py-2 border rounded-lg" onchange="loadClassStudents(this.value)">
+                        <select name="classId" required id="marks-class-select" class="w-full px-4 py-2 border rounded-lg" onchange="loadClassSubjects(this.value)">
                             <option value="">Select Class</option>
                             ${classesResult.success ? classesResult.data.data.map(cls => 
                                 `<option value="${cls._id}">${cls.classID} - ${cls.name}</option>`
                             ).join('') : ''}
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-gray-700 font-bold mb-2">Subject *</label>
+                        <select name="subject" required id="marks-subject-select" class="w-full px-4 py-2 border rounded-lg" disabled onchange="loadStudentsForSubject()">
+                            <option value="">Select Subject</option>
                         </select>
                     </div>
                     <div>
@@ -1918,7 +2153,7 @@ window.showAddMarksModal = async function() {
                 </div>
 
                 <div id="students-marks-container" class="mb-6">
-                    <p class="text-gray-500 text-center">Select a class to add marks</p>
+                    <p class="text-gray-500 text-center">Select a class and subject to add marks</p>
                 </div>
 
                 <div class="flex gap-4">
@@ -1934,56 +2169,98 @@ window.showAddMarksModal = async function() {
     `;
     document.body.appendChild(modal);
 
-    window.loadClassStudents = async function(classId) {
+    let currentClassStudents = [];
+
+    window.loadClassSubjects = async function(classId) {
+        const subjectSelect = document.getElementById('marks-subject-select');
         const container = document.getElementById('students-marks-container');
+        
         if (!classId) {
-            container.innerHTML = '<p class="text-gray-500 text-center">Select a class to add marks</p>';
+            subjectSelect.disabled = true;
+            subjectSelect.innerHTML = '<option value="">Select Subject</option>';
+            container.innerHTML = '<p class="text-gray-500 text-center">Select a class and subject to add marks</p>';
             return;
         }
 
-        const result = await API.get(`/dos/students/class/${classId}`);
-        if (result.success && result.data.data) {
+        // Load subjects for the class
+        const subjectsResult = await API.get(`/dos/subjects?class=${classId}`);
+        const subjects = subjectsResult.success ? subjectsResult.data.data : [];
+
+        if (subjects.length === 0) {
+            subjectSelect.disabled = true;
+            subjectSelect.innerHTML = '<option value="">No subjects available</option>';
             container.innerHTML = `
-                <h3 class="text-lg font-bold mb-4">Enter Marks for Students</h3>
-                <div class="max-h-96 overflow-y-auto space-y-4">
-                    ${result.data.data.map((student, index) => `
-                        <div class="border p-4 rounded-lg">
-                            <div class="flex items-center justify-between mb-3">
-                                <div>
-                                    <p class="font-bold">${student.firstName} ${student.lastName}</p>
-                                    <p class="text-sm text-gray-500">${student.studentID}</p>
-                                </div>
-                            </div>
-                            <input type="hidden" name="students[${index}][studentId]" value="${student._id}">
-                            <div class="grid md:grid-cols-2 gap-3">
-                                <div>
-                                    <label class="block text-sm text-gray-700 mb-1">Subject *</label>
-                                    <input type="text" name="students[${index}][subject]" required class="w-full px-3 py-2 border rounded text-sm" placeholder="e.g., Mathematics">
-                                </div>
-                                <div>
-                                    <label class="block text-sm text-gray-700 mb-1">Score (0-100) *</label>
-                                    <input type="number" name="students[${index}][score]" required min="0" max="100" class="w-full px-3 py-2 border rounded text-sm">
-                                </div>
-                            </div>
-                        </div>
-                    `).join('')}
+                <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4 text-center">
+                    <i class="fas fa-exclamation-triangle text-yellow-600 text-3xl mb-2"></i>
+                    <p class="text-yellow-800 font-bold mb-2">No subjects found for this class</p>
+                    <p class="text-yellow-700 mb-3">Please create subjects first before adding marks.</p>
+                    <button onclick="navigateTo('/subjects')" class="bg-yellow-600 text-white px-4 py-2 rounded hover:bg-yellow-700">
+                        <i class="fas fa-plus mr-2"></i>Create Subjects
+                    </button>
                 </div>
             `;
+            return;
         }
+
+        // Populate subject dropdown
+        subjectSelect.disabled = false;
+        subjectSelect.innerHTML = '<option value="">Select Subject</option>' + 
+            subjects.map(subj => `<option value="${subj.name}">${subj.name}${subj.code ? ' (' + subj.code + ')' : ''}</option>`).join('');
+        
+        // Load students for the class
+        const studentsResult = await API.get(`/dos/students/class/${classId}`);
+        if (studentsResult.success && studentsResult.data.data) {
+            currentClassStudents = studentsResult.data.data;
+        }
+        
+        container.innerHTML = '<p class="text-gray-500 text-center">Select a subject to continue</p>';
+    };
+
+    window.loadStudentsForSubject = function() {
+        const container = document.getElementById('students-marks-container');
+        const subjectName = document.getElementById('marks-subject-select').value;
+        
+        if (!subjectName || currentClassStudents.length === 0) {
+            container.innerHTML = '<p class="text-gray-500 text-center">Select a subject to continue</p>';
+            return;
+        }
+
+        container.innerHTML = `
+            <h3 class="text-lg font-bold mb-4">Enter Marks for ${subjectName}</h3>
+            <div class="max-h-96 overflow-y-auto space-y-3">
+                ${currentClassStudents.map((student, index) => `
+                    <div class="border p-4 rounded-lg flex items-center justify-between">
+                        <div class="flex-1">
+                            <p class="font-bold">${student.firstName} ${student.lastName}</p>
+                            <p class="text-sm text-gray-500">${student.studentID}</p>
+                        </div>
+                        <div class="w-32">
+                            <input type="hidden" name="students[${index}][studentId]" value="${student._id}">
+                            <input type="number" name="students[${index}][score]" required min="0" max="100" 
+                                class="w-full px-3 py-2 border rounded text-sm" placeholder="Score">
+                        </div>
+                    </div>
+                `).join('')}
+            </div>
+        `;
     };
 
     document.getElementById('add-marks-form').addEventListener('submit', async (e) => {
         e.preventDefault();
         const formData = new FormData(e.target);
         
+        const subject = formData.get('subject');
         const marks = [];
         let index = 0;
         while (formData.get(`students[${index}][studentId]`)) {
-            marks.push({
-                studentId: formData.get(`students[${index}][studentId]`),
-                subject: formData.get(`students[${index}][subject]`),
-                score: parseFloat(formData.get(`students[${index}][score]`))
-            });
+            const score = formData.get(`students[${index}][score]`);
+            if (score !== null && score !== '') {
+                marks.push({
+                    studentId: formData.get(`students[${index}][studentId]`),
+                    subject: subject,
+                    score: parseFloat(score)
+                });
+            }
             index++;
         }
 
@@ -2000,7 +2277,11 @@ window.showAddMarksModal = async function() {
         if (result.success) {
             showNotification(`Marks added successfully for ${result.data.count} students!`, 'success');
             modal.remove();
-            renderMarks();
+            // Reload marks with current filters
+            const classId = document.getElementById('filter-class')?.value || '';
+            const term = document.getElementById('filter-term')?.value || '';
+            const assessment = document.getElementById('filter-assessment')?.value || '';
+            loadMarks(classId, term, assessment);
         } else {
             showNotification('Failed to add marks: ' + result.message, 'error');
         }
@@ -2206,12 +2487,14 @@ window.loadDisciplineReports = async function() {
 
 async function renderPerformance() {
     const mainContent = document.getElementById('main-content');
+    const isDOS = currentUser && currentUser.role === 'DOS';
+    
     mainContent.innerHTML = `
         <div class="bg-orange-600 text-white py-12 text-center">
             <h1 class="text-4xl font-bold mb-4">Performance Analytics</h1>
-            <button onclick="showPublishBestPerformersModal()" class="bg-white text-orange-600 px-6 py-2 rounded-lg hover:bg-gray-100 transition mt-4">
+            ${isDOS ? `<button onclick="showPublishBestPerformersModal()" class="bg-white text-orange-600 px-6 py-2 rounded-lg hover:bg-gray-100 transition mt-4">
                 <i class="fas fa-trophy mr-2"></i>Publish Best Performers
-            </button>
+            </button>` : ''}
         </div>
         <div class="container mx-auto px-4 py-16">
             <!-- Filter Section -->
@@ -2410,8 +2693,9 @@ async function renderClasses() {
     `;
     
     let endpoint = '/dos/classes';
-    if (isTeacher && currentUser.id) {
-        endpoint = `/dos/my-classes/${currentUser.id}`;
+    if (isTeacher && currentUser) {
+        const userId = currentUser._id || currentUser.id;
+        endpoint = `/dos/my-classes/${userId}`;
     }
     
     const result = await API.get(endpoint);
@@ -2440,9 +2724,12 @@ async function renderClasses() {
                                 <button onclick="viewClass('${cls._id}')" class="flex-1 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 text-sm">
                                     <i class="fas fa-eye mr-1"></i>View
                                 </button>
-                                <button onclick="editClass('${cls._id}')" class="flex-1 bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 text-sm">
+                                ${isDOS ? `<button onclick="editClass('${cls._id}')" class="flex-1 bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 text-sm">
                                     <i class="fas fa-edit mr-1"></i>Edit
                                 </button>
+                                <button onclick="deleteClass('${cls._id}', '${cls.classID}')" class="flex-1 bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700 text-sm">
+                                    <i class="fas fa-trash mr-1"></i>Delete
+                                </button>` : ''}
                             </div>
                         </div>
                     `).join('')}
@@ -2560,6 +2847,202 @@ window.showCreateClassModal = async function() {
             showNotification('Failed to create class: ' + result.message, 'error');
         }
     });
+}
+
+window.deleteClass = async function(classId, className) {
+    if (!confirm(`Are you sure you want to delete class "${className}"? This action cannot be undone.`)) {
+        return;
+    }
+    
+    const result = await API.delete(`/dos/classes/${classId}`);
+    
+    if (result.success) {
+        showNotification(`Class "${className}" deleted successfully`, 'success');
+        renderClasses();
+    } else {
+        showNotification('Failed to delete class: ' + result.message, 'error');
+    }
+}
+
+// Subject Management
+async function renderSubjects() {
+    const mainContent = document.getElementById('main-content');
+    const isTeacher = currentUser && currentUser.role === 'Teacher';
+    
+    mainContent.innerHTML = `
+        <div class="bg-indigo-600 text-white py-12 text-center">
+            <h1 class="text-4xl font-bold mb-4">Subject Management</h1>
+            ${isTeacher ? `<button onclick="showCreateSubjectModal()" class="bg-white text-indigo-600 px-6 py-2 rounded-lg hover:bg-gray-100 transition mt-4">
+                <i class="fas fa-plus mr-2"></i>Create New Subject
+            </button>` : ''}
+        </div>
+        <div class="container mx-auto px-4 py-16">
+            <div id="subjects-list" class="text-center">
+                <i class="fas fa-spinner fa-spin text-4xl text-indigo-600"></i>
+                <p class="mt-4">Loading subjects...</p>
+            </div>
+        </div>
+    `;
+    
+    let endpoint = '/dos/subjects';
+    if (isTeacher && currentUser) {
+        const userId = currentUser._id || currentUser.id;
+        endpoint = `/dos/subjects/teacher/${userId}`;
+    }
+    
+    const result = await API.get(endpoint);
+    const subjectsList = document.getElementById('subjects-list');
+    
+    if (result.success && result.data.data) {
+        if (result.data.data.length === 0) {
+            subjectsList.innerHTML = `
+                <div class="text-gray-600">
+                    <i class="fas fa-info-circle text-4xl mb-4"></i>
+                    <p class="text-lg">No subjects found. Create your first subject!</p>
+                </div>
+            `;
+        } else {
+            subjectsList.innerHTML = `
+                <div class="grid md:grid-cols-3 gap-6">
+                    ${result.data.data.map(subject => `
+                        <div class="bg-white p-6 rounded-lg shadow-lg hover:shadow-xl transition">
+                            <div class="flex justify-between items-start mb-3">
+                                <h3 class="text-2xl font-bold text-indigo-600">${subject.name}</h3>
+                                ${subject.code ? `<span class="bg-indigo-100 text-indigo-800 px-2 py-1 rounded text-sm font-bold">${subject.code}</span>` : ''}
+                            </div>
+                            <p class="text-gray-700 mb-2"><strong>Class:</strong> ${subject.class?.classID || 'N/A'}</p>
+                            <p class="text-gray-600 mb-2"><strong>Teacher:</strong> ${subject.teacher?.name || 'N/A'}</p>
+                            <p class="text-gray-600 mb-4"><strong>Students:</strong> ${subject.students?.length || 0}</p>
+                            ${subject.description ? `<p class="text-gray-500 text-sm mb-4 italic">${subject.description}</p>` : ''}
+                            <div class="flex gap-2">
+                                ${isTeacher ? `
+                                    <button onclick="syncSubjectStudents('${subject._id}')" class="flex-1 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 text-sm" title="Sync new students from class">
+                                        <i class="fas fa-sync mr-1"></i>Sync
+                                    </button>
+                                    <button onclick="deleteSubject('${subject._id}', '${subject.name}')" class="flex-1 bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700 text-sm">
+                                        <i class="fas fa-trash mr-1"></i>Delete
+                                    </button>
+                                ` : ''}
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+        }
+    } else {
+        subjectsList.innerHTML = `
+            <div class="text-red-600">
+                <i class="fas fa-exclamation-triangle text-4xl mb-4"></i>
+                <p>Unable to load subjects. ${result.message}</p>
+            </div>
+        `;
+    }
+}
+
+window.showCreateSubjectModal = async function() {
+    if (!currentUser) {
+        showNotification('Please log in to create subjects', 'error');
+        return;
+    }
+
+    const userId = currentUser._id || currentUser.id;
+    const classesResult = await API.get(`/dos/my-classes/${userId}`);
+    
+    const modal = document.createElement('div');
+    modal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 overflow-y-auto';
+    modal.innerHTML = `
+        <div class="bg-white rounded-lg p-8 max-w-md w-full mx-4 my-8">
+            <h2 class="text-2xl font-bold mb-6 text-indigo-600">Create New Subject</h2>
+            <form id="create-subject-form">
+                <div class="mb-4">
+                    <label class="block text-gray-700 font-bold mb-2">Subject Name *</label>
+                    <input type="text" name="name" required class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder="e.g., Mathematics">
+                </div>
+                <div class="mb-4">
+                    <label class="block text-gray-700 font-bold mb-2">Subject Code (Optional)</label>
+                    <input type="text" name="code" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder="e.g., MATH101" maxlength="10">
+                </div>
+                <div class="mb-4">
+                    <label class="block text-gray-700 font-bold mb-2">Class *</label>
+                    <select name="class" required class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                        <option value="">Select Class</option>
+                        ${classesResult.success ? classesResult.data.data.map(cls => 
+                            `<option value="${cls._id}">${cls.classID} (${cls.students?.length || 0} students)</option>`
+                        ).join('') : ''}
+                    </select>
+                </div>
+                <div class="mb-6">
+                    <label class="block text-gray-700 font-bold mb-2">Description (Optional)</label>
+                    <textarea name="description" rows="3" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder="Brief description of the subject"></textarea>
+                </div>
+                <div class="flex gap-4">
+                    <button type="submit" class="flex-1 bg-indigo-600 text-white px-6 py-3 rounded-lg hover:bg-indigo-700 font-bold">
+                        <i class="fas fa-plus mr-2"></i>Create
+                    </button>
+                    <button type="button" onclick="this.closest('.fixed').remove()" class="flex-1 bg-gray-400 text-white px-6 py-3 rounded-lg hover:bg-gray-500 font-bold">
+                        Cancel
+                    </button>
+                </div>
+            </form>
+        </div>
+    `;
+    document.body.appendChild(modal);
+
+    document.getElementById('create-subject-form').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const formData = new FormData(e.target);
+        const data = Object.fromEntries(formData);
+        
+        data.teacher = currentUser._id || currentUser.id;
+        
+        if (!data.code || data.code.trim() === '') {
+            delete data.code;
+        }
+        
+        if (!data.description || data.description.trim() === '') {
+            delete data.description;
+        }
+        
+        const result = await API.post('/dos/subjects', data);
+        
+        if (result.success) {
+            showNotification(`Subject created: ${result.data.data.name} (${result.data.data.students.length} students assigned)`, 'success');
+            modal.remove();
+            renderSubjects();
+        } else {
+            showNotification('Failed to create subject: ' + result.message, 'error');
+        }
+    });
+}
+
+window.syncSubjectStudents = async function(subjectId) {
+    const result = await API.post(`/dos/subjects/${subjectId}/sync-students`);
+    
+    if (result.success) {
+        if (result.data.added > 0) {
+            showNotification(`Synced! Added ${result.data.added} new student(s)`, 'success');
+        } else {
+            showNotification('Already up to date - no new students to add', 'info');
+        }
+        renderSubjects();
+    } else {
+        showNotification('Failed to sync students: ' + result.message, 'error');
+    }
+}
+
+window.deleteSubject = async function(subjectId, subjectName) {
+    if (!confirm(`Are you sure you want to delete "${subjectName}"? This action cannot be undone.`)) {
+        return;
+    }
+    
+    const result = await API.delete(`/dos/subjects/${subjectId}`);
+    
+    if (result.success) {
+        showNotification(`Subject "${subjectName}" deleted successfully`, 'success');
+        renderSubjects();
+    } else {
+        showNotification('Failed to delete subject: ' + result.message, 'error');
+    }
 }
 
 async function renderTrainers() {
@@ -2878,59 +3361,178 @@ async function renderStudentPortal() {
     `;
     
     // Load student data
-    const result = await API.post('/students/student-login', {
-        studentId: currentUser.studentId,
-        studentName: currentUser.studentName
-    });
+    if (!currentUser.studentData || !currentUser.studentData._id) {
+        document.getElementById('student-data').innerHTML = `
+            <div class="text-red-600">
+                <i class="fas fa-exclamation-triangle text-4xl mb-4"></i>
+                <p>Unable to load student data. Please log in again.</p>
+            </div>
+        `;
+        return;
+    }
     
+    const studentId = currentUser.studentData._id;
     const studentData = document.getElementById('student-data');
     const studentContent = document.getElementById('student-content');
     
-    if (result.success) {
-        studentData.classList.add('hidden');
-        studentContent.classList.remove('hidden');
+    studentData.classList.add('hidden');
+    studentContent.classList.remove('hidden');
+    
+    // Load PUBLISHED marks by student (only marks that DOS has published)
+    const marksResult = await API.get(`/dos/students/${studentId}`);
+    const studentMarks = document.getElementById('student-marks');
+    
+    if (marksResult.success && marksResult.data.data) {
+        // Get all PUBLISHED marks for this student
+        const allMarksResult = await API.get('/dos/marks');
         
-        // Load marks
-        const marksResult = await API.get(`/marks/student/${result.data.student._id}`);
-        const studentMarks = document.getElementById('student-marks');
+        if (allMarksResult.success && allMarksResult.data.data) {
+            const studentMarksData = allMarksResult.data.data.filter(mark => 
+                mark.student && (mark.student._id === studentId || mark.student === studentId) &&
+                mark.published === true  // Only show published marks
+            );
+            
+            // Group marks by subject
+            const subjectMarks = {};
+            let totalMarks = 0;
+            let totalSubjects = 0;
+            
+            studentMarksData.forEach(mark => {
+                if (!subjectMarks[mark.subject]) {
+                    subjectMarks[mark.subject] = [];
+                }
+                subjectMarks[mark.subject].push(mark);
+                totalMarks += mark.marks;
+                totalSubjects++;
+            });
+            
+            const averagePercentage = totalSubjects > 0 ? (totalMarks / totalSubjects).toFixed(1) : 0;
+            
+            if (Object.keys(subjectMarks).length > 0) {
+                studentMarks.innerHTML = `
+                    <div class="bg-gradient-to-r from-blue-500 to-indigo-600 text-white p-6 rounded-lg mb-6">
+                        <h3 class="text-2xl font-bold mb-2">Overall Average</h3>
+                        <p class="text-5xl font-bold">${averagePercentage}%</p>
+                        <p class="text-sm mt-2">${totalSubjects} assessments across ${Object.keys(subjectMarks).length} subjects</p>
+                    </div>
+                    
+                    <div class="space-y-4">
+                        ${Object.entries(subjectMarks).map(([subject, marks]) => {
+                            const subjectAvg = (marks.reduce((sum, m) => sum + m.marks, 0) / marks.length).toFixed(1);
+                            return `
+                                <div class="border border-gray-200 rounded-lg p-4 hover:shadow-md transition">
+                                    <div class="flex justify-between items-center mb-2">
+                                        <h4 class="text-lg font-bold text-gray-800">${subject}</h4>
+                                        <span class="text-2xl font-bold ${subjectAvg >= 70 ? 'text-green-600' : subjectAvg >= 50 ? 'text-yellow-600' : 'text-red-600'}">${subjectAvg}%</span>
+                                    </div>
+                                    <div class="space-y-2">
+                                        ${marks.map(mark => `
+                                            <div class="flex justify-between text-sm">
+                                                <span class="text-gray-600">${mark.assessmentType} - ${mark.term}</span>
+                                                <span class="font-semibold">${mark.marks}%</span>
+                                            </div>
+                                        `).join('')}
+                                    </div>
+                                </div>
+                            `;
+                        }).join('')}
+                    </div>
+                `;
+            } else {
+                studentMarks.innerHTML = `
+                    <div class="bg-blue-50 border border-blue-200 rounded-lg p-6 text-center">
+                        <i class="fas fa-info-circle text-blue-600 text-4xl mb-3"></i>
+                        <p class="text-blue-800 font-bold text-lg mb-2">No Published Marks Yet</p>
+                        <p class="text-blue-700">Your academic performance will appear here once the Dean of Studies publishes your marks.</p>
+                        <p class="text-blue-700 text-sm mt-2">Contact the Dean of Studies if you have questions.</p>
+                    </div>
+                `;
+            }
+        }
+    }
+    
+    // Load PUBLISHED conduct reports (only reports that DOD has published)
+    const publishedReportsResult = await API.get(`/dod/published?studentId=${studentId}`);
+    const studentConduct = document.getElementById('student-conduct');
+    
+    if (publishedReportsResult.success && publishedReportsResult.data.data && publishedReportsResult.data.data.length > 0) {
+        // Get the most recent published report
+        const reports = publishedReportsResult.data.data;
+        const latestReport = reports[0]; // Already sorted by publishedAt descending
         
-        if (marksResult.success && marksResult.data.data) {
-            studentMarks.innerHTML = `
-                <div class="grid md:grid-cols-3 gap-4">
-                    ${['Term 1', 'Term 2', 'Term 3'].map(term => `
-                        <div class="bg-blue-50 p-4 rounded-lg">
-                            <h4 class="font-bold text-blue-600 mb-2">${term}</h4>
-                            <p class="text-3xl font-bold text-gray-800">85%</p>
-                            <p class="text-sm text-gray-600">Average</p>
+        const conductScore = latestReport.conductScore || 40;
+        const deductionsCount = latestReport.totalReductions || 0;
+        const percentage = (conductScore / 40) * 100;
+        
+        // Display all published reports
+        let deductionsHTML = '';
+        
+        if (reports.length > 0) {
+            deductionsHTML = `
+                <div class="mt-4 space-y-3">
+                    <h4 class="font-bold text-gray-700">Published Reports History:</h4>
+                    ${reports.map(report => `
+                        <div class="bg-blue-50 border-l-4 border-blue-500 p-3 rounded">
+                            <div class="flex justify-between items-start">
+                                <div>
+                                    <p class="font-semibold text-blue-800">${report.term}</p>
+                                    <p class="text-sm text-gray-600">Academic Year: ${report.academicYear || 'N/A'}</p>
+                                    <p class="text-sm text-gray-600">Published: ${new Date(report.publishedAt).toLocaleDateString()}</p>
+                                </div>
+                                <div class="text-right">
+                                    <p class="text-2xl font-bold ${report.conductScore >= 30 ? 'text-green-600' : report.conductScore >= 20 ? 'text-yellow-600' : 'text-red-600'}">${report.conductScore}/40</p>
+                                    <p class="text-sm text-gray-600">${report.totalReductions} deductions</p>
+                                </div>
+                            </div>
                         </div>
                     `).join('')}
                 </div>
             `;
         }
         
-        // Load conduct
-        const conductResult = await API.get(`/discipline/student/${result.data.student._id}`);
-        const studentConduct = document.getElementById('student-conduct');
-        
         studentConduct.innerHTML = `
-            <div class="flex items-center justify-between bg-gray-50 p-4 rounded-lg">
-                <div>
-                    <p class="text-sm text-gray-600">Current Conduct Score</p>
-                    <p class="text-4xl font-bold text-gray-800">35 <span class="text-lg text-gray-500">/ 40</span></p>
-                </div>
-                <div class="w-24 h-24">
-                    <svg viewBox="0 0 36 36" class="circular-chart">
-                        <path class="circle-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="#eee" stroke-width="3"/>
-                        <path class="circle" stroke-dasharray="${(35/40)*100}, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="#10b981" stroke-width="3"/>
-                    </svg>
+            <div class="bg-gradient-to-r from-${conductScore >= 30 ? 'green' : conductScore >= 20 ? 'yellow' : 'red'}-500 to-${conductScore >= 30 ? 'green' : conductScore >= 20 ? 'yellow' : 'red'}-600 text-white p-6 rounded-lg mb-4">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-lg font-semibold mb-2">Current Conduct Score</p>
+                        <p class="text-5xl font-bold">${conductScore} <span class="text-2xl">/ 40</span></p>
+                        <p class="text-sm mt-2">${conductScore >= 30 ? 'Good Standing' : conductScore >= 20 ? 'Warning' : 'Critical - Needs Attention'}</p>
+                    </div>
+                    <div class="text-right">
+                        <p class="text-3xl font-bold">${percentage.toFixed(0)}%</p>
+                        <p class="text-sm">Conduct Grade</p>
+                    </div>
                 </div>
             </div>
+            
+            <div class="grid md:grid-cols-2 gap-4 mb-4">
+                <div class="bg-gray-50 p-4 rounded-lg">
+                    <p class="text-sm text-gray-600">Total Deductions</p>
+                    <p class="text-3xl font-bold text-gray-800">${deductionsCount}</p>
+                </div>
+                <div class="bg-gray-50 p-4 rounded-lg">
+                    <p class="text-sm text-gray-600">Points Lost</p>
+                    <p class="text-3xl font-bold text-red-600">${40 - conductScore}</p>
+                </div>
+            </div>
+            
+            ${deductionsHTML}
+            
+            ${deductionsCount === 0 ? `
+                <div class="bg-green-50 border border-green-200 rounded-lg p-4 text-center mt-4">
+                    <i class="fas fa-check-circle text-green-600 text-3xl mb-2"></i>
+                    <p class="text-green-800 font-semibold">Excellent! No conduct deductions for ${latestReport.term}</p>
+                    <p class="text-green-700 text-sm">Keep up the good behavior!</p>
+                </div>
+            ` : ''}
         `;
     } else {
-        studentData.innerHTML = `
-            <div class="text-red-600">
-                <i class="fas fa-exclamation-triangle text-4xl mb-4"></i>
-                <p>Unable to load your data. Please contact administration.</p>
+        studentConduct.innerHTML = `
+            <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-6 text-center">
+                <i class="fas fa-info-circle text-yellow-600 text-4xl mb-3"></i>
+                <p class="text-yellow-800 font-bold text-lg mb-2">No Published Reports Yet</p>
+                <p class="text-yellow-700">Your conduct reports will appear here once the Dean of Discipline publishes them.</p>
+                <p class="text-yellow-700 text-sm mt-2">Contact the Dean of Discipline if you have questions.</p>
             </div>
         `;
     }

@@ -3,13 +3,17 @@ const mongoose = require('mongoose');
 const DisciplineSummarySchema = new mongoose.Schema({
     student: {
         type: mongoose.Schema.ObjectId,
-        ref: 'User',
+        ref: 'Student',
         required: true
     },
     term: {
         type: String,
         required: true,
         enum: ['Term 1', 'Term 2', 'Term 3']
+    },
+    academicYear: {
+        type: String,
+        required: true
     },
     totalReductions: {
         type: Number,
@@ -24,12 +28,11 @@ const DisciplineSummarySchema = new mongoose.Schema({
     },
     publishedBy: {
         type: mongoose.Schema.ObjectId,
-        ref: 'User',
-        required: true
+        ref: 'User'
     },
     publishedTo: {
         type: [String],
-        default: ['DOS', 'SM']
+        default: ['Student', 'Parent', 'DOS', 'SM']
     },
     publishedAt: {
         type: Date,
