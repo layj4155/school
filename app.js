@@ -48,16 +48,32 @@ function showNotification(message, type = 'success') {
 // ============================================
 
 const API = {
+    getHeaders() {
+        const token = localStorage.getItem('token');
+        const headers = {
+            'Content-Type': 'application/json'
+        };
+        if (token) {
+            headers['Authorization'] = `Bearer ${token}`;
+        }
+        return headers;
+    },
+
     async get(endpoint) {
         try {
             showLoading();
-            const response = await axios.get(`${API_URL}${endpoint}`);
+            const response = await axios.get(`${API_URL}${endpoint}`, {
+                headers: this.getHeaders()
+            });
             return { success: true, data: response.data };
         } catch (error) {
             console.error(`API Error (GET ${endpoint}):`, error);
+            const errorData = error.response?.data;
+            const errorMessage = errorData?.msg || errorData?.error || errorData?.message || error.message || 'Request failed';
             return { 
                 success: false, 
-                message: error.response?.data?.msg || error.message || 'Request failed' 
+                message: errorMessage,
+                status: error.response?.status
             };
         } finally {
             hideLoading();
@@ -67,13 +83,18 @@ const API = {
     async post(endpoint, data) {
         try {
             showLoading();
-            const response = await axios.post(`${API_URL}${endpoint}`, data);
+            const response = await axios.post(`${API_URL}${endpoint}`, data, {
+                headers: this.getHeaders()
+            });
             return { success: true, data: response.data };
         } catch (error) {
             console.error(`API Error (POST ${endpoint}):`, error);
+            const errorData = error.response?.data;
+            const errorMessage = errorData?.msg || errorData?.error || errorData?.message || error.message || 'Request failed';
             return { 
                 success: false, 
-                message: error.response?.data?.msg || error.message || 'Request failed' 
+                message: errorMessage,
+                status: error.response?.status
             };
         } finally {
             hideLoading();
@@ -83,13 +104,18 @@ const API = {
     async put(endpoint, data) {
         try {
             showLoading();
-            const response = await axios.put(`${API_URL}${endpoint}`, data);
+            const response = await axios.put(`${API_URL}${endpoint}`, data, {
+                headers: this.getHeaders()
+            });
             return { success: true, data: response.data };
         } catch (error) {
             console.error(`API Error (PUT ${endpoint}):`, error);
+            const errorData = error.response?.data;
+            const errorMessage = errorData?.msg || errorData?.error || errorData?.message || error.message || 'Request failed';
             return { 
                 success: false, 
-                message: error.response?.data?.msg || error.message || 'Request failed' 
+                message: errorMessage,
+                status: error.response?.status
             };
         } finally {
             hideLoading();
@@ -99,13 +125,18 @@ const API = {
     async delete(endpoint) {
         try {
             showLoading();
-            const response = await axios.delete(`${API_URL}${endpoint}`);
+            const response = await axios.delete(`${API_URL}${endpoint}`, {
+                headers: this.getHeaders()
+            });
             return { success: true, data: response.data };
         } catch (error) {
             console.error(`API Error (DELETE ${endpoint}):`, error);
+            const errorData = error.response?.data;
+            const errorMessage = errorData?.msg || errorData?.error || errorData?.message || error.message || 'Request failed';
             return { 
                 success: false, 
-                message: error.response?.data?.msg || error.message || 'Request failed' 
+                message: errorMessage,
+                status: error.response?.status
             };
         } finally {
             hideLoading();
@@ -5928,37 +5959,43 @@ window.showCreateNewsModal = async function() {
     document.getElementById('create-news-form').addEventListener('submit', async (e) => {
         e.preventDefault();
         const formData = new FormData(e.target);
-        formData.append('author', currentUser.name);
+        const submitButton = e.target.querySelector('button[type="submit"]');
+        const originalText = submitButton.innerHTML;
         
-        // For now, we'll convert image to base64 or handle file upload
-        // In production, you'd upload to a file server
-        const data = {
-            title: formData.get('title'),
-            content: formData.get('content'),
-            category: formData.get('category'),
-            published: formData.get('published') === 'on',
-            author: currentUser.name
-        };
-        
-        // Handle file uploads
-        const imageFile = formData.get('image');
-        const documentFile = formData.get('document');
-        
-        const uploadFiles = async () => {
+        try {
+            submitButton.disabled = true;
+            submitButton.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Creating...';
+            
+            // For now, we'll convert image to base64 or handle file upload
+            // In production, you'd upload to a file server
+            const data = {
+                title: formData.get('title'),
+                content: formData.get('content'),
+                category: formData.get('category') || 'News',
+                published: formData.get('published') === 'on',
+                author: currentUser?.name || 'Unknown'
+            };
+            
+            // Handle file uploads
+            const imageFile = formData.get('image');
+            const documentFile = formData.get('document');
+            
             // Handle image
             if (imageFile && imageFile.size > 0) {
-                const reader = new FileReader();
-                data.image = await new Promise((resolve) => {
+                data.image = await new Promise((resolve, reject) => {
+                    const reader = new FileReader();
                     reader.onload = (e) => resolve(e.target.result);
+                    reader.onerror = reject;
                     reader.readAsDataURL(imageFile);
                 });
             }
             
             // Handle document
             if (documentFile && documentFile.size > 0) {
-                const reader = new FileReader();
-                const docData = await new Promise((resolve) => {
+                const docData = await new Promise((resolve, reject) => {
+                    const reader = new FileReader();
                     reader.onload = (e) => resolve(e.target.result);
+                    reader.onerror = reject;
                     reader.readAsDataURL(documentFile);
                 });
                 data.documents = [docData];
@@ -5971,11 +6008,15 @@ window.showCreateNewsModal = async function() {
                 modal.remove();
                 renderITNews();
             } else {
-                showNotification('Failed to create news: ' + result.message, 'error');
+                showNotification('Failed to create news: ' + (result.message || 'Unknown error'), 'error');
             }
-        };
-        
-        uploadFiles();
+        } catch (error) {
+            console.error('Error creating news:', error);
+            showNotification('Failed to create news: ' + (error.message || 'Unknown error'), 'error');
+        } finally {
+            submitButton.disabled = false;
+            submitButton.innerHTML = originalText;
+        }
     });
 };
 
@@ -6294,49 +6335,101 @@ window.showCreateEmployeeYearModal = async function() {
     document.body.appendChild(modal);
     
     window.updateEmployeeSelect = function(type) {
-        document.getElementById('teacher-select-div').style.display = type === 'Teacher' ? 'block' : 'none';
-        document.getElementById('staff-select-div').style.display = type === 'Staff' ? 'block' : 'none';
-        document.getElementById('teacher-select').required = type === 'Teacher';
-        document.getElementById('staff-select').required = type === 'Staff';
+        const teacherDiv = document.getElementById('teacher-select-div');
+        const staffDiv = document.getElementById('staff-select-div');
+        const teacherSelect = document.getElementById('teacher-select');
+        const staffSelect = document.getElementById('staff-select');
+        
+        if (type === 'Teacher') {
+            teacherDiv.style.display = 'block';
+            staffDiv.style.display = 'none';
+            teacherSelect.required = true;
+            staffSelect.required = false;
+            staffSelect.value = ''; // Clear staff selection
+        } else if (type === 'Staff') {
+            teacherDiv.style.display = 'none';
+            staffDiv.style.display = 'block';
+            teacherSelect.required = false;
+            staffSelect.required = true;
+            teacherSelect.value = ''; // Clear teacher selection
+        } else {
+            teacherDiv.style.display = 'none';
+            staffDiv.style.display = 'none';
+            teacherSelect.required = false;
+            staffSelect.required = false;
+            teacherSelect.value = '';
+            staffSelect.value = '';
+        }
     };
     
     document.getElementById('create-employee-year-form').addEventListener('submit', async (e) => {
         e.preventDefault();
         const formData = new FormData(e.target);
+        const submitButton = e.target.querySelector('button[type="submit"]');
+        const originalText = submitButton.innerHTML;
         
-        const data = {
-            employeeType: formData.get('employeeType'),
-            employee: formData.get('employee'),
-            year: formData.get('year'),
-            achievement: formData.get('achievement'),
-            published: formData.get('published') === 'on'
-        };
-        
-        // Handle photo upload
-        const photoFile = formData.get('photo');
-        if (photoFile && photoFile.size > 0) {
-            const reader = new FileReader();
-            reader.onload = async (e) => {
-                data.photo = e.target.result;
-                const result = await API.post('/it/employee-of-year', data);
-                if (result.success) {
-                    showNotification('Employee of the year added successfully!', 'success');
-                    modal.remove();
-                    renderITEmployeeYear();
-                } else {
-                    showNotification('Failed to add employee: ' + result.message, 'error');
-                }
+        try {
+            submitButton.disabled = true;
+            submitButton.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Adding...';
+            
+            const employeeType = formData.get('employeeType');
+            
+            // Get employee from the correct select based on type
+            let employee = null;
+            if (employeeType === 'Teacher') {
+                employee = document.getElementById('teacher-select')?.value;
+            } else if (employeeType === 'Staff') {
+                employee = document.getElementById('staff-select')?.value;
+            }
+            
+            // Validate employee selection
+            if (!employee || employee === '' || employee === 'null' || employee === 'undefined') {
+                showNotification('Please select an employee', 'error');
+                submitButton.disabled = false;
+                submitButton.innerHTML = originalText;
+                return;
+            }
+            
+            if (!employeeType) {
+                showNotification('Please select an employee type', 'error');
+                submitButton.disabled = false;
+                submitButton.innerHTML = originalText;
+                return;
+            }
+            
+            const data = {
+                employeeType: employeeType,
+                employee: employee,
+                year: formData.get('year'),
+                achievement: formData.get('achievement'),
+                published: formData.get('published') === 'on'
             };
-            reader.readAsDataURL(photoFile);
-        } else {
+            
+            // Handle photo upload
+            const photoFile = formData.get('photo');
+            if (photoFile && photoFile.size > 0) {
+                data.photo = await new Promise((resolve, reject) => {
+                    const reader = new FileReader();
+                    reader.onload = (e) => resolve(e.target.result);
+                    reader.onerror = reject;
+                    reader.readAsDataURL(photoFile);
+                });
+            }
+            
             const result = await API.post('/it/employee-of-year', data);
             if (result.success) {
                 showNotification('Employee of the year added successfully!', 'success');
                 modal.remove();
                 renderITEmployeeYear();
             } else {
-                showNotification('Failed to add employee: ' + result.message, 'error');
+                showNotification('Failed to add employee: ' + (result.message || 'Unknown error'), 'error');
             }
+        } catch (error) {
+            console.error('Error adding employee of the year:', error);
+            showNotification('Failed to add employee: ' + (error.message || 'Unknown error'), 'error');
+        } finally {
+            submitButton.disabled = false;
+            submitButton.innerHTML = originalText;
         }
     });
 };
@@ -6487,49 +6580,73 @@ window.showCreatePageContentModal = async function() {
     document.getElementById('create-page-content-form').addEventListener('submit', async (e) => {
         e.preventDefault();
         const formData = new FormData(e.target);
+        const submitButton = e.target.querySelector('button[type="submit"]');
+        const originalText = submitButton.innerHTML;
         
-        const data = {
-            page: formData.get('page'),
-            title: formData.get('title'),
-            content: formData.get('content'),
-            order: parseInt(formData.get('order')) || 0,
-            published: formData.get('published') === 'on'
-        };
-        
-        // Handle multiple images
-        const imageFiles = formData.getAll('images');
-        if (imageFiles.length > 0 && imageFiles[0].size > 0) {
-            data.images = [];
-            let processed = 0;
-            imageFiles.forEach(file => {
-                if (file.size > 0) {
-                    const reader = new FileReader();
-                    reader.onload = async (e) => {
-                        data.images.push(e.target.result);
-                        processed++;
-                        if (processed === imageFiles.filter(f => f.size > 0).length) {
-                            const result = await API.post('/it/page-content', data);
-                            if (result.success) {
-                                showNotification('Page content added successfully!', 'success');
-                                modal.remove();
-                                renderITPageContent();
-                            } else {
-                                showNotification('Failed to add content: ' + result.message, 'error');
-                            }
-                        }
-                    };
-                    reader.readAsDataURL(file);
-                }
-            });
-        } else {
+        try {
+            submitButton.disabled = true;
+            submitButton.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Adding...';
+            
+            const data = {
+                page: formData.get('page'),
+                title: formData.get('title'),
+                content: formData.get('content'),
+                order: parseInt(formData.get('order')) || 0,
+                published: formData.get('published') === 'on'
+            };
+            
+            // Handle multiple images
+            const imageFiles = formData.getAll('images');
+            if (imageFiles.length > 0 && imageFiles.some(f => f.size > 0)) {
+                data.images = [];
+                const validFiles = imageFiles.filter(f => f.size > 0);
+                
+                // Process all images in parallel
+                const imagePromises = validFiles.map(file => {
+                    return new Promise((resolve, reject) => {
+                        const reader = new FileReader();
+                        reader.onload = (e) => resolve(e.target.result);
+                        reader.onerror = reject;
+                        reader.readAsDataURL(file);
+                    });
+                });
+                
+                data.images = await Promise.all(imagePromises);
+            }
+            
+            // Handle multiple documents
+            const documentFiles = formData.getAll('documents');
+            if (documentFiles.length > 0 && documentFiles.some(f => f.size > 0)) {
+                data.documents = [];
+                const validDocs = documentFiles.filter(f => f.size > 0);
+                
+                // Process all documents in parallel
+                const docPromises = validDocs.map(file => {
+                    return new Promise((resolve, reject) => {
+                        const reader = new FileReader();
+                        reader.onload = (e) => resolve(e.target.result);
+                        reader.onerror = reject;
+                        reader.readAsDataURL(file);
+                    });
+                });
+                
+                data.documents = await Promise.all(docPromises);
+            }
+            
             const result = await API.post('/it/page-content', data);
             if (result.success) {
                 showNotification('Page content added successfully!', 'success');
                 modal.remove();
                 renderITPageContent();
             } else {
-                showNotification('Failed to add content: ' + result.message, 'error');
+                showNotification('Failed to add content: ' + (result.message || 'Unknown error'), 'error');
             }
+        } catch (error) {
+            console.error('Error adding page content:', error);
+            showNotification('Failed to add content: ' + (error.message || 'Unknown error'), 'error');
+        } finally {
+            submitButton.disabled = false;
+            submitButton.innerHTML = originalText;
         }
     });
 };

@@ -211,19 +211,48 @@ exports.createEmployeeOfYear = async (req, res) => {
     try {
         req.body.createdBy = req.user.id;
         
+        // Validate required fields
+        if (!req.body.employeeType || !req.body.employee) {
+            return res.status(400).json({
+                success: false,
+                error: 'Employee type and employee are required'
+            });
+        }
+        
         // Get employee name based on type
         if (req.body.employeeType === 'Teacher') {
-            const teacher = await Teacher.findById(req.body.employee);
-            if (teacher) {
-                req.body.employeeName = teacher.name;
-                req.body.employeeModel = 'Teacher';
+            // Teachers are stored as User documents with role 'Teacher'
+            const teacher = await User.findById(req.body.employee);
+            if (!teacher) {
+                return res.status(400).json({
+                    success: false,
+                    error: 'Teacher not found'
+                });
             }
-        } else {
+            // Verify it's actually a teacher
+            if (teacher.role !== 'Teacher') {
+                return res.status(400).json({
+                    success: false,
+                    error: 'Selected user is not a teacher'
+                });
+            }
+            req.body.employeeName = teacher.name;
+            req.body.employeeModel = 'User'; // Teachers are stored in User collection
+        } else if (req.body.employeeType === 'Staff') {
             const user = await User.findById(req.body.employee);
-            if (user) {
-                req.body.employeeName = user.name;
-                req.body.employeeModel = 'User';
+            if (!user) {
+                return res.status(400).json({
+                    success: false,
+                    error: 'Staff member not found'
+                });
             }
+            req.body.employeeName = user.name;
+            req.body.employeeModel = 'User';
+        } else {
+            return res.status(400).json({
+                success: false,
+                error: 'Invalid employee type'
+            });
         }
         
         const employeeOfYear = await EmployeeOfYear.create(req.body);

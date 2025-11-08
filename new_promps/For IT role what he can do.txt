@@ -1,0 +1,8 @@
+For IT role what he can do 
+1. IT can register a students also
+2. Manages all created account for every role 
+3. IT can create news and publish them to the news also when creating news there will be the news title, news content, can upload (photos, documents if any), author will be That IT names, then publish the news to news window
+4. IT can create announcements also that will be connected to announcement link in the footer under school info those announcement also should have a title, concerns (either parents, teachers, staff, or students), content, upload documents or photos if any, then publish the announcement. 
+5. IT can also add Employee of the year on the link that is found in footer too under school data here he will have to select among the teachers, and Staffs then add achievement what he or she did, upload their photo, an publish the employee of the year
+5. IT can add Trainers to trainer page where he will add Trainers based on O'Level, and A'Level for A'level remember we have SOD and ACC, so here he will put their names, Levels and Trade where Applicable, phone number, and Upload their photo if any the post to the trainers page
+6. He can add even more content on each link we have on our website he has to select where he want to add content for example on Home, About, Academic, Admission and other links in footer then those content will be posted bellow other content even upload some pictures or document within those content he can add
