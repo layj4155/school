@@ -3622,9 +3622,9 @@ async function renderTrainers() {
 
 window.showCreateTrainerModal = async function() {
     const modal = document.createElement('div');
-    modal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 overflow-y-auto';
+    modal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 overflow-y-auto p-4';
     modal.innerHTML = `
-        <div class="bg-white rounded-lg p-8 max-w-2xl w-full mx-4 my-8">
+        <div class="bg-white rounded-lg p-8 max-w-2xl w-full my-8 max-h-[90vh] overflow-y-auto">
             <h2 class="text-2xl font-bold mb-6 text-blue-600">Add Trainer</h2>
             <form id="create-trainer-form">
                 <div class="space-y-4">
@@ -5875,9 +5875,9 @@ async function renderITNews() {
 
 window.showCreateNewsModal = async function() {
     const modal = document.createElement('div');
-    modal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 overflow-y-auto';
+    modal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 overflow-y-auto p-4';
     modal.innerHTML = `
-        <div class="bg-white rounded-lg p-8 max-w-3xl w-full mx-4 my-8">
+        <div class="bg-white rounded-lg p-8 max-w-3xl w-full my-8 max-h-[90vh] overflow-y-auto">
             <h2 class="text-2xl font-bold mb-6 text-orange-600">Create News</h2>
             <form id="create-news-form" enctype="multipart/form-data">
                 <div class="space-y-4">
@@ -6047,9 +6047,9 @@ async function renderITAnnouncements() {
 
 window.showCreateAnnouncementModal = async function() {
     const modal = document.createElement('div');
-    modal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 overflow-y-auto';
+    modal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 overflow-y-auto p-4';
     modal.innerHTML = `
-        <div class="bg-white rounded-lg p-8 max-w-3xl w-full mx-4 my-8">
+        <div class="bg-white rounded-lg p-8 max-w-3xl w-full my-8 max-h-[90vh] overflow-y-auto">
             <h2 class="text-2xl font-bold mb-6 text-yellow-600">Create Announcement</h2>
             <form id="create-announcement-form">
                 <div class="space-y-4">
@@ -6231,9 +6231,9 @@ window.showCreateEmployeeYearModal = async function() {
     ) : [];
     
     const modal = document.createElement('div');
-    modal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 overflow-y-auto';
+    modal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 overflow-y-auto p-4';
     modal.innerHTML = `
-        <div class="bg-white rounded-lg p-8 max-w-3xl w-full mx-4 my-8">
+        <div class="bg-white rounded-lg p-8 max-w-3xl w-full my-8 max-h-[90vh] overflow-y-auto">
             <h2 class="text-2xl font-bold mb-6 text-purple-600">Add Employee of the Year</h2>
             <form id="create-employee-year-form">
                 <div class="space-y-4">
@@ -6428,9 +6428,9 @@ window.filterPageContent = function(page) {
 
 window.showCreatePageContentModal = async function() {
     const modal = document.createElement('div');
-    modal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 overflow-y-auto';
+    modal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 overflow-y-auto p-4';
     modal.innerHTML = `
-        <div class="bg-white rounded-lg p-8 max-w-4xl w-full mx-4 my-8">
+        <div class="bg-white rounded-lg p-8 max-w-4xl w-full my-8 max-h-[90vh] overflow-y-auto">
             <h2 class="text-2xl font-bold mb-6 text-teal-600">Add Page Content</h2>
             <form id="create-page-content-form">
                 <div class="space-y-4">
