@@ -210,26 +210,37 @@ exports.publishBestPerformers = async (req, res) => {
         const bestPerformers = Object.values(studentPerformance)
             .map(sp => {
                 const average = calculateAverage(sp.marks);
+                // Calculate total marks obtained
+                const totalMarks = sp.marks.reduce((sum, mark) => sum + mark.marks, 0);
                 return {
                     student: sp.student,
                     class: sp.class,
-                    average: Math.round(average * 100) / 100
+                    average: Math.round(average * 100) / 100,
+                    totalMarks: totalMarks
                 };
             })
             .filter(p => p.average >= 84)
             .sort((a, b) => b.average - a.average);
 
+        if (bestPerformers.length === 0) {
+            return res.status(400).json({
+                success: false,
+                error: 'No best performers found (students with 84% or above)'
+            });
+        }
+
         const newsTitle = `Best Performers - ${assessmentType || term} ${academicYear}`;
-        const newsContent = bestPerformers.map((p, index) => 
-            `${index + 1}. ${p.student.firstName} ${p.student.lastName} (${p.class.classID}) - ${p.average}%`
-        ).join('\n');
+        // Format content with name, class, and total marks
+        const newsContent = `Congratulations to our outstanding students who achieved 84% and above!\n\n${bestPerformers.map((p, index) => 
+            `${index + 1}. ${p.student.firstName} ${p.student.lastName} - Class: ${p.class.classID} - Total Marks: ${p.totalMarks} (Average: ${p.average}%)`
+        ).join('\n\n')}`;
 
         const news = await News.create({
             title: newsTitle,
             content: newsContent,
-            type: 'Performance',
-            published: true,
-            publishedAt: new Date()
+            author: 'DOS Administration',
+            category: 'Achievements',
+            published: true
         });
 
         res.status(201).json({

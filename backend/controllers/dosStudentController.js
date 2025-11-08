@@ -119,14 +119,8 @@ exports.getStudent = async (req, res) => {
 
 exports.updateStudent = async (req, res) => {
     try {
-        const student = await Student.findByIdAndUpdate(
-            req.params.id,
-            req.body,
-            {
-                new: true,
-                runValidators: true
-            }
-        );
+        const { classId, ...updateData } = req.body;
+        const student = await Student.findById(req.params.id);
 
         if (!student) {
             return res.status(404).json({
@@ -135,9 +129,37 @@ exports.updateStudent = async (req, res) => {
             });
         }
 
+        // Handle class change if classId is provided
+        const oldClassId = student.class ? student.class.toString() : null;
+        if (classId && classId !== oldClassId) {
+            // Remove student from old class
+            if (oldClassId) {
+                await Class.findByIdAndUpdate(oldClassId, {
+                    $pull: { students: student._id }
+                });
+            }
+            
+            // Add student to new class
+            await Class.findByIdAndUpdate(classId, {
+                $addToSet: { students: student._id }
+            });
+            
+            updateData.class = classId;
+        }
+
+        // Update student data
+        const updatedStudent = await Student.findByIdAndUpdate(
+            req.params.id,
+            updateData,
+            {
+                new: true,
+                runValidators: true
+            }
+        ).populate('class', 'classID name');
+
         res.status(200).json({
             success: true,
-            data: student
+            data: updatedStudent
         });
     } catch (error) {
         res.status(400).json({

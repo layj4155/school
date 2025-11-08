@@ -232,6 +232,11 @@ const routes = {
     '/lib-borrow': renderLibBorrow,
     '/lib-overdue': renderLibOverdue,
     '/lib-reports': renderLibReports,
+    '/it-users': renderITUsers,
+    '/it-news': renderITNews,
+    '/it-announcements': renderITAnnouncements,
+    '/it-employee-year': renderITEmployeeYear,
+    '/it-page-content': renderITPageContent,
 };
 
 function navigateTo(path) {
@@ -321,7 +326,45 @@ async function renderHome() {
                 </div>
             </div>
         </div>
+
+        <!-- Page Content from IT Management -->
+        <div id="home-page-content" class="py-20 bg-gray-50"></div>
     `;
+    
+    // Load page content for Home
+    try {
+        const contentResult = await API.get('/it/page-content?page=Home&published=true');
+        const contentDiv = document.getElementById('home-page-content');
+        if (contentResult.success && contentResult.data.data && contentResult.data.data.length > 0) {
+            contentDiv.innerHTML = `
+                <div class="container mx-auto px-4">
+                    ${contentResult.data.data.sort((a, b) => a.order - b.order).map(item => `
+                        <div class="mb-12 bg-white p-8 rounded-lg shadow-lg">
+                            <h3 class="text-3xl font-bold text-blue-600 mb-4">${item.title}</h3>
+                            <div class="text-gray-700 leading-relaxed whitespace-pre-line mb-4">${item.content}</div>
+                            ${item.images && item.images.length > 0 ? `
+                                <div class="grid md:grid-cols-2 gap-4 mb-4">
+                                    ${item.images.map(img => `<img src="${img}" alt="${item.title}" class="rounded-lg shadow">`).join('')}
+                                </div>
+                            ` : ''}
+                            ${item.documents && item.documents.length > 0 ? `
+                                <div class="mt-4">
+                                    <p class="font-semibold mb-2">Documents:</p>
+                                    ${item.documents.map(doc => `
+                                        <a href="${doc}" target="_blank" class="text-blue-600 hover:underline block">
+                                            <i class="fas fa-file mr-2"></i>View Document
+                                        </a>
+                                    `).join('')}
+                                </div>
+                            ` : ''}
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+        }
+    } catch (error) {
+        console.error('Error loading home page content:', error);
+    }
 }
 
 async function renderAbout() {
@@ -331,7 +374,7 @@ async function renderAbout() {
             <div class="absolute inset-0 bg-gradient-to-b from-blue-900/50 to-blue-900/90"></div>
             <div class="relative h-full flex items-center justify-center text-center text-white px-4">
                 <div>
-                    <h1 class="text-5xl font-bold mb-4">About Kageyo TVET School</h1>
+                    <h1 class="text-5xl font-bold mb-4">About Kageyo TSS</h1>
                     <p class="text-xl mb-6">Discover our rich history and commitment to excellence</p>
                     <div class="flex space-x-2 justify-center text-sm">
                         <a href="#/" class="hover:underline">Home</a>
@@ -365,7 +408,7 @@ async function renderAbout() {
                         <h2 class="text-3xl font-bold text-blue-600">Our Vision</h2>
                     </div>
                     <p class="text-gray-700 leading-relaxed">
-                        To be a leading TVET institution in Rwanda, recognized for producing skilled graduates.
+                        To be a leading TSS institution in Rwanda, recognized for producing skilled graduates.
                     </p>
                 </div>
             </div>
@@ -406,7 +449,7 @@ async function renderAbout() {
                 <h5 class="text-xl font-bold text-blue-600 mb-3 mt-6">Origin</h5>
                 <p class="text-gray-700 leading-relaxed mb-6">
                     Established in 1997 in KAJEVUBA village, Bugomba cell, Kaniga sector, Gicumbi district, 
-                    Northern Province. Started with 377 students and has grown to become a leading TVET institution.
+                    Northern Province. Started with 377 students and has grown to become a leading TSS institution.
                 </p>
             </div>
 
@@ -428,7 +471,45 @@ async function renderAbout() {
                 </div>
             </div>
         </div>
+
+        <!-- Page Content from IT Management -->
+        <div id="about-page-content" class="py-20 bg-gray-50"></div>
     `;
+    
+    // Load page content for About
+    try {
+        const contentResult = await API.get('/it/page-content?page=About&published=true');
+        const contentDiv = document.getElementById('about-page-content');
+        if (contentResult.success && contentResult.data.data && contentResult.data.data.length > 0) {
+            contentDiv.innerHTML = `
+                <div class="container mx-auto px-4">
+                    ${contentResult.data.data.sort((a, b) => a.order - b.order).map(item => `
+                        <div class="mb-12 bg-white p-8 rounded-lg shadow-lg">
+                            <h3 class="text-3xl font-bold text-blue-600 mb-4">${item.title}</h3>
+                            <div class="text-gray-700 leading-relaxed whitespace-pre-line mb-4">${item.content}</div>
+                            ${item.images && item.images.length > 0 ? `
+                                <div class="grid md:grid-cols-2 gap-4 mb-4">
+                                    ${item.images.map(img => `<img src="${img}" alt="${item.title}" class="rounded-lg shadow">`).join('')}
+                                </div>
+                            ` : ''}
+                            ${item.documents && item.documents.length > 0 ? `
+                                <div class="mt-4">
+                                    <p class="font-semibold mb-2">Documents:</p>
+                                    ${item.documents.map(doc => `
+                                        <a href="${doc}" target="_blank" class="text-blue-600 hover:underline block">
+                                            <i class="fas fa-file mr-2"></i>View Document
+                                        </a>
+                                    `).join('')}
+                                </div>
+                            ` : ''}
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+        }
+    } catch (error) {
+        console.error('Error loading about page content:', error);
+    }
 }
 
 async function renderAcademics() {
@@ -616,7 +697,7 @@ async function renderLogin() {
         <div class="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-500 to-blue-700 py-12 px-4">
             <div class="max-w-md w-full bg-white rounded-lg shadow-xl p-8">
                 <div class="text-center mb-8">
-                    <img src="logo.jpg" alt="Logo" class="w-20 h-20 mx-auto rounded-full mb-4">
+                    <img src="KTSSlogo.png" alt="Logo" class="w-20 h-20 mx-auto rounded-full mb-4">
                     <h2 class="text-3xl font-bold text-gray-800">Welcome Back</h2>
                     <p class="text-gray-600">Sign in to your account</p>
                 </div>
@@ -844,9 +925,9 @@ async function renderRegister() {
         <div class="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-500 to-blue-700 py-12 px-4">
             <div class="max-w-md w-full bg-white rounded-lg shadow-xl p-8">
                 <div class="text-center mb-8">
-                    <img src="logo.jpg" alt="Logo" class="w-20 h-20 mx-auto rounded-full mb-4">
+                    <img src="KTSSlogo.png" alt="Logo" class="w-20 h-20 mx-auto rounded-full mb-4">
                     <h2 class="text-3xl font-bold text-gray-800">Create Account</h2>
-                    <p class="text-gray-600">Join Kageyo TVET School</p>
+                    <p class="text-gray-600">Join Kageyo TSS</p>
                     <div class="mt-3 bg-blue-50 rounded-lg p-3">
                         <p class="text-xs text-blue-800 font-semibold">Select your role from the dropdown below</p>
                     </div>
@@ -1152,22 +1233,22 @@ async function renderDOSDashboard() {
             <div class="grid md:grid-cols-4 gap-6 mb-12">
                 <div class="bg-white p-6 rounded-lg shadow-lg">
                     <i class="fas fa-users text-3xl text-blue-600 mb-3"></i>
-                    <h3 class="text-2xl font-bold" id="dos-students">...</h3>
+                    <h3 class="text-2xl font-bold" id="dos-students"><i class="fas fa-spinner fa-spin"></i></h3>
                     <p class="text-gray-600">Students</p>
                 </div>
                 <div class="bg-white p-6 rounded-lg shadow-lg">
                     <i class="fas fa-school text-3xl text-green-600 mb-3"></i>
-                    <h3 class="text-2xl font-bold" id="dos-classes">...</h3>
+                    <h3 class="text-2xl font-bold" id="dos-classes"><i class="fas fa-spinner fa-spin"></i></h3>
                     <p class="text-gray-600">Classes</p>
                 </div>
                 <div class="bg-white p-6 rounded-lg shadow-lg">
                     <i class="fas fa-chalkboard-teacher text-3xl text-purple-600 mb-3"></i>
-                    <h3 class="text-2xl font-bold" id="dos-teachers">...</h3>
+                    <h3 class="text-2xl font-bold" id="dos-teachers"><i class="fas fa-spinner fa-spin"></i></h3>
                     <p class="text-gray-600">Teachers</p>
                 </div>
                 <div class="bg-white p-6 rounded-lg shadow-lg">
                     <i class="fas fa-chart-line text-3xl text-orange-600 mb-3"></i>
-                    <h3 class="text-2xl font-bold">95%</h3>
+                    <h3 class="text-2xl font-bold" id="dos-avg-performance"><i class="fas fa-spinner fa-spin"></i></h3>
                     <p class="text-gray-600">Avg Performance</p>
                 </div>
             </div>
@@ -1206,6 +1287,55 @@ async function renderDOSDashboard() {
             </div>
         </div>
     `;
+    
+    // Load DOS statistics
+    loadDOSStats();
+}
+
+async function loadDOSStats() {
+    const studentsCount = document.getElementById('dos-students');
+    const classesCount = document.getElementById('dos-classes');
+    const teachersCount = document.getElementById('dos-teachers');
+    const avgPerformance = document.getElementById('dos-avg-performance');
+    
+    // Get students count
+    const studentsResult = await API.get('/dos/students');
+    if (studentsResult.success && studentsResult.data.data) {
+        studentsCount.textContent = studentsResult.data.data.length || 0;
+    } else {
+        studentsCount.textContent = '0';
+    }
+    
+    // Get classes count
+    const classesResult = await API.get('/dos/classes');
+    if (classesResult.success && classesResult.data.data) {
+        classesCount.textContent = classesResult.data.data.length || 0;
+    } else {
+        classesCount.textContent = '0';
+    }
+    
+    // Get teachers count
+    const teachersResult = await API.get('/dos/teachers');
+    if (teachersResult.success && teachersResult.data.data) {
+        teachersCount.textContent = teachersResult.data.data.length || 0;
+    } else {
+        teachersCount.textContent = '0';
+    }
+    
+    // Calculate average performance from published marks
+    const marksResult = await API.get('/dos/marks');
+    if (marksResult.success && marksResult.data.data) {
+        const publishedMarks = marksResult.data.data.filter(mark => mark.published === true);
+        if (publishedMarks.length > 0) {
+            const totalMarks = publishedMarks.reduce((sum, mark) => sum + mark.marks, 0);
+            const average = (totalMarks / publishedMarks.length).toFixed(1);
+            avgPerformance.textContent = `${average}%`;
+        } else {
+            avgPerformance.textContent = 'N/A';
+        }
+    } else {
+        avgPerformance.textContent = 'N/A';
+    }
 }
 
 // Dean of Discipline Dashboard
@@ -1303,6 +1433,19 @@ async function loadDODStatistics() {
 // IT Dashboard
 async function renderITDashboard() {
     const mainContent = document.getElementById('main-content');
+    
+    // Load statistics
+    const [usersResult, studentsResult, teachersResult] = await Promise.all([
+        API.get('/it/users').catch(() => ({ success: false, data: { count: 0 } })),
+        API.get('/dos/students').catch(() => ({ success: false, data: { count: 0 } })),
+        API.get('/dos/teachers').catch(() => ({ success: false, data: { count: 0 } }))
+    ]);
+    
+    const totalUsers = usersResult.success ? usersResult.data.count || usersResult.data.data?.length || 0 : 0;
+    const totalStudents = studentsResult.success ? studentsResult.data.count || studentsResult.data.data?.length || 0 : 0;
+    const totalTeachers = teachersResult.success ? teachersResult.data.count || teachersResult.data.data?.length || 0 : 0;
+    const totalStaff = totalUsers - totalStudents - totalTeachers;
+    
     mainContent.innerHTML = `
         <div class="bg-gradient-to-r from-gray-800 to-gray-900 text-white py-12">
             <div class="container mx-auto px-4">
@@ -1315,22 +1458,22 @@ async function renderITDashboard() {
             <div class="grid md:grid-cols-4 gap-6 mb-12">
                 <div class="bg-white p-6 rounded-lg shadow-lg">
                     <i class="fas fa-users text-3xl text-blue-600 mb-3"></i>
-                    <h3 class="text-2xl font-bold">...</h3>
+                    <h3 class="text-2xl font-bold">${totalUsers}</h3>
                     <p class="text-gray-600">Total Users</p>
                 </div>
                 <div class="bg-white p-6 rounded-lg shadow-lg">
                     <i class="fas fa-user-graduate text-3xl text-green-600 mb-3"></i>
-                    <h3 class="text-2xl font-bold">...</h3>
+                    <h3 class="text-2xl font-bold">${totalStudents}</h3>
                     <p class="text-gray-600">Students</p>
                 </div>
                 <div class="bg-white p-6 rounded-lg shadow-lg">
                     <i class="fas fa-user-tie text-3xl text-purple-600 mb-3"></i>
-                    <h3 class="text-2xl font-bold">...</h3>
+                    <h3 class="text-2xl font-bold">${totalStaff}</h3>
                     <p class="text-gray-600">Staff</p>
                 </div>
                 <div class="bg-white p-6 rounded-lg shadow-lg">
                     <i class="fas fa-chalkboard-teacher text-3xl text-orange-600 mb-3"></i>
-                    <h3 class="text-2xl font-bold">...</h3>
+                    <h3 class="text-2xl font-bold">${totalTeachers}</h3>
                     <p class="text-gray-600">Teachers</p>
                 </div>
             </div>
@@ -1342,30 +1485,35 @@ async function renderITDashboard() {
                     <h3 class="text-xl font-bold mb-2">Register Student</h3>
                     <p class="text-sm">Add new students to system</p>
                 </button>
+                <button onclick="navigateTo('/it-users')" class="bg-indigo-600 text-white p-6 rounded-lg hover:bg-indigo-700 transition text-left">
+                    <i class="fas fa-users-cog text-3xl mb-3"></i>
+                    <h3 class="text-xl font-bold mb-2">Manage Accounts</h3>
+                    <p class="text-sm">Manage all user accounts</p>
+                </button>
+                <button onclick="navigateTo('/it-news')" class="bg-orange-600 text-white p-6 rounded-lg hover:bg-orange-700 transition text-left">
+                    <i class="fas fa-newspaper text-3xl mb-3"></i>
+                    <h3 class="text-xl font-bold mb-2">Create News</h3>
+                    <p class="text-sm">Create and publish news</p>
+                </button>
+                <button onclick="navigateTo('/it-announcements')" class="bg-yellow-600 text-white p-6 rounded-lg hover:bg-yellow-700 transition text-left">
+                    <i class="fas fa-bullhorn text-3xl mb-3"></i>
+                    <h3 class="text-xl font-bold mb-2">Create Announcements</h3>
+                    <p class="text-sm">Create announcements for users</p>
+                </button>
+                <button onclick="navigateTo('/it-employee-year')" class="bg-purple-600 text-white p-6 rounded-lg hover:bg-purple-700 transition text-left">
+                    <i class="fas fa-trophy text-3xl mb-3"></i>
+                    <h3 class="text-xl font-bold mb-2">Employee of Year</h3>
+                    <p class="text-sm">Add employee of the year</p>
+                </button>
                 <button onclick="navigateTo('/trainers')" class="bg-green-600 text-white p-6 rounded-lg hover:bg-green-700 transition text-left">
                     <i class="fas fa-user-tie text-3xl mb-3"></i>
-                    <h3 class="text-xl font-bold mb-2">Manage Staff</h3>
-                    <p class="text-sm">Add/edit staff and teachers</p>
+                    <h3 class="text-xl font-bold mb-2">Manage Trainers</h3>
+                    <p class="text-sm">Add/edit trainers</p>
                 </button>
-                <button class="bg-purple-600 text-white p-6 rounded-lg hover:bg-purple-700 transition text-left">
-                    <i class="fas fa-database text-3xl mb-3"></i>
-                    <h3 class="text-xl font-bold mb-2">Database Manager</h3>
-                    <p class="text-sm">Manage database and backups</p>
-                </button>
-                <button onclick="navigateTo('/news')" class="bg-orange-600 text-white p-6 rounded-lg hover:bg-orange-700 transition text-left">
-                    <i class="fas fa-newspaper text-3xl mb-3"></i>
-                    <h3 class="text-xl font-bold mb-2">Website Content</h3>
-                    <p class="text-sm">Manage news and announcements</p>
-                </button>
-                <button class="bg-red-600 text-white p-6 rounded-lg hover:bg-red-700 transition text-left">
-                    <i class="fas fa-shield-alt text-3xl mb-3"></i>
-                    <h3 class="text-xl font-bold mb-2">Security</h3>
-                    <p class="text-sm">User permissions and access</p>
-                </button>
-                <button class="bg-indigo-600 text-white p-6 rounded-lg hover:bg-indigo-700 transition text-left">
-                    <i class="fas fa-server text-3xl mb-3"></i>
-                    <h3 class="text-xl font-bold mb-2">System Settings</h3>
-                    <p class="text-sm">Configure application settings</p>
+                <button onclick="navigateTo('/it-page-content')" class="bg-teal-600 text-white p-6 rounded-lg hover:bg-teal-700 transition text-left">
+                    <i class="fas fa-file-alt text-3xl mb-3"></i>
+                    <h3 class="text-xl font-bold mb-2">Page Content</h3>
+                    <p class="text-sm">Manage website page content</p>
                 </button>
             </div>
         </div>
@@ -1707,10 +1855,10 @@ window.showRegisterStudentModal = async function() {
     const locationsResult = await API.get('/locations/all');
     
     const modal = document.createElement('div');
-    modal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 overflow-y-auto';
+    modal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 overflow-y-auto';
     modal.innerHTML = `
-        <div class="bg-white rounded-lg p-8 max-w-3xl w-full mx-4 my-8">
-            <h2 class="text-2xl font-bold mb-6 text-blue-600">Register New Student</h2>
+        <div class="bg-white rounded-lg p-8 max-w-3xl w-full my-8 max-h-[90vh] overflow-y-auto">
+            <h2 class="text-2xl font-bold mb-6 text-blue-600 sticky top-0 bg-white pb-4 border-b">Register New Student</h2>
             <form id="register-student-form" class="space-y-6">
                 <!-- Personal Information -->
                 <div class="border-b pb-4">
@@ -1868,6 +2016,356 @@ window.showRegisterStudentModal = async function() {
             showNotification('Failed to register student: ' + result.message, 'error');
         }
     });
+}
+
+// View Student Details
+window.viewStudent = async function(studentId) {
+    try {
+        const result = await API.get(`/dos/students/${studentId}`);
+        
+        if (!result.success) {
+            showNotification('Failed to load student details: ' + result.message, 'error');
+            return;
+        }
+        
+        const student = result.data.data;
+        const modal = document.createElement('div');
+        modal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 overflow-y-auto';
+        modal.innerHTML = `
+            <div class="bg-white rounded-lg p-8 max-w-3xl w-full my-8 max-h-[90vh] overflow-y-auto">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-2xl font-bold text-blue-600">Student Details</h2>
+                    <button onclick="this.closest('.fixed').remove()" class="text-gray-500 hover:text-gray-700">
+                        <i class="fas fa-times text-2xl"></i>
+                    </button>
+                </div>
+                
+                <div class="space-y-6">
+                    <!-- Personal Information -->
+                    <div class="border-b pb-4">
+                        <h3 class="text-lg font-bold text-gray-700 mb-4">Personal Information</h3>
+                        <div class="grid md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-gray-600 text-sm font-semibold mb-1">Student ID</label>
+                                <p class="text-gray-800 font-mono">${student.studentID || 'N/A'}</p>
+                            </div>
+                            <div>
+                                <label class="block text-gray-600 text-sm font-semibold mb-1">Name</label>
+                                <p class="text-gray-800">${student.firstName} ${student.lastName}</p>
+                            </div>
+                            <div>
+                                <label class="block text-gray-600 text-sm font-semibold mb-1">Gender</label>
+                                <p class="text-gray-800">${student.gender || 'N/A'}</p>
+                            </div>
+                            <div>
+                                <label class="block text-gray-600 text-sm font-semibold mb-1">Date of Birth</label>
+                                <p class="text-gray-800">${student.dateOfBirth ? new Date(student.dateOfBirth).toLocaleDateString() : 'N/A'}</p>
+                            </div>
+                            <div>
+                                <label class="block text-gray-600 text-sm font-semibold mb-1">Age</label>
+                                <p class="text-gray-800">${student.age || 'N/A'}</p>
+                            </div>
+                            <div>
+                                <label class="block text-gray-600 text-sm font-semibold mb-1">Class</label>
+                                <p class="text-gray-800">${student.class?.classID || 'N/A'} - ${student.class?.name || 'N/A'}</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Parent/Guardian Information -->
+                    <div class="border-b pb-4">
+                        <h3 class="text-lg font-bold text-gray-700 mb-4">Parent/Guardian Information</h3>
+                        <div class="grid md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-gray-600 text-sm font-semibold mb-1">Name</label>
+                                <p class="text-gray-800">${student.parentName || 'N/A'}</p>
+                            </div>
+                            <div>
+                                <label class="block text-gray-600 text-sm font-semibold mb-1">Phone</label>
+                                <p class="text-gray-800">${student.parentPhone || 'N/A'}</p>
+                            </div>
+                            <div>
+                                <label class="block text-gray-600 text-sm font-semibold mb-1">Relationship</label>
+                                <p class="text-gray-800">${student.relationship || 'N/A'}</p>
+                            </div>
+                            <div>
+                                <label class="block text-gray-600 text-sm font-semibold mb-1">Email</label>
+                                <p class="text-gray-800">${student.parentEmail || 'N/A'}</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Address Information -->
+                    ${student.address ? `
+                    <div class="border-b pb-4">
+                        <h3 class="text-lg font-bold text-gray-700 mb-4">Address Information</h3>
+                        <div class="grid md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-gray-600 text-sm font-semibold mb-1">Province</label>
+                                <p class="text-gray-800">${student.address.province || 'N/A'}</p>
+                            </div>
+                            <div>
+                                <label class="block text-gray-600 text-sm font-semibold mb-1">District</label>
+                                <p class="text-gray-800">${student.address.district || 'N/A'}</p>
+                            </div>
+                            <div>
+                                <label class="block text-gray-600 text-sm font-semibold mb-1">Sector</label>
+                                <p class="text-gray-800">${student.address.sector || 'N/A'}</p>
+                            </div>
+                            <div>
+                                <label class="block text-gray-600 text-sm font-semibold mb-1">Cell</label>
+                                <p class="text-gray-800">${student.address.cell || 'N/A'}</p>
+                            </div>
+                            <div>
+                                <label class="block text-gray-600 text-sm font-semibold mb-1">Village</label>
+                                <p class="text-gray-800">${student.address.village || 'N/A'}</p>
+                            </div>
+                        </div>
+                    </div>
+                    ` : ''}
+                </div>
+                
+                <div class="mt-6 flex gap-4">
+                    <button onclick="editStudent('${studentId}'); this.closest('.fixed').remove();" class="flex-1 bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 font-bold">
+                        <i class="fas fa-edit mr-2"></i>Edit Student
+                    </button>
+                    <button onclick="this.closest('.fixed').remove()" class="flex-1 bg-gray-400 text-white px-6 py-3 rounded-lg hover:bg-gray-500 font-bold">
+                        Close
+                    </button>
+                </div>
+            </div>
+        `;
+        document.body.appendChild(modal);
+    } catch (error) {
+        showNotification('Error loading student details: ' + error.message, 'error');
+    }
+}
+
+// Edit Student
+window.editStudent = async function(studentId) {
+    try {
+        const [studentResult, classesResult, locationsResult] = await Promise.all([
+            API.get(`/dos/students/${studentId}`),
+            API.get('/dos/classes'),
+            API.get('/locations/all')
+        ]);
+        
+        if (!studentResult.success) {
+            showNotification('Failed to load student: ' + studentResult.message, 'error');
+            return;
+        }
+        
+        const student = studentResult.data.data;
+        const modal = document.createElement('div');
+        modal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 overflow-y-auto';
+        modal.innerHTML = `
+            <div class="bg-white rounded-lg p-8 max-w-3xl w-full my-8 max-h-[90vh] overflow-y-auto">
+                <h2 class="text-2xl font-bold mb-6 text-blue-600 sticky top-0 bg-white pb-4 border-b">Edit Student</h2>
+                <form id="edit-student-form" class="space-y-6">
+                    <!-- Personal Information -->
+                    <div class="border-b pb-4">
+                        <h3 class="text-lg font-bold text-gray-700 mb-4">Personal Information</h3>
+                        <div class="grid md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-gray-700 font-bold mb-2">Student ID</label>
+                                <input type="text" value="${student.studentID}" disabled class="w-full px-4 py-2 border rounded-lg bg-gray-100 text-gray-600">
+                            </div>
+                            <div>
+                                <label class="block text-gray-700 font-bold mb-2">First Name *</label>
+                                <input type="text" name="firstName" value="${student.firstName}" required class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            </div>
+                            <div>
+                                <label class="block text-gray-700 font-bold mb-2">Last Name *</label>
+                                <input type="text" name="lastName" value="${student.lastName}" required class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            </div>
+                            <div>
+                                <label class="block text-gray-700 font-bold mb-2">Gender *</label>
+                                <select name="gender" required class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                    <option value="">Select Gender</option>
+                                    <option value="Male" ${student.gender === 'Male' ? 'selected' : ''}>Male</option>
+                                    <option value="Female" ${student.gender === 'Female' ? 'selected' : ''}>Female</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-gray-700 font-bold mb-2">Date of Birth *</label>
+                                <input type="date" name="dateOfBirth" value="${student.dateOfBirth ? student.dateOfBirth.split('T')[0] : ''}" required class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            </div>
+                            <div>
+                                <label class="block text-gray-700 font-bold mb-2">Class *</label>
+                                <select name="classId" required class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                    <option value="">Select Class</option>
+                                    ${classesResult.success ? classesResult.data.data.map(cls => 
+                                        `<option value="${cls._id}" ${student.class?._id?.toString() === cls._id.toString() ? 'selected' : ''}>${cls.classID} - ${cls.name}</option>`
+                                    ).join('') : ''}
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Parent/Guardian Information -->
+                    <div class="border-b pb-4">
+                        <h3 class="text-lg font-bold text-gray-700 mb-4">Parent/Guardian Information</h3>
+                        <div class="grid md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-gray-700 font-bold mb-2">Parent/Guardian Name *</label>
+                                <input type="text" name="parentName" value="${student.parentName || ''}" required class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            </div>
+                            <div>
+                                <label class="block text-gray-700 font-bold mb-2">Phone Number *</label>
+                                <input type="tel" name="parentPhone" value="${student.parentPhone || ''}" required class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="0788123456">
+                            </div>
+                            <div>
+                                <label class="block text-gray-700 font-bold mb-2">Relationship *</label>
+                                <select name="relationship" required class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                    <option value="">Select Relationship</option>
+                                    <option value="Father" ${student.relationship === 'Father' ? 'selected' : ''}>Father</option>
+                                    <option value="Mother" ${student.relationship === 'Mother' ? 'selected' : ''}>Mother</option>
+                                    <option value="Guardian" ${student.relationship === 'Guardian' ? 'selected' : ''}>Guardian</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-gray-700 font-bold mb-2">Email (Optional)</label>
+                                <input type="email" name="parentEmail" value="${student.parentEmail || ''}" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Address Information -->
+                    <div class="border-b pb-4">
+                        <h3 class="text-lg font-bold text-gray-700 mb-4">Address Information</h3>
+                        <div class="grid md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-gray-700 font-bold mb-2">Province *</label>
+                                <select name="province" required id="edit-province-select" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" onchange="loadEditDistricts(this.value)">
+                                    <option value="">Select Province</option>
+                                    ${locationsResult.success ? Object.keys(locationsResult.data.data).map(province => 
+                                        `<option value="${province}" ${student.address?.province === province ? 'selected' : ''}>${province}</option>`
+                                    ).join('') : ''}
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-gray-700 font-bold mb-2">District *</label>
+                                <select name="district" required id="edit-district-select" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                    <option value="">Select District</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-gray-700 font-bold mb-2">Sector *</label>
+                                <input type="text" name="sector" value="${student.address?.sector || ''}" required class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            </div>
+                            <div>
+                                <label class="block text-gray-700 font-bold mb-2">Cell *</label>
+                                <input type="text" name="cell" value="${student.address?.cell || ''}" required class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            </div>
+                            <div>
+                                <label class="block text-gray-700 font-bold mb-2">Village *</label>
+                                <input type="text" name="village" value="${student.address?.village || ''}" required class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flex gap-4">
+                        <button type="submit" class="flex-1 bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 font-bold">
+                            <i class="fas fa-save mr-2"></i>Update Student
+                        </button>
+                        <button type="button" onclick="this.closest('.fixed').remove()" class="flex-1 bg-gray-400 text-white px-6 py-3 rounded-lg hover:bg-gray-500 font-bold">
+                            Cancel
+                        </button>
+                    </div>
+                </form>
+            </div>
+        `;
+        document.body.appendChild(modal);
+
+        // Store locations data globally for district loading
+        window.locationsData = locationsResult.success ? locationsResult.data.data : {};
+        
+        // Load districts if province is already selected
+        if (student.address?.province) {
+            setTimeout(() => {
+                loadEditDistricts(student.address.province, student.address.district);
+            }, 100);
+        }
+
+        window.loadEditDistricts = function(province, selectedDistrict = '') {
+            const districtSelect = document.getElementById('edit-district-select');
+            districtSelect.innerHTML = '<option value="">Select District</option>';
+            
+            if (province && window.locationsData[province]) {
+                const districts = window.locationsData[province].districts;
+                districtSelect.innerHTML += districts.map(d => 
+                    `<option value="${d}" ${d === selectedDistrict ? 'selected' : ''}>${d}</option>`
+                ).join('');
+            }
+        };
+
+        document.getElementById('edit-student-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            const data = {
+                firstName: formData.get('firstName'),
+                lastName: formData.get('lastName'),
+                gender: formData.get('gender'),
+                dateOfBirth: formData.get('dateOfBirth'),
+                classId: formData.get('classId'),
+                parentName: formData.get('parentName'),
+                parentPhone: formData.get('parentPhone'),
+                relationship: formData.get('relationship'),
+                parentEmail: formData.get('parentEmail'),
+                address: {
+                    province: formData.get('province'),
+                    district: formData.get('district'),
+                    sector: formData.get('sector'),
+                    cell: formData.get('cell'),
+                    village: formData.get('village')
+                }
+            };
+            
+            const result = await API.put(`/dos/students/${studentId}`, data);
+            
+            if (result.success) {
+                showNotification('Student updated successfully!', 'success');
+                modal.remove();
+                renderStudents();
+            } else {
+                showNotification('Failed to update student: ' + result.message, 'error');
+            }
+        });
+    } catch (error) {
+        showNotification('Error loading student: ' + error.message, 'error');
+    }
+}
+
+// Delete Student
+window.deleteStudent = async function(studentId) {
+    try {
+        // First get student details for confirmation
+        const studentResult = await API.get(`/dos/students/${studentId}`);
+        
+        if (!studentResult.success) {
+            showNotification('Failed to load student: ' + studentResult.message, 'error');
+            return;
+        }
+        
+        const student = studentResult.data.data;
+        const studentName = `${student.firstName} ${student.lastName}`;
+        const studentID = student.studentID;
+        
+        if (!confirm(`Are you sure you want to delete student "${studentName}" (${studentID})?\n\nThis action cannot be undone and will remove all associated data.`)) {
+            return;
+        }
+        
+        const result = await API.delete(`/dos/students/${studentId}`);
+        
+        if (result.success) {
+            showNotification(`Student "${studentName}" deleted successfully`, 'success');
+            renderStudents();
+        } else {
+            showNotification('Failed to delete student: ' + result.message, 'error');
+        }
+    } catch (error) {
+        showNotification('Error deleting student: ' + error.message, 'error');
+    }
 }
 
 async function renderMarks() {
@@ -3046,10 +3544,15 @@ window.deleteSubject = async function(subjectId, subjectName) {
 
 async function renderTrainers() {
     const mainContent = document.getElementById('main-content');
+    const isIT = currentUser && currentUser.role === 'IT';
+    
     mainContent.innerHTML = `
         <div class="bg-blue-600 text-white py-12 text-center">
             <h1 class="text-4xl font-bold mb-4">Our Trainers</h1>
             <p class="text-xl">Meet our dedicated and experienced team</p>
+            ${isIT ? `<button onclick="showCreateTrainerModal()" class="bg-white text-blue-600 px-6 py-2 rounded-lg hover:bg-gray-100 transition mt-4">
+                <i class="fas fa-plus mr-2"></i>Add Trainer
+            </button>` : ''}
         </div>
         
         <div class="container mx-auto px-4 py-16">
@@ -3073,26 +3576,40 @@ async function renderTrainers() {
     const trainersList = document.getElementById('trainers-list');
     
     if (result.success && result.data.data) {
-        trainersList.innerHTML = `
-            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-                ${result.data.data.map(trainer => `
-                    <div class="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-all transform hover:-translate-y-2">
-                        <div class="h-48 bg-gradient-to-br from-blue-100 to-blue-200 flex items-center justify-center">
-                            ${trainer.photo ? 
-                                `<img src="${trainer.photo}" alt="${trainer.name}" class="w-full h-full object-cover">` :
-                                `<i class="fas fa-user-tie text-6xl text-blue-600"></i>`
-                            }
+        if (result.data.data.length === 0) {
+            trainersList.innerHTML = '<p class="text-gray-500">No trainers found.</p>';
+        } else {
+            trainersList.innerHTML = `
+                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                    ${result.data.data.map(trainer => `
+                        <div class="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-all transform hover:-translate-y-2">
+                            <div class="h-48 bg-gradient-to-br from-blue-100 to-blue-200 flex items-center justify-center">
+                                ${trainer.photo ? 
+                                    `<img src="${trainer.photo}" alt="${trainer.name}" class="w-full h-full object-cover">` :
+                                    `<i class="fas fa-user-tie text-6xl text-blue-600"></i>`
+                                }
+                            </div>
+                            <div class="p-6">
+                                <h3 class="text-xl font-bold mb-2 text-blue-600">${trainer.name}</h3>
+                                <p class="text-gray-600 mb-1">${trainer.subject || 'Trainer'}</p>
+                                ${trainer.level ? `<p class="text-sm text-gray-500 mb-1"><i class="fas fa-graduation-cap mr-1"></i>${trainer.level}${trainer.trade && trainer.trade !== 'None' ? ` - ${trainer.trade}` : ''}</p>` : ''}
+                                ${trainer.phone ? `<p class="text-sm text-gray-500"><i class="fas fa-phone mr-2"></i>${trainer.phone}</p>` : ''}
+                                ${isIT ? `
+                                    <div class="mt-4 flex gap-2">
+                                        <button onclick="editTrainer('${trainer._id}')" class="flex-1 bg-blue-600 text-white px-3 py-1 rounded text-sm hover:bg-blue-700">
+                                            <i class="fas fa-edit mr-1"></i>Edit
+                                        </button>
+                                        <button onclick="deleteTrainer('${trainer._id}')" class="flex-1 bg-red-600 text-white px-3 py-1 rounded text-sm hover:bg-red-700">
+                                            <i class="fas fa-trash mr-1"></i>Delete
+                                        </button>
+                                    </div>
+                                ` : ''}
+                            </div>
                         </div>
-                        <div class="p-6">
-                            <h3 class="text-xl font-bold mb-2 text-blue-600">${trainer.name}</h3>
-                            <p class="text-gray-600 mb-2">${trainer.subject || trainer.role || 'Trainer'}</p>
-                            <p class="text-sm text-gray-500 mb-3">${trainer.email || ''}</p>
-                            ${trainer.phone ? `<p class="text-sm text-gray-500"><i class="fas fa-phone mr-2"></i>${trainer.phone}</p>` : ''}
-                        </div>
-                    </div>
-                `).join('')}
-            </div>
-        `;
+                    `).join('')}
+                </div>
+            `;
+        }
     } else {
         trainersList.innerHTML = `
             <div class="text-red-600">
@@ -3102,6 +3619,140 @@ async function renderTrainers() {
         `;
     }
 }
+
+window.showCreateTrainerModal = async function() {
+    const modal = document.createElement('div');
+    modal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 overflow-y-auto p-4';
+    modal.innerHTML = `
+        <div class="bg-white rounded-lg p-8 max-w-2xl w-full my-8 max-h-[90vh] overflow-y-auto">
+            <h2 class="text-2xl font-bold mb-6 text-blue-600">Add Trainer</h2>
+            <form id="create-trainer-form">
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-gray-700 font-bold mb-2">Name *</label>
+                        <input type="text" name="name" required class="w-full px-4 py-2 border rounded-lg">
+                    </div>
+                    <div>
+                        <label class="block text-gray-700 font-bold mb-2">Teacher ID *</label>
+                        <input type="text" name="teacherId" required class="w-full px-4 py-2 border rounded-lg" placeholder="e.g., T001">
+                    </div>
+                    <div>
+                        <label class="block text-gray-700 font-bold mb-2">Email *</label>
+                        <input type="email" name="email" required class="w-full px-4 py-2 border rounded-lg">
+                    </div>
+                    <div>
+                        <label class="block text-gray-700 font-bold mb-2">Phone Number *</label>
+                        <input type="tel" name="phone" required class="w-full px-4 py-2 border rounded-lg" placeholder="0788123456">
+                    </div>
+                    <div>
+                        <label class="block text-gray-700 font-bold mb-2">Level *</label>
+                        <select name="level" required id="level-select" class="w-full px-4 py-2 border rounded-lg" onchange="handleTrainerLevelChange(this.value)">
+                            <option value="">Select Level</option>
+                            <option value="O-Level">O-Level</option>
+                            <option value="A-Level">A-Level</option>
+                        </select>
+                    </div>
+                    <div id="trade-div" style="display:none;">
+                        <label class="block text-gray-700 font-bold mb-2">Trade *</label>
+                        <select name="trade" id="trade-select" class="w-full px-4 py-2 border rounded-lg">
+                            <option value="None">None</option>
+                            <option value="SOD">Software Development (SOD)</option>
+                            <option value="ACC">Accounting Profession (ACC)</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-gray-700 font-bold mb-2">Subject *</label>
+                        <input type="text" name="subject" required class="w-full px-4 py-2 border rounded-lg" placeholder="e.g., Mathematics">
+                    </div>
+                    <div>
+                        <label class="block text-gray-700 font-bold mb-2">Photo</label>
+                        <input type="file" name="photo" accept="image/*" class="w-full px-4 py-2 border rounded-lg">
+                    </div>
+                </div>
+                <div class="flex gap-4 mt-6">
+                    <button type="submit" class="flex-1 bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 font-bold">
+                        <i class="fas fa-save mr-2"></i>Add Trainer
+                    </button>
+                    <button type="button" onclick="this.closest('.fixed').remove()" class="flex-1 bg-gray-400 text-white px-6 py-3 rounded-lg hover:bg-gray-500 font-bold">
+                        Cancel
+                    </button>
+                </div>
+            </form>
+        </div>
+    `;
+    document.body.appendChild(modal);
+    
+    window.handleTrainerLevelChange = function(level) {
+        const tradeDiv = document.getElementById('trade-div');
+        const tradeSelect = document.getElementById('trade-select');
+        if (level === 'A-Level') {
+            tradeDiv.style.display = 'block';
+            tradeSelect.required = true;
+        } else {
+            tradeDiv.style.display = 'none';
+            tradeSelect.required = false;
+            tradeSelect.value = 'None';
+        }
+    };
+    
+    document.getElementById('create-trainer-form').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const formData = new FormData(e.target);
+        
+        const data = {
+            name: formData.get('name'),
+            teacherId: formData.get('teacherId'),
+            email: formData.get('email'),
+            phone: formData.get('phone'),
+            level: formData.get('level'),
+            trade: formData.get('trade') || 'None',
+            subject: formData.get('subject'),
+            department: formData.get('level') === 'O-Level' ? 'O-Level' : (formData.get('trade') === 'SOD' ? 'Software Development' : 'Accounting')
+        };
+        
+        // Handle photo upload
+        const photoFile = formData.get('photo');
+        if (photoFile && photoFile.size > 0) {
+            const reader = new FileReader();
+            reader.onload = async (e) => {
+                data.photo = e.target.result;
+                const result = await API.post('/trainers', data);
+                if (result.success) {
+                    showNotification('Trainer added successfully!', 'success');
+                    modal.remove();
+                    renderTrainers();
+                } else {
+                    showNotification('Failed to add trainer: ' + result.message, 'error');
+                }
+            };
+            reader.readAsDataURL(photoFile);
+        } else {
+            const result = await API.post('/trainers', data);
+            if (result.success) {
+                showNotification('Trainer added successfully!', 'success');
+                modal.remove();
+                renderTrainers();
+            } else {
+                showNotification('Failed to add trainer: ' + result.message, 'error');
+            }
+        }
+    });
+};
+
+window.editTrainer = function(trainerId) {
+    showNotification('Edit trainer functionality coming soon', 'info');
+};
+
+window.deleteTrainer = async function(trainerId) {
+    if (!confirm('Are you sure you want to delete this trainer?')) return;
+    const result = await API.delete(`/trainers/${trainerId}`);
+    if (result.success) {
+        showNotification('Trainer deleted successfully', 'success');
+        renderTrainers();
+    } else {
+        showNotification('Failed to delete trainer: ' + result.message, 'error');
+    }
+};
 
 async function renderNews() {
     const mainContent = document.getElementById('main-content');
@@ -3219,7 +3870,7 @@ async function renderNews() {
                         <div class="max-w-4xl mx-auto">
                             ${news.image ? `<img src="${news.image}" alt="${news.title}" class="w-full rounded-lg shadow-lg mb-8">` : ''}
                             <div class="prose max-w-none">
-                                <p class="text-lg text-gray-700 leading-relaxed">${news.content}</p>
+                                <div class="text-lg text-gray-700 leading-relaxed whitespace-pre-line">${news.content}</div>
                             </div>
                         </div>
                     </div>
@@ -3241,11 +3892,59 @@ async function renderAnnouncements() {
     mainContent.innerHTML = `
         <div class="bg-orange-600 text-white py-12 text-center">
             <h1 class="text-4xl font-bold mb-4">Announcements</h1>
+            <p class="text-xl">Important updates and notices</p>
         </div>
         <div class="container mx-auto px-4 py-16">
-            <p class="text-center text-gray-600">Announcements - Connect to backend for data</p>
+            <div id="announcements-list" class="text-center">
+                <i class="fas fa-spinner fa-spin text-4xl text-orange-600"></i>
+                <p class="mt-4">Loading announcements...</p>
+            </div>
         </div>
     `;
+    
+    const result = await API.get('/it/announcements?published=true');
+    const announcementsList = document.getElementById('announcements-list');
+    
+    if (result.success && result.data.data) {
+        if (result.data.data.length === 0) {
+            announcementsList.innerHTML = '<p class="text-gray-500">No announcements at this time.</p>';
+        } else {
+            announcementsList.innerHTML = `
+                <div class="grid md:grid-cols-2 gap-6">
+                    ${result.data.data.map(item => `
+                        <div class="bg-white rounded-lg shadow-lg overflow-hidden">
+                            ${item.image ? `<img src="${item.image}" alt="${item.title}" class="w-full h-48 object-cover">` : ''}
+                            <div class="p-6">
+                                <div class="flex justify-between items-start mb-4">
+                                    <h3 class="text-xl font-bold">${item.title}</h3>
+                                    <span class="px-2 py-1 text-xs font-semibold rounded-full bg-orange-100 text-orange-800">${item.concerns}</span>
+                                </div>
+                                <p class="text-gray-600 mb-4">${item.content}</p>
+                                <p class="text-sm text-gray-500">${new Date(item.createdAt).toLocaleDateString()}</p>
+                                ${item.documents && item.documents.length > 0 ? `
+                                    <div class="mt-4">
+                                        <p class="text-sm font-semibold mb-2">Documents:</p>
+                                        ${item.documents.map(doc => `
+                                            <a href="${doc}" target="_blank" class="text-blue-600 hover:underline text-sm block">
+                                                <i class="fas fa-file mr-1"></i>View Document
+                                            </a>
+                                        `).join('')}
+                                    </div>
+                                ` : ''}
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+        }
+    } else {
+        announcementsList.innerHTML = `
+            <div class="text-red-600">
+                <i class="fas fa-exclamation-triangle text-4xl mb-4"></i>
+                <p>Unable to load announcements. ${result.message || 'Unknown error'}</p>
+            </div>
+        `;
+    }
 }
 
 async function renderEmployeeOfYear() {
@@ -3253,11 +3952,47 @@ async function renderEmployeeOfYear() {
     mainContent.innerHTML = `
         <div class="bg-yellow-600 text-white py-12 text-center">
             <h1 class="text-4xl font-bold mb-4">Employee of the Year</h1>
+            <p class="text-xl">Recognizing excellence and dedication</p>
         </div>
         <div class="container mx-auto px-4 py-16">
-            <p class="text-center text-gray-600">Employee recognition - Connect to backend for data</p>
+            <div id="employee-year-list" class="text-center">
+                <i class="fas fa-spinner fa-spin text-4xl text-yellow-600"></i>
+                <p class="mt-4">Loading employees of the year...</p>
+            </div>
         </div>
     `;
+    
+    const result = await API.get('/it/employee-of-year?published=true');
+    const employeeList = document.getElementById('employee-year-list');
+    
+    if (result.success && result.data.data) {
+        if (result.data.data.length === 0) {
+            employeeList.innerHTML = '<p class="text-gray-500">No employees of the year yet.</p>';
+        } else {
+            employeeList.innerHTML = `
+                <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    ${result.data.data.map(item => `
+                        <div class="bg-white rounded-lg shadow-lg overflow-hidden">
+                            ${item.photo ? `<img src="${item.photo}" alt="${item.employeeName}" class="w-full h-64 object-cover">` : 
+                                `<div class="w-full h-64 bg-yellow-100 flex items-center justify-center"><i class="fas fa-user text-6xl text-yellow-400"></i></div>`}
+                            <div class="p-6">
+                                <h3 class="text-xl font-bold mb-2">${item.employeeName}</h3>
+                                <p class="text-sm text-yellow-600 mb-2">${item.employeeType} - ${item.year}</p>
+                                <p class="text-gray-600">${item.achievement}</p>
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+        }
+    } else {
+        employeeList.innerHTML = `
+            <div class="text-red-600">
+                <i class="fas fa-exclamation-triangle text-4xl mb-4"></i>
+                <p>Unable to load employees. ${result.message || 'Unknown error'}</p>
+            </div>
+        `;
+    }
 }
 
 async function renderDevelopers() {
@@ -3850,33 +4585,56 @@ async function renderDODDeduct() {
 }
 
 window.showDeductFromStudentsModal = async function() {
-    const studentsResult = await API.get('/dod/students');
-    const faultsResult = await API.get('/dod/faults');
+    const [classesResult, faultsResult] = await Promise.all([
+        API.get('/dos/classes'),
+        API.get('/dod/faults')
+    ]);
     
     const modal = document.createElement('div');
     modal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 overflow-y-auto';
     modal.innerHTML = `
-        <div class="bg-white rounded-lg p-8 max-w-2xl w-full mx-4 my-8">
+        <div class="bg-white rounded-lg p-8 max-w-3xl w-full mx-4 my-8">
             <h2 class="text-2xl font-bold mb-6 text-orange-600">Deduct from Students</h2>
             <form id="deduct-students-form">
-                <div class="mb-4">
-                    <label class="block text-gray-700 font-bold mb-2">Select Students *</label>
-                    <div class="border rounded-lg p-4 max-h-48 overflow-y-auto">
-                        ${studentsResult.success ? studentsResult.data.data.map(student => `
-                            <label class="flex items-center p-2 hover:bg-gray-50 rounded cursor-pointer">
-                                <input type="checkbox" name="studentIds" value="${student._id}" class="mr-3">
-                                <div>
-                                    <p class="font-semibold">${student.firstName} ${student.lastName}</p>
-                                    <p class="text-xs text-gray-500">${student.studentID} - ${student.class?.classID || 'N/A'}</p>
-                                </div>
-                            </label>
-                        `).join('') : '<p class="text-gray-500">No students found</p>'}
+                <!-- Step 1: Select Class -->
+                <div class="mb-6">
+                    <label class="block text-gray-700 font-bold mb-2">Select Class *</label>
+                    <select id="class-select" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500" onchange="loadStudentsForDeduction(this.value)">
+                        <option value="">Select a class first</option>
+                        ${classesResult.success ? classesResult.data.data.map(cls => 
+                            `<option value="${cls._id}">${cls.classID} - ${cls.name}</option>`
+                        ).join('') : ''}
+                    </select>
+                    <p class="text-sm text-gray-500 mt-1">Select a class to view its students</p>
+                </div>
+
+                <!-- Step 2: Search and Select Students -->
+                <div class="mb-6" id="students-section" style="display: none;">
+                    <div class="flex justify-between items-center mb-2">
+                        <label class="block text-gray-700 font-bold">Select Students *</label>
+                        <button type="button" onclick="toggleSelectAll()" class="text-sm text-orange-600 hover:text-orange-800 font-semibold" id="select-all-btn">
+                            Select All
+                        </button>
+                    </div>
+                    <div class="mb-3">
+                        <input type="text" id="student-search" placeholder="Search students by name or ID..." 
+                               class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+                               onkeyup="filterStudents()">
+                        <p class="text-xs text-gray-500 mt-1"><i class="fas fa-search mr-1"></i>Type to search students</p>
+                    </div>
+                    <div class="border rounded-lg p-4 max-h-64 overflow-y-auto bg-gray-50" id="students-list">
+                        <p class="text-gray-500 text-center py-8">Please select a class to view students</p>
+                    </div>
+                    <div class="mt-2 text-sm text-gray-600">
+                        <span id="selected-count">0</span> student(s) selected
                     </div>
                 </div>
+
+                <!-- Step 3: Select Fault -->
                 <div class="grid md:grid-cols-2 gap-4 mb-4">
                     <div>
                         <label class="block text-gray-700 font-bold mb-2">Select Fault *</label>
-                        <select name="faultId" required id="fault-select" class="w-full px-4 py-2 border rounded-lg" onchange="updateDeductionPoints(this.value)">
+                        <select name="faultId" required id="fault-select" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500" onchange="updateDeductionPoints(this.value)">
                             <option value="">Select Fault</option>
                             ${faultsResult.success ? faultsResult.data.data.map(fault => 
                                 `<option value="${fault._id}" data-points="${fault.pointsToDeduct}">${fault.name} (-${fault.pointsToDeduct} pts)</option>`
@@ -3888,10 +4646,12 @@ window.showDeductFromStudentsModal = async function() {
                         <input type="number" id="points-display" readonly class="w-full px-4 py-2 border rounded-lg bg-gray-100" value="0">
                     </div>
                 </div>
+
+                <!-- Step 4: Term and Academic Year -->
                 <div class="grid md:grid-cols-2 gap-4 mb-6">
                     <div>
                         <label class="block text-gray-700 font-bold mb-2">Term *</label>
-                        <select name="term" required class="w-full px-4 py-2 border rounded-lg">
+                        <select name="term" required class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500">
                             <option value="">Select Term</option>
                             <option value="Term 1">Term 1</option>
                             <option value="Term 2">Term 2</option>
@@ -3900,13 +4660,17 @@ window.showDeductFromStudentsModal = async function() {
                     </div>
                     <div>
                         <label class="block text-gray-700 font-bold mb-2">Academic Year *</label>
-                        <input type="text" name="academicYear" required class="w-full px-4 py-2 border rounded-lg" value="2024-2025">
+                        <input type="text" name="academicYear" required class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500" value="2024-2025">
                     </div>
                 </div>
+
+                <!-- Step 5: Comment -->
                 <div class="mb-6">
                     <label class="block text-gray-700 font-bold mb-2">Comment *</label>
-                    <textarea name="comment" required class="w-full px-4 py-2 border rounded-lg" rows="3" placeholder="Describe the incident..."></textarea>
+                    <textarea name="comment" required class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500" rows="3" placeholder="Describe the incident..."></textarea>
                 </div>
+
+                <!-- Action Buttons -->
                 <div class="flex gap-4">
                     <button type="submit" class="flex-1 bg-orange-600 text-white px-6 py-3 rounded-lg hover:bg-orange-700 font-bold">
                         <i class="fas fa-minus-circle mr-2"></i>Deduct Points
@@ -3920,6 +4684,108 @@ window.showDeductFromStudentsModal = async function() {
     `;
     document.body.appendChild(modal);
 
+    // Store students data
+    let allStudents = [];
+    let filteredStudents = [];
+
+    // Load students when class is selected
+    window.loadStudentsForDeduction = async function(classId) {
+        if (!classId) {
+            document.getElementById('students-section').style.display = 'none';
+            document.getElementById('students-list').innerHTML = '<p class="text-gray-500 text-center py-8">Please select a class to view students</p>';
+            return;
+        }
+
+        try {
+            showLoading();
+            const studentsResult = await API.get(`/dos/students/class/${classId}`);
+            hideLoading();
+
+            if (studentsResult.success && studentsResult.data.data) {
+                allStudents = studentsResult.data.data;
+                filteredStudents = [...allStudents];
+                renderStudentsList();
+                document.getElementById('students-section').style.display = 'block';
+                document.getElementById('student-search').value = '';
+            } else {
+                document.getElementById('students-list').innerHTML = '<p class="text-gray-500 text-center py-8">No students found in this class</p>';
+                document.getElementById('students-section').style.display = 'block';
+            }
+        } catch (error) {
+            hideLoading();
+            showNotification('Failed to load students: ' + error.message, 'error');
+            document.getElementById('students-list').innerHTML = '<p class="text-red-500 text-center py-8">Error loading students</p>';
+        }
+    };
+
+    // Render students list
+    function renderStudentsList() {
+        const studentsList = document.getElementById('students-list');
+        
+        if (filteredStudents.length === 0) {
+            studentsList.innerHTML = '<p class="text-gray-500 text-center py-8">No students match your search</p>';
+            updateSelectedCount();
+            return;
+        }
+
+        studentsList.innerHTML = filteredStudents.map(student => `
+            <label class="flex items-center p-3 hover:bg-white rounded cursor-pointer border-b border-gray-200 student-item" data-student-id="${student._id}">
+                <input type="checkbox" name="studentIds" value="${student._id}" class="mr-3 student-checkbox" onchange="updateSelectedCount()">
+                <div class="flex-1">
+                    <p class="font-semibold text-gray-800">${student.firstName} ${student.lastName}</p>
+                    <p class="text-xs text-gray-500">${student.studentID}</p>
+                </div>
+            </label>
+        `).join('');
+        
+        updateSelectedCount();
+    }
+
+    // Filter students by search term
+    window.filterStudents = function() {
+        const searchTerm = document.getElementById('student-search').value.toLowerCase().trim();
+        
+        if (!searchTerm) {
+            filteredStudents = [...allStudents];
+        } else {
+            filteredStudents = allStudents.filter(student => {
+                const fullName = `${student.firstName} ${student.lastName}`.toLowerCase();
+                const studentID = student.studentID.toLowerCase();
+                return fullName.includes(searchTerm) || studentID.includes(searchTerm);
+            });
+        }
+        
+        renderStudentsList();
+    };
+
+    // Toggle select all students
+    window.toggleSelectAll = function() {
+        const checkboxes = document.querySelectorAll('.student-checkbox');
+        const selectAllBtn = document.getElementById('select-all-btn');
+        const allChecked = Array.from(checkboxes).every(cb => cb.checked);
+        
+        checkboxes.forEach(cb => {
+            cb.checked = !allChecked;
+        });
+        
+        selectAllBtn.textContent = allChecked ? 'Select All' : 'Deselect All';
+        updateSelectedCount();
+    };
+
+    // Update selected count
+    window.updateSelectedCount = function() {
+        const checkboxes = document.querySelectorAll('.student-checkbox:checked');
+        const count = checkboxes.length;
+        document.getElementById('selected-count').textContent = count;
+        
+        const selectAllBtn = document.getElementById('select-all-btn');
+        const allCheckboxes = document.querySelectorAll('.student-checkbox');
+        if (allCheckboxes.length > 0) {
+            selectAllBtn.textContent = count === allCheckboxes.length ? 'Deselect All' : 'Select All';
+        }
+    };
+
+    // Update deduction points
     window.updateDeductionPoints = function(faultId) {
         const select = document.getElementById('fault-select');
         const option = select.options[select.selectedIndex];
@@ -3927,10 +4793,17 @@ window.showDeductFromStudentsModal = async function() {
         document.getElementById('points-display').value = points;
     };
 
+    // Form submission
     document.getElementById('deduct-students-form').addEventListener('submit', async (e) => {
         e.preventDefault();
         const formData = new FormData(e.target);
         const studentIds = formData.getAll('studentIds');
+        const classId = document.getElementById('class-select').value;
+        
+        if (!classId) {
+            showNotification('Please select a class first', 'error');
+            return;
+        }
         
         if (studentIds.length === 0) {
             showNotification('Please select at least one student', 'error');
@@ -3945,10 +4818,12 @@ window.showDeductFromStudentsModal = async function() {
             comment: formData.get('comment')
         };
         
+        showLoading();
         const result = await API.post('/dod/deduct/students', data);
+        hideLoading();
         
         if (result.success) {
-            showNotification(`Points deducted from ${result.data.count} students!`, 'success');
+            showNotification(`Points deducted from ${result.data.count} student(s)!`, 'success');
             modal.remove();
         } else {
             showNotification('Failed to deduct points: ' + result.message, 'error');
@@ -4835,6 +5710,844 @@ async function loadMostBorrowed() {
         }
     }
 }
+
+// ============================================
+// IT MANAGEMENT PAGES
+// ============================================
+
+// IT Users Management
+async function renderITUsers() {
+    const mainContent = document.getElementById('main-content');
+    mainContent.innerHTML = `
+        <div class="bg-indigo-600 text-white py-12 text-center">
+            <h1 class="text-4xl font-bold mb-4">User Account Management</h1>
+            <p class="text-xl">Manage all user accounts in the system</p>
+        </div>
+        <div class="container mx-auto px-4 py-16">
+            <div class="bg-white rounded-lg shadow overflow-hidden">
+                <table class="min-w-full">
+                    <thead class="bg-indigo-600 text-white">
+                        <tr>
+                            <th class="px-6 py-3 text-left">Name</th>
+                            <th class="px-6 py-3 text-left">Email</th>
+                            <th class="px-6 py-3 text-left">Role</th>
+                            <th class="px-6 py-3 text-left">Created</th>
+                            <th class="px-6 py-3 text-left">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="users-list" class="divide-y">
+                        <tr>
+                            <td colspan="5" class="px-6 py-8 text-center">
+                                <i class="fas fa-spinner fa-spin text-4xl text-indigo-600"></i>
+                                <p class="mt-4">Loading users...</p>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    `;
+    
+    const result = await API.get('/it/users');
+    const usersList = document.getElementById('users-list');
+    
+    if (result.success && result.data.data) {
+        if (result.data.data.length === 0) {
+            usersList.innerHTML = `
+                <tr>
+                    <td colspan="5" class="px-6 py-8 text-center text-gray-500">
+                        No users found
+                    </td>
+                </tr>
+            `;
+        } else {
+            usersList.innerHTML = result.data.data.map(user => `
+                <tr class="hover:bg-gray-50">
+                    <td class="px-6 py-4">${user.name}</td>
+                    <td class="px-6 py-4">${user.email}</td>
+                    <td class="px-6 py-4">
+                        <span class="px-2 py-1 text-xs font-semibold rounded-full bg-indigo-100 text-indigo-800">${user.role}</span>
+                    </td>
+                    <td class="px-6 py-4">${new Date(user.createdAt).toLocaleDateString()}</td>
+                    <td class="px-6 py-4">
+                        <button onclick="editITUser('${user._id}')" class="text-green-600 hover:text-green-800 mr-3">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button onclick="deleteITUser('${user._id}', '${user.name}')" class="text-red-600 hover:text-red-800">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+    } else {
+        usersList.innerHTML = `
+            <tr>
+                <td colspan="5" class="px-6 py-8 text-center text-red-600">
+                    Error loading users: ${result.message || 'Unknown error'}
+                </td>
+            </tr>
+        `;
+    }
+}
+
+window.editITUser = async function(userId) {
+    const result = await API.get(`/it/users/${userId}`);
+    // Implementation for editing user
+    showNotification('User editing functionality coming soon', 'info');
+};
+
+window.deleteITUser = async function(userId, userName) {
+    if (!confirm(`Are you sure you want to delete user "${userName}"?`)) return;
+    
+    const result = await API.delete(`/it/users/${userId}`);
+    if (result.success) {
+        showNotification('User deleted successfully', 'success');
+        renderITUsers();
+    } else {
+        showNotification('Failed to delete user: ' + result.message, 'error');
+    }
+};
+
+// IT News Creation
+async function renderITNews() {
+    const mainContent = document.getElementById('main-content');
+    mainContent.innerHTML = `
+        <div class="bg-orange-600 text-white py-12 text-center">
+            <h1 class="text-4xl font-bold mb-4">Create News</h1>
+            <button onclick="showCreateNewsModal()" class="bg-white text-orange-600 px-6 py-2 rounded-lg hover:bg-gray-100 transition mt-4">
+                <i class="fas fa-plus mr-2"></i>Create New News
+            </button>
+        </div>
+        <div class="container mx-auto px-4 py-16">
+            <div id="news-list" class="text-center">
+                <i class="fas fa-spinner fa-spin text-4xl text-orange-600"></i>
+                <p class="mt-4">Loading news...</p>
+            </div>
+        </div>
+    `;
+    
+    // Get all news for IT management (including unpublished)
+    const result = await API.get('/news?all=true');
+    const newsList = document.getElementById('news-list');
+    
+    if (result.success && result.data.data) {
+        if (result.data.data.length === 0) {
+            newsList.innerHTML = '<p class="text-gray-500">No news found. Create your first news!</p>';
+        } else {
+            newsList.innerHTML = `
+                <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    ${result.data.data.map(item => `
+                        <div class="bg-white rounded-lg shadow-lg overflow-hidden">
+                            ${item.image ? `<img src="${item.image}" alt="${item.title}" class="w-full h-48 object-cover">` : 
+                                `<div class="w-full h-48 bg-orange-100 flex items-center justify-center"><i class="fas fa-newspaper text-4xl text-orange-400"></i></div>`}
+                            <div class="p-6">
+                                <h3 class="text-xl font-bold mb-2">${item.title}</h3>
+                                <p class="text-sm text-gray-500 mb-2">${item.author || 'N/A'} - ${new Date(item.createdAt).toLocaleDateString()}</p>
+                                <p class="text-xs mb-3">
+                                    <span class="px-2 py-1 rounded-full ${item.published ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}">
+                                        ${item.published ? 'Published' : 'Draft'}
+                                    </span>
+                                </p>
+                                <div class="flex gap-2">
+                                    <button onclick="editITNews('${item._id || item.id}')" class="flex-1 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 text-sm">
+                                        <i class="fas fa-edit mr-1"></i>Edit
+                                    </button>
+                                    <button onclick="deleteITNews('${item._id || item.id}')" class="flex-1 bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700 text-sm">
+                                        <i class="fas fa-trash mr-1"></i>Delete
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+        }
+    } else {
+        newsList.innerHTML = `
+            <div class="text-red-600">
+                <i class="fas fa-exclamation-triangle text-4xl mb-4"></i>
+                <p>Unable to load news. ${result.message || 'Unknown error'}</p>
+            </div>
+        `;
+    }
+}
+
+window.showCreateNewsModal = async function() {
+    const modal = document.createElement('div');
+    modal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 overflow-y-auto p-4';
+    modal.innerHTML = `
+        <div class="bg-white rounded-lg p-8 max-w-3xl w-full my-8 max-h-[90vh] overflow-y-auto">
+            <h2 class="text-2xl font-bold mb-6 text-orange-600">Create News</h2>
+            <form id="create-news-form" enctype="multipart/form-data">
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-gray-700 font-bold mb-2">Title *</label>
+                        <input type="text" name="title" required class="w-full px-4 py-2 border rounded-lg">
+                    </div>
+                    <div>
+                        <label class="block text-gray-700 font-bold mb-2">Content *</label>
+                        <textarea name="content" required rows="6" class="w-full px-4 py-2 border rounded-lg"></textarea>
+                    </div>
+                    <div>
+                        <label class="block text-gray-700 font-bold mb-2">Image</label>
+                        <input type="file" name="image" accept="image/*" class="w-full px-4 py-2 border rounded-lg">
+                    </div>
+                    <div>
+                        <label class="block text-gray-700 font-bold mb-2">Document</label>
+                        <input type="file" name="document" accept=".pdf,.doc,.docx" class="w-full px-4 py-2 border rounded-lg">
+                    </div>
+                    <div>
+                        <label class="block text-gray-700 font-bold mb-2">Category</label>
+                        <select name="category" class="w-full px-4 py-2 border rounded-lg">
+                            <option value="News">News</option>
+                            <option value="Events">Events</option>
+                            <option value="Announcements">Announcements</option>
+                            <option value="Achievements">Achievements</option>
+                            <option value="General">General</option>
+                        </select>
+                    </div>
+                    <div class="flex items-center">
+                        <input type="checkbox" name="published" id="published" checked class="mr-2">
+                        <label for="published" class="text-gray-700">Publish immediately</label>
+                    </div>
+                </div>
+                <div class="flex gap-4 mt-6">
+                    <button type="submit" class="flex-1 bg-orange-600 text-white px-6 py-3 rounded-lg hover:bg-orange-700 font-bold">
+                        <i class="fas fa-save mr-2"></i>Create News
+                    </button>
+                    <button type="button" onclick="this.closest('.fixed').remove()" class="flex-1 bg-gray-400 text-white px-6 py-3 rounded-lg hover:bg-gray-500 font-bold">
+                        Cancel
+                    </button>
+                </div>
+            </form>
+        </div>
+    `;
+    document.body.appendChild(modal);
+    
+    document.getElementById('create-news-form').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const formData = new FormData(e.target);
+        formData.append('author', currentUser.name);
+        
+        // For now, we'll convert image to base64 or handle file upload
+        // In production, you'd upload to a file server
+        const data = {
+            title: formData.get('title'),
+            content: formData.get('content'),
+            category: formData.get('category'),
+            published: formData.get('published') === 'on',
+            author: currentUser.name
+        };
+        
+        // Handle file uploads
+        const imageFile = formData.get('image');
+        const documentFile = formData.get('document');
+        
+        const uploadFiles = async () => {
+            // Handle image
+            if (imageFile && imageFile.size > 0) {
+                const reader = new FileReader();
+                data.image = await new Promise((resolve) => {
+                    reader.onload = (e) => resolve(e.target.result);
+                    reader.readAsDataURL(imageFile);
+                });
+            }
+            
+            // Handle document
+            if (documentFile && documentFile.size > 0) {
+                const reader = new FileReader();
+                const docData = await new Promise((resolve) => {
+                    reader.onload = (e) => resolve(e.target.result);
+                    reader.readAsDataURL(documentFile);
+                });
+                data.documents = [docData];
+            }
+            
+            // Submit data
+            const result = await API.post('/news', data);
+            if (result.success) {
+                showNotification('News created successfully!', 'success');
+                modal.remove();
+                renderITNews();
+            } else {
+                showNotification('Failed to create news: ' + result.message, 'error');
+            }
+        };
+        
+        uploadFiles();
+    });
+};
+
+window.editITNews = function(newsId) {
+    showNotification('Edit news functionality coming soon', 'info');
+};
+
+window.deleteITNews = async function(newsId) {
+    if (!confirm('Are you sure you want to delete this news?')) return;
+    const result = await API.delete(`/news/${newsId}`);
+    if (result.success) {
+        showNotification('News deleted successfully', 'success');
+        renderITNews();
+    } else {
+        showNotification('Failed to delete news: ' + result.message, 'error');
+    }
+};
+
+// IT Announcements
+async function renderITAnnouncements() {
+    const mainContent = document.getElementById('main-content');
+    mainContent.innerHTML = `
+        <div class="bg-yellow-600 text-white py-12 text-center">
+            <h1 class="text-4xl font-bold mb-4">Create Announcements</h1>
+            <button onclick="showCreateAnnouncementModal()" class="bg-white text-yellow-600 px-6 py-2 rounded-lg hover:bg-gray-100 transition mt-4">
+                <i class="fas fa-plus mr-2"></i>Create New Announcement
+            </button>
+        </div>
+        <div class="container mx-auto px-4 py-16">
+            <div id="announcements-list" class="text-center">
+                <i class="fas fa-spinner fa-spin text-4xl text-yellow-600"></i>
+                <p class="mt-4">Loading announcements...</p>
+            </div>
+        </div>
+    `;
+    
+    const result = await API.get('/it/announcements');
+    const announcementsList = document.getElementById('announcements-list');
+    
+    if (result.success && result.data.data) {
+        if (result.data.data.length === 0) {
+            announcementsList.innerHTML = '<p class="text-gray-500">No announcements found. Create your first announcement!</p>';
+        } else {
+            announcementsList.innerHTML = `
+                <div class="grid md:grid-cols-2 gap-6">
+                    ${result.data.data.map(item => `
+                        <div class="bg-white rounded-lg shadow-lg p-6">
+                            <div class="flex justify-between items-start mb-4">
+                                <h3 class="text-xl font-bold">${item.title}</h3>
+                                <span class="px-2 py-1 text-xs font-semibold rounded-full bg-yellow-100 text-yellow-800">${item.concerns}</span>
+                            </div>
+                            <p class="text-gray-600 mb-4">${item.content.substring(0, 100)}...</p>
+                            <p class="text-sm text-gray-500 mb-4">${new Date(item.createdAt).toLocaleDateString()}</p>
+                            <div class="flex gap-2">
+                                <button onclick="editITAnnouncement('${item._id}')" class="flex-1 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 text-sm">
+                                    <i class="fas fa-edit mr-1"></i>Edit
+                                </button>
+                                <button onclick="deleteITAnnouncement('${item._id}')" class="flex-1 bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700 text-sm">
+                                    <i class="fas fa-trash mr-1"></i>Delete
+                                </button>
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+        }
+    }
+}
+
+window.showCreateAnnouncementModal = async function() {
+    const modal = document.createElement('div');
+    modal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 overflow-y-auto p-4';
+    modal.innerHTML = `
+        <div class="bg-white rounded-lg p-8 max-w-3xl w-full my-8 max-h-[90vh] overflow-y-auto">
+            <h2 class="text-2xl font-bold mb-6 text-yellow-600">Create Announcement</h2>
+            <form id="create-announcement-form">
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-gray-700 font-bold mb-2">Title *</label>
+                        <input type="text" name="title" required class="w-full px-4 py-2 border rounded-lg">
+                    </div>
+                    <div>
+                        <label class="block text-gray-700 font-bold mb-2">Concerns *</label>
+                        <select name="concerns" required class="w-full px-4 py-2 border rounded-lg">
+                            <option value="">Select</option>
+                            <option value="Parents">Parents</option>
+                            <option value="Teachers">Teachers</option>
+                            <option value="Staff">Staff</option>
+                            <option value="Students">Students</option>
+                            <option value="All">All</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-gray-700 font-bold mb-2">Content *</label>
+                        <textarea name="content" required rows="6" class="w-full px-4 py-2 border rounded-lg"></textarea>
+                    </div>
+                    <div>
+                        <label class="block text-gray-700 font-bold mb-2">Image</label>
+                        <input type="file" name="image" accept="image/*" class="w-full px-4 py-2 border rounded-lg">
+                    </div>
+                    <div>
+                        <label class="block text-gray-700 font-bold mb-2">Documents</label>
+                        <input type="file" name="documents" multiple accept=".pdf,.doc,.docx" class="w-full px-4 py-2 border rounded-lg">
+                    </div>
+                    <div class="flex items-center">
+                        <input type="checkbox" name="published" id="announcement-published" checked class="mr-2">
+                        <label for="announcement-published" class="text-gray-700">Publish immediately</label>
+                    </div>
+                </div>
+                <div class="flex gap-4 mt-6">
+                    <button type="submit" class="flex-1 bg-yellow-600 text-white px-6 py-3 rounded-lg hover:bg-yellow-700 font-bold">
+                        <i class="fas fa-save mr-2"></i>Create Announcement
+                    </button>
+                    <button type="button" onclick="this.closest('.fixed').remove()" class="flex-1 bg-gray-400 text-white px-6 py-3 rounded-lg hover:bg-gray-500 font-bold">
+                        Cancel
+                    </button>
+                </div>
+            </form>
+        </div>
+    `;
+    document.body.appendChild(modal);
+    
+    document.getElementById('create-announcement-form').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const formData = new FormData(e.target);
+        
+        const data = {
+            title: formData.get('title'),
+            content: formData.get('content'),
+            concerns: formData.get('concerns'),
+            published: formData.get('published') === 'on'
+        };
+        
+        // Handle file uploads
+        const imageFile = formData.get('image');
+        const documentFiles = formData.getAll('documents');
+        
+        const uploadFiles = async () => {
+            // Handle image
+            if (imageFile && imageFile.size > 0) {
+                const reader = new FileReader();
+                data.image = await new Promise((resolve) => {
+                    reader.onload = (e) => resolve(e.target.result);
+                    reader.readAsDataURL(imageFile);
+                });
+            }
+            
+            // Handle documents
+            if (documentFiles.length > 0) {
+                data.documents = [];
+                for (const file of documentFiles) {
+                    if (file.size > 0) {
+                        const reader = new FileReader();
+                        const docData = await new Promise((resolve) => {
+                            reader.onload = (e) => resolve(e.target.result);
+                            reader.readAsDataURL(file);
+                        });
+                        data.documents.push(docData);
+                    }
+                }
+            }
+            
+            // Submit data
+            const result = await API.post('/it/announcements', data);
+            if (result.success) {
+                showNotification('Announcement created successfully!', 'success');
+                modal.remove();
+                renderITAnnouncements();
+            } else {
+                showNotification('Failed to create announcement: ' + result.message, 'error');
+            }
+        };
+        
+        uploadFiles();
+    });
+};
+
+window.editITAnnouncement = function(id) {
+    showNotification('Edit announcement functionality coming soon', 'info');
+};
+
+window.deleteITAnnouncement = async function(id) {
+    if (!confirm('Are you sure you want to delete this announcement?')) return;
+    const result = await API.delete(`/it/announcements/${id}`);
+    if (result.success) {
+        showNotification('Announcement deleted successfully', 'success');
+        renderITAnnouncements();
+    } else {
+        showNotification('Failed to delete announcement: ' + result.message, 'error');
+    }
+};
+
+// IT Employee of Year
+async function renderITEmployeeYear() {
+    const mainContent = document.getElementById('main-content');
+    mainContent.innerHTML = `
+        <div class="bg-purple-600 text-white py-12 text-center">
+            <h1 class="text-4xl font-bold mb-4">Employee of the Year</h1>
+            <button onclick="showCreateEmployeeYearModal()" class="bg-white text-purple-600 px-6 py-2 rounded-lg hover:bg-gray-100 transition mt-4">
+                <i class="fas fa-plus mr-2"></i>Add Employee of the Year
+            </button>
+        </div>
+        <div class="container mx-auto px-4 py-16">
+            <div id="employee-year-list" class="text-center">
+                <i class="fas fa-spinner fa-spin text-4xl text-purple-600"></i>
+                <p class="mt-4">Loading employees of the year...</p>
+            </div>
+        </div>
+    `;
+    
+    const result = await API.get('/it/employee-of-year');
+    const employeeList = document.getElementById('employee-year-list');
+    
+    if (result.success && result.data.data) {
+        if (result.data.data.length === 0) {
+            employeeList.innerHTML = '<p class="text-gray-500">No employees of the year found. Add your first one!</p>';
+        } else {
+            employeeList.innerHTML = `
+                <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    ${result.data.data.map(item => `
+                        <div class="bg-white rounded-lg shadow-lg overflow-hidden">
+                            ${item.photo ? `<img src="${item.photo}" alt="${item.employeeName}" class="w-full h-64 object-cover">` : 
+                                `<div class="w-full h-64 bg-purple-100 flex items-center justify-center"><i class="fas fa-user text-6xl text-purple-400"></i></div>`}
+                            <div class="p-6">
+                                <h3 class="text-xl font-bold mb-2">${item.employeeName}</h3>
+                                <p class="text-sm text-purple-600 mb-2">${item.employeeType} - ${item.year}</p>
+                                <p class="text-gray-600 mb-4">${item.achievement.substring(0, 100)}...</p>
+                                <div class="flex gap-2">
+                                    <button onclick="editITEmployeeYear('${item._id}')" class="flex-1 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 text-sm">
+                                        <i class="fas fa-edit mr-1"></i>Edit
+                                    </button>
+                                    <button onclick="deleteITEmployeeYear('${item._id}')" class="flex-1 bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700 text-sm">
+                                        <i class="fas fa-trash mr-1"></i>Delete
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+        }
+    }
+}
+
+window.showCreateEmployeeYearModal = async function() {
+    const [teachersResult, usersResult] = await Promise.all([
+        API.get('/dos/teachers').catch(() => ({ success: false, data: { data: [] } })),
+        API.get('/it/users').catch(() => ({ success: false, data: { data: [] } }))
+    ]);
+    
+    const staffUsers = usersResult.success ? usersResult.data.data.filter(u => 
+        ['SM', 'DOS', 'DOD', 'IT', 'Librarian', 'Bursar', 'Patron', 'Matron'].includes(u.role)
+    ) : [];
+    
+    const modal = document.createElement('div');
+    modal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 overflow-y-auto p-4';
+    modal.innerHTML = `
+        <div class="bg-white rounded-lg p-8 max-w-3xl w-full my-8 max-h-[90vh] overflow-y-auto">
+            <h2 class="text-2xl font-bold mb-6 text-purple-600">Add Employee of the Year</h2>
+            <form id="create-employee-year-form">
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-gray-700 font-bold mb-2">Employee Type *</label>
+                        <select name="employeeType" required id="employee-type-select" class="w-full px-4 py-2 border rounded-lg" onchange="updateEmployeeSelect(this.value)">
+                            <option value="">Select Type</option>
+                            <option value="Teacher">Teacher</option>
+                            <option value="Staff">Staff</option>
+                        </select>
+                    </div>
+                    <div id="teacher-select-div" style="display:none;">
+                        <label class="block text-gray-700 font-bold mb-2">Select Teacher *</label>
+                        <select name="employee" id="teacher-select" class="w-full px-4 py-2 border rounded-lg">
+                            <option value="">Select Teacher</option>
+                            ${teachersResult.success ? teachersResult.data.data.map(teacher => 
+                                `<option value="${teacher._id}">${teacher.name}</option>`
+                            ).join('') : ''}
+                        </select>
+                    </div>
+                    <div id="staff-select-div" style="display:none;">
+                        <label class="block text-gray-700 font-bold mb-2">Select Staff *</label>
+                        <select name="employee" id="staff-select" class="w-full px-4 py-2 border rounded-lg">
+                            <option value="">Select Staff</option>
+                            ${staffUsers.map(staff => 
+                                `<option value="${staff._id}">${staff.name} (${staff.role})</option>`
+                            ).join('')}
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-gray-700 font-bold mb-2">Year *</label>
+                        <input type="text" name="year" required value="${new Date().getFullYear()}" class="w-full px-4 py-2 border rounded-lg">
+                    </div>
+                    <div>
+                        <label class="block text-gray-700 font-bold mb-2">Achievement *</label>
+                        <textarea name="achievement" required rows="4" class="w-full px-4 py-2 border rounded-lg" placeholder="Describe the achievement..."></textarea>
+                    </div>
+                    <div>
+                        <label class="block text-gray-700 font-bold mb-2">Photo</label>
+                        <input type="file" name="photo" accept="image/*" class="w-full px-4 py-2 border rounded-lg">
+                    </div>
+                    <div class="flex items-center">
+                        <input type="checkbox" name="published" id="employee-published" checked class="mr-2">
+                        <label for="employee-published" class="text-gray-700">Publish immediately</label>
+                    </div>
+                </div>
+                <div class="flex gap-4 mt-6">
+                    <button type="submit" class="flex-1 bg-purple-600 text-white px-6 py-3 rounded-lg hover:bg-purple-700 font-bold">
+                        <i class="fas fa-save mr-2"></i>Add Employee
+                    </button>
+                    <button type="button" onclick="this.closest('.fixed').remove()" class="flex-1 bg-gray-400 text-white px-6 py-3 rounded-lg hover:bg-gray-500 font-bold">
+                        Cancel
+                    </button>
+                </div>
+            </form>
+        </div>
+    `;
+    document.body.appendChild(modal);
+    
+    window.updateEmployeeSelect = function(type) {
+        document.getElementById('teacher-select-div').style.display = type === 'Teacher' ? 'block' : 'none';
+        document.getElementById('staff-select-div').style.display = type === 'Staff' ? 'block' : 'none';
+        document.getElementById('teacher-select').required = type === 'Teacher';
+        document.getElementById('staff-select').required = type === 'Staff';
+    };
+    
+    document.getElementById('create-employee-year-form').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const formData = new FormData(e.target);
+        
+        const data = {
+            employeeType: formData.get('employeeType'),
+            employee: formData.get('employee'),
+            year: formData.get('year'),
+            achievement: formData.get('achievement'),
+            published: formData.get('published') === 'on'
+        };
+        
+        // Handle photo upload
+        const photoFile = formData.get('photo');
+        if (photoFile && photoFile.size > 0) {
+            const reader = new FileReader();
+            reader.onload = async (e) => {
+                data.photo = e.target.result;
+                const result = await API.post('/it/employee-of-year', data);
+                if (result.success) {
+                    showNotification('Employee of the year added successfully!', 'success');
+                    modal.remove();
+                    renderITEmployeeYear();
+                } else {
+                    showNotification('Failed to add employee: ' + result.message, 'error');
+                }
+            };
+            reader.readAsDataURL(photoFile);
+        } else {
+            const result = await API.post('/it/employee-of-year', data);
+            if (result.success) {
+                showNotification('Employee of the year added successfully!', 'success');
+                modal.remove();
+                renderITEmployeeYear();
+            } else {
+                showNotification('Failed to add employee: ' + result.message, 'error');
+            }
+        }
+    });
+};
+
+window.editITEmployeeYear = function(id) {
+    showNotification('Edit employee functionality coming soon', 'info');
+};
+
+window.deleteITEmployeeYear = async function(id) {
+    if (!confirm('Are you sure you want to delete this employee of the year?')) return;
+    const result = await API.delete(`/it/employee-of-year/${id}`);
+    if (result.success) {
+        showNotification('Employee deleted successfully', 'success');
+        renderITEmployeeYear();
+    } else {
+        showNotification('Failed to delete employee: ' + result.message, 'error');
+    }
+};
+
+// IT Page Content
+async function renderITPageContent() {
+    const mainContent = document.getElementById('main-content');
+    mainContent.innerHTML = `
+        <div class="bg-teal-600 text-white py-12 text-center">
+            <h1 class="text-4xl font-bold mb-4">Page Content Management</h1>
+            <button onclick="showCreatePageContentModal()" class="bg-white text-teal-600 px-6 py-2 rounded-lg hover:bg-gray-100 transition mt-4">
+                <i class="fas fa-plus mr-2"></i>Add Page Content
+            </button>
+        </div>
+        <div class="container mx-auto px-4 py-16">
+            <div class="mb-6">
+                <label class="block text-gray-700 font-bold mb-2">Filter by Page</label>
+                <select id="page-filter" class="w-full md:w-64 px-4 py-2 border rounded-lg" onchange="filterPageContent(this.value)">
+                    <option value="">All Pages</option>
+                    <option value="Home">Home</option>
+                    <option value="About">About</option>
+                    <option value="Academics">Academics</option>
+                    <option value="Admissions">Admissions</option>
+                    <option value="Contact">Contact</option>
+                    <option value="Other">Other</option>
+                </select>
+            </div>
+            <div id="page-content-list" class="text-center">
+                <i class="fas fa-spinner fa-spin text-4xl text-teal-600"></i>
+                <p class="mt-4">Loading page content...</p>
+            </div>
+        </div>
+    `;
+    
+    loadPageContent();
+}
+
+async function loadPageContent(filterPage = '') {
+    const result = await API.get(`/it/page-content${filterPage ? '?page=' + filterPage : ''}`);
+    const contentList = document.getElementById('page-content-list');
+    
+    if (result.success && result.data.data) {
+        if (result.data.data.length === 0) {
+            contentList.innerHTML = '<p class="text-gray-500">No page content found. Add your first content!</p>';
+        } else {
+            contentList.innerHTML = `
+                <div class="grid md:grid-cols-2 gap-6">
+                    ${result.data.data.map(item => `
+                        <div class="bg-white rounded-lg shadow-lg p-6">
+                            <div class="flex justify-between items-start mb-4">
+                                <h3 class="text-xl font-bold">${item.title}</h3>
+                                <span class="px-2 py-1 text-xs font-semibold rounded-full bg-teal-100 text-teal-800">${item.page}</span>
+                            </div>
+                            <p class="text-gray-600 mb-4">${item.content.substring(0, 150)}...</p>
+                            <div class="flex gap-2">
+                                <button onclick="editITPageContent('${item._id}')" class="flex-1 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 text-sm">
+                                    <i class="fas fa-edit mr-1"></i>Edit
+                                </button>
+                                <button onclick="deleteITPageContent('${item._id}')" class="flex-1 bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700 text-sm">
+                                    <i class="fas fa-trash mr-1"></i>Delete
+                                </button>
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+        }
+    }
+}
+
+window.filterPageContent = function(page) {
+    loadPageContent(page);
+};
+
+window.showCreatePageContentModal = async function() {
+    const modal = document.createElement('div');
+    modal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 overflow-y-auto p-4';
+    modal.innerHTML = `
+        <div class="bg-white rounded-lg p-8 max-w-4xl w-full my-8 max-h-[90vh] overflow-y-auto">
+            <h2 class="text-2xl font-bold mb-6 text-teal-600">Add Page Content</h2>
+            <form id="create-page-content-form">
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-gray-700 font-bold mb-2">Page *</label>
+                        <select name="page" required class="w-full px-4 py-2 border rounded-lg">
+                            <option value="">Select Page</option>
+                            <option value="Home">Home</option>
+                            <option value="About">About</option>
+                            <option value="Academics">Academics</option>
+                            <option value="Admissions">Admissions</option>
+                            <option value="Contact">Contact</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-gray-700 font-bold mb-2">Title *</label>
+                        <input type="text" name="title" required class="w-full px-4 py-2 border rounded-lg">
+                    </div>
+                    <div>
+                        <label class="block text-gray-700 font-bold mb-2">Content *</label>
+                        <textarea name="content" required rows="8" class="w-full px-4 py-2 border rounded-lg"></textarea>
+                    </div>
+                    <div>
+                        <label class="block text-gray-700 font-bold mb-2">Images</label>
+                        <input type="file" name="images" multiple accept="image/*" class="w-full px-4 py-2 border rounded-lg">
+                    </div>
+                    <div>
+                        <label class="block text-gray-700 font-bold mb-2">Documents</label>
+                        <input type="file" name="documents" multiple accept=".pdf,.doc,.docx" class="w-full px-4 py-2 border rounded-lg">
+                    </div>
+                    <div>
+                        <label class="block text-gray-700 font-bold mb-2">Order</label>
+                        <input type="number" name="order" value="0" class="w-full px-4 py-2 border rounded-lg">
+                    </div>
+                    <div class="flex items-center">
+                        <input type="checkbox" name="published" id="content-published" checked class="mr-2">
+                        <label for="content-published" class="text-gray-700">Publish immediately</label>
+                    </div>
+                </div>
+                <div class="flex gap-4 mt-6">
+                    <button type="submit" class="flex-1 bg-teal-600 text-white px-6 py-3 rounded-lg hover:bg-teal-700 font-bold">
+                        <i class="fas fa-save mr-2"></i>Add Content
+                    </button>
+                    <button type="button" onclick="this.closest('.fixed').remove()" class="flex-1 bg-gray-400 text-white px-6 py-3 rounded-lg hover:bg-gray-500 font-bold">
+                        Cancel
+                    </button>
+                </div>
+            </form>
+        </div>
+    `;
+    document.body.appendChild(modal);
+    
+    document.getElementById('create-page-content-form').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const formData = new FormData(e.target);
+        
+        const data = {
+            page: formData.get('page'),
+            title: formData.get('title'),
+            content: formData.get('content'),
+            order: parseInt(formData.get('order')) || 0,
+            published: formData.get('published') === 'on'
+        };
+        
+        // Handle multiple images
+        const imageFiles = formData.getAll('images');
+        if (imageFiles.length > 0 && imageFiles[0].size > 0) {
+            data.images = [];
+            let processed = 0;
+            imageFiles.forEach(file => {
+                if (file.size > 0) {
+                    const reader = new FileReader();
+                    reader.onload = async (e) => {
+                        data.images.push(e.target.result);
+                        processed++;
+                        if (processed === imageFiles.filter(f => f.size > 0).length) {
+                            const result = await API.post('/it/page-content', data);
+                            if (result.success) {
+                                showNotification('Page content added successfully!', 'success');
+                                modal.remove();
+                                renderITPageContent();
+                            } else {
+                                showNotification('Failed to add content: ' + result.message, 'error');
+                            }
+                        }
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+        } else {
+            const result = await API.post('/it/page-content', data);
+            if (result.success) {
+                showNotification('Page content added successfully!', 'success');
+                modal.remove();
+                renderITPageContent();
+            } else {
+                showNotification('Failed to add content: ' + result.message, 'error');
+            }
+        }
+    });
+};
+
+window.editITPageContent = function(id) {
+    showNotification('Edit page content functionality coming soon', 'info');
+};
+
+window.deleteITPageContent = async function(id) {
+    if (!confirm('Are you sure you want to delete this page content?')) return;
+    const result = await API.delete(`/it/page-content/${id}`);
+    if (result.success) {
+        showNotification('Page content deleted successfully', 'success');
+        renderITPageContent();
+    } else {
+        showNotification('Failed to delete content: ' + result.message, 'error');
+    }
+};
 
 // ============================================
 // INITIALIZATION
