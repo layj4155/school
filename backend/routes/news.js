@@ -8,8 +8,13 @@ const { protect, authorize } = require('../middleware/auth');
 // @access  Public
 router.get('/', async (req, res) => {
     try {
-        const { category, featured } = req.query;
-        let query = { published: true };
+        const { category, featured, all } = req.query;
+        let query = {};
+        
+        // If 'all' parameter is not true, only show published news
+        if (all !== 'true') {
+            query.published = true;
+        }
         
         if (category) query.category = category;
         if (featured) query.featured = featured === 'true';

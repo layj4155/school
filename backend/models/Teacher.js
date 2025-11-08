@@ -28,7 +28,17 @@ const TeacherSchema = new mongoose.Schema({
     department: {
         type: String,
         enum: ['Software Development', 'Accounting', 'Business', 'Networking', 'Hospitality', 'O-Level', 'Support'],
-        required: true
+        required: false
+    },
+    level: {
+        type: String,
+        enum: ['O-Level', 'A-Level'],
+        required: false
+    },
+    trade: {
+        type: String,
+        enum: ['None', 'SOD', 'ACC'],
+        default: 'None'
     },
     photo: String,
     userAccount: {

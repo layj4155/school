@@ -27,6 +27,7 @@ const dos = require('./routes/dos');
 const dod = require('./routes/dod');
 const librarian = require('./routes/librarian');
 const locations = require('./routes/locations');
+const it = require('./routes/it');
 
 const app = express();
 
@@ -53,6 +54,7 @@ app.use('/api/dos', dos);
 app.use('/api/dod', dod);
 app.use('/api/librarian', librarian);
 app.use('/api/locations', locations);
+app.use('/api/it', it);
 
 app.use(errorHandler);
 

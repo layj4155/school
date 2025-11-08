@@ -1,6 +1,11 @@
 const mongoose = require('mongoose');
 
-const NewsSchema = new mongoose.Schema({
+const PageContentSchema = new mongoose.Schema({
+    page: {
+        type: String,
+        required: [true, 'Please specify the page'],
+        enum: ['Home', 'About', 'Academics', 'Admissions', 'Contact', 'Other']
+    },
     title: {
         type: String,
         required: [true, 'Please add a title'],
@@ -10,31 +15,19 @@ const NewsSchema = new mongoose.Schema({
         type: String,
         required: [true, 'Please add content']
     },
-    excerpt: {
+    images: [{
         type: String
-    },
-    image: {
-        type: String
-    },
+    }],
     documents: [{
         type: String
     }],
-    author: {
-        type: String,
-        required: [true, 'Please add author name']
-    },
-    category: {
-        type: String,
-        enum: ['Events', 'Announcements', 'Achievements', 'News', 'General'],
-        default: 'News'
+    order: {
+        type: Number,
+        default: 0
     },
     published: {
         type: Boolean,
         default: true
-    },
-    featured: {
-        type: Boolean,
-        default: false
     },
     createdBy: {
         type: mongoose.Schema.ObjectId,
@@ -50,13 +43,10 @@ const NewsSchema = new mongoose.Schema({
     }
 });
 
-// Generate excerpt if not provided
-NewsSchema.pre('save', function(next) {
-    if (!this.excerpt && this.content) {
-        this.excerpt = this.content.substring(0, 200) + '...';
-    }
+PageContentSchema.pre('save', function(next) {
     this.updatedAt = Date.now();
     next();
 });
 
-module.exports = mongoose.model('News', NewsSchema);
+module.exports = mongoose.model('PageContent', PageContentSchema);
+
