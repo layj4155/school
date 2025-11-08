@@ -1,0 +1,88 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" width="400" height="400" style="background:white">
+  <!-- Shield Outline -->
+  <path d="M50,10 Q50,10 100,10 H300 Q350,10 350,10 V350 Q300,400 200,400 Q100,400 50,350 Z" fill="white" stroke="#2A5DB0" stroke-width="8" />
+
+  <!-- Outer Circle Border -->
+  <circle cx="200" cy="200" r="140" fill="none" stroke="#2A5DB0" stroke-width="6" />
+
+  <!-- Inner Circle Border -->
+  <circle cx="200" cy="200" r="125" fill="none" stroke="#2A5DB0" stroke-width="4" />
+
+  <!-- Top Arc Text: KAGEYO TVET SCHOOL -->
+  <defs>
+    <path id="arcTop" d="M60,200 A140,140 0 0 1 340,200" />
+  </defs>
+  <text font-family="Montserrat, sans-serif" font-weight="bold" font-size="24" fill="#2A5DB0" text-anchor="middle">
+    <textPath href="#arcTop" startOffset="50%">KAGEYO TVET SCHOOL</textPath>
+  </text>
+
+  <!-- Bottom Arc Text: GICUMBI -->
+  <defs>
+    <path id="arcBottom" d="M60,200 A140,140 0 0 0 340,200" />
+  </defs>
+  <text font-family="Montserrat, sans-serif" font-weight="bold" font-size="28" fill="#2A5DB0" text-anchor="middle">
+    <textPath href="#arcBottom" startOffset="50%">GICUMBI</textPath>
+  </text>
+
+  <!-- Base Motto: WORK SUCCESS PROMOTION -->
+  <text x="100" y="350" font-family="Montserrat, sans-serif" font-weight="bold" font-size="18" fill="#2A5DB0">WORK</text>
+  <text x="190" y="350" font-family="Montserrat, sans-serif" font-weight="bold" font-size="18" fill="#2A5DB0">SUCCESS</text>
+  <text x="280" y="350" font-family="Montserrat, sans-serif" font-weight="bold" font-size="18" fill="#2A5DB0">PROMOTION</text>
+
+  <!-- Central Heart Shape -->
+  <path d="M200,100 C220,80 240,80 260,100 C280,120 280,160 260,180 C240,200 220,200 200,180 C180,200 160,200 140,180 C120,160 120,120 140,100 C160,80 180,80 200,100 Z" fill="white" stroke="#2A5DB0" stroke-width="3" />
+
+  <!-- Book Inside Heart -->
+  <rect x="170" y="120" width="60" height="40" fill="white" stroke="black" stroke-width="2" />
+  <line x1="170" y1="130" x2="230" y2="130" stroke="black" stroke-width="2" />
+  <line x1="170" y1="140" x2="230" y2="140" stroke="black" stroke-width="2" />
+  <line x1="170" y1="150" x2="230" y2="150" stroke="black" stroke-width="2" />
+
+  <!-- Candle Above Book -->
+  <rect x="195" y="100" width="10" height="15" fill="#FFA500" />
+  <polygon points="190,100 200,90 210,100" fill="#FFD700" />
+
+  <!-- Two Doves -->
+  <!-- Left Dove -->
+  <path d="M160,130 L155,125 L150,130 L152,135 L158,133 Z" fill="#4CAF50" />
+  <!-- Right Dove -->
+  <path d="M240,130 L245,125 L250,130 L248,135 L242,133 Z" fill="#4CAF50" />
+
+  <!-- Sun Below Book -->
+  <circle cx="200" cy="170" r="10" fill="#FFD700" />
+  <line x1="200" y1="160" x2="200" y2="150" stroke="#FFD700" stroke-width="2" />
+  <line x1="210" y1="165" x2="220" y2="155" stroke="#FFD700" stroke-width="2" />
+  <line x1="210" y1="175" x2="220" y2="185" stroke="#FFD700" stroke-width="2" />
+  <line x1="190" y1="165" x2="180" y2="155" stroke="#FFD700" stroke-width="2" />
+  <line x1="190" y1="175" x2="180" y2="185" stroke="#FFD700" stroke-width="2" />
+
+  <!-- Water Waves Below Sun -->
+  <path d="M180,180 Q190,185 200,180 Q210,185 220,180" fill="none" stroke="#2A5DB0" stroke-width="3" />
+  <path d="M180,185 Q190,190 200,185 Q210,190 220,185" fill="none" stroke="#2A5DB0" stroke-width="3" />
+  <path d="M180,190 Q190,195 200,190 Q210,195 220,190" fill="none" stroke="#2A5DB0" stroke-width="3" />
+
+  <!-- Laurel Wreath (Simplified Symmetrical Leaves) -->
+  <!-- Left Side -->
+  <g fill="#4CAF50">
+    <path d="M140,120 L135,125 L130,120 L132,115 L138,117 Z" />
+    <path d="M135,130 L130,135 L125,130 L127,125 L133,127 Z" />
+    <path d="M130,140 L125,145 L120,140 L122,135 L128,137 Z" />
+    <path d="M125,150 L120,155 L115,150 L117,145 L123,147 Z" />
+    <path d="M120,160 L115,165 L110,160 L112,155 L118,157 Z" />
+    <path d="M115,170 L110,175 L105,170 L107,165 L113,167 Z" />
+    <path d="M110,180 L105,185 L100,180 L102,175 L108,177 Z" />
+    <path d="M105,190 L100,195 L95,190 L97,185 L103,187 Z" />
+  </g>
+
+  <!-- Right Side (Mirrored) -->
+  <g fill="#4CAF50" transform="scale(-1,1) translate(-400,0)">
+    <path d="M140,120 L135,125 L130,120 L132,115 L138,117 Z" />
+    <path d="M135,130 L130,135 L125,130 L127,125 L133,127 Z" />
+    <path d="M130,140 L125,145 L120,140 L122,135 L128,137 Z" />
+    <path d="M125,150 L120,155 L115,150 L117,145 L123,147 Z" />
+    <path d="M120,160 L115,165 L110,160 L112,155 L118,157 Z" />
+    <path d="M115,170 L110,175 L105,170 L107,165 L113,167 Z" />
+    <path d="M110,180 L105,185 L100,180 L102,175 L108,177 Z" />
+    <path d="M105,190 L100,195 L95,190 L97,185 L103,187 Z" />
+  </g>
+</svg>
