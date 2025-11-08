@@ -331,7 +331,7 @@ async function renderAbout() {
             <div class="absolute inset-0 bg-gradient-to-b from-blue-900/50 to-blue-900/90"></div>
             <div class="relative h-full flex items-center justify-center text-center text-white px-4">
                 <div>
-                    <h1 class="text-5xl font-bold mb-4">About Kageyo TVET School</h1>
+                    <h1 class="text-5xl font-bold mb-4">About Kageyo TSS</h1>
                     <p class="text-xl mb-6">Discover our rich history and commitment to excellence</p>
                     <div class="flex space-x-2 justify-center text-sm">
                         <a href="#/" class="hover:underline">Home</a>
@@ -365,7 +365,7 @@ async function renderAbout() {
                         <h2 class="text-3xl font-bold text-blue-600">Our Vision</h2>
                     </div>
                     <p class="text-gray-700 leading-relaxed">
-                        To be a leading TVET institution in Rwanda, recognized for producing skilled graduates.
+                        To be a leading TSS institution in Rwanda, recognized for producing skilled graduates.
                     </p>
                 </div>
             </div>
@@ -406,7 +406,7 @@ async function renderAbout() {
                 <h5 class="text-xl font-bold text-blue-600 mb-3 mt-6">Origin</h5>
                 <p class="text-gray-700 leading-relaxed mb-6">
                     Established in 1997 in KAJEVUBA village, Bugomba cell, Kaniga sector, Gicumbi district, 
-                    Northern Province. Started with 377 students and has grown to become a leading TVET institution.
+                    Northern Province. Started with 377 students and has grown to become a leading TSS institution.
                 </p>
             </div>
 
@@ -616,7 +616,7 @@ async function renderLogin() {
         <div class="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-500 to-blue-700 py-12 px-4">
             <div class="max-w-md w-full bg-white rounded-lg shadow-xl p-8">
                 <div class="text-center mb-8">
-                    <img src="logo.jpg" alt="Logo" class="w-20 h-20 mx-auto rounded-full mb-4">
+                    <img src="KTSSlogo.png" alt="Logo" class="w-20 h-20 mx-auto rounded-full mb-4">
                     <h2 class="text-3xl font-bold text-gray-800">Welcome Back</h2>
                     <p class="text-gray-600">Sign in to your account</p>
                 </div>
@@ -844,9 +844,9 @@ async function renderRegister() {
         <div class="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-500 to-blue-700 py-12 px-4">
             <div class="max-w-md w-full bg-white rounded-lg shadow-xl p-8">
                 <div class="text-center mb-8">
-                    <img src="logo.jpg" alt="Logo" class="w-20 h-20 mx-auto rounded-full mb-4">
+                    <img src="KTSSlogo.png" alt="Logo" class="w-20 h-20 mx-auto rounded-full mb-4">
                     <h2 class="text-3xl font-bold text-gray-800">Create Account</h2>
-                    <p class="text-gray-600">Join Kageyo TVET School</p>
+                    <p class="text-gray-600">Join Kageyo TSS</p>
                     <div class="mt-3 bg-blue-50 rounded-lg p-3">
                         <p class="text-xs text-blue-800 font-semibold">Select your role from the dropdown below</p>
                     </div>
@@ -1152,22 +1152,22 @@ async function renderDOSDashboard() {
             <div class="grid md:grid-cols-4 gap-6 mb-12">
                 <div class="bg-white p-6 rounded-lg shadow-lg">
                     <i class="fas fa-users text-3xl text-blue-600 mb-3"></i>
-                    <h3 class="text-2xl font-bold" id="dos-students">...</h3>
+                    <h3 class="text-2xl font-bold" id="dos-students"><i class="fas fa-spinner fa-spin"></i></h3>
                     <p class="text-gray-600">Students</p>
                 </div>
                 <div class="bg-white p-6 rounded-lg shadow-lg">
                     <i class="fas fa-school text-3xl text-green-600 mb-3"></i>
-                    <h3 class="text-2xl font-bold" id="dos-classes">...</h3>
+                    <h3 class="text-2xl font-bold" id="dos-classes"><i class="fas fa-spinner fa-spin"></i></h3>
                     <p class="text-gray-600">Classes</p>
                 </div>
                 <div class="bg-white p-6 rounded-lg shadow-lg">
                     <i class="fas fa-chalkboard-teacher text-3xl text-purple-600 mb-3"></i>
-                    <h3 class="text-2xl font-bold" id="dos-teachers">...</h3>
+                    <h3 class="text-2xl font-bold" id="dos-teachers"><i class="fas fa-spinner fa-spin"></i></h3>
                     <p class="text-gray-600">Teachers</p>
                 </div>
                 <div class="bg-white p-6 rounded-lg shadow-lg">
                     <i class="fas fa-chart-line text-3xl text-orange-600 mb-3"></i>
-                    <h3 class="text-2xl font-bold">95%</h3>
+                    <h3 class="text-2xl font-bold" id="dos-avg-performance"><i class="fas fa-spinner fa-spin"></i></h3>
                     <p class="text-gray-600">Avg Performance</p>
                 </div>
             </div>
@@ -1206,6 +1206,55 @@ async function renderDOSDashboard() {
             </div>
         </div>
     `;
+    
+    // Load DOS statistics
+    loadDOSStats();
+}
+
+async function loadDOSStats() {
+    const studentsCount = document.getElementById('dos-students');
+    const classesCount = document.getElementById('dos-classes');
+    const teachersCount = document.getElementById('dos-teachers');
+    const avgPerformance = document.getElementById('dos-avg-performance');
+    
+    // Get students count
+    const studentsResult = await API.get('/dos/students');
+    if (studentsResult.success && studentsResult.data.data) {
+        studentsCount.textContent = studentsResult.data.data.length || 0;
+    } else {
+        studentsCount.textContent = '0';
+    }
+    
+    // Get classes count
+    const classesResult = await API.get('/dos/classes');
+    if (classesResult.success && classesResult.data.data) {
+        classesCount.textContent = classesResult.data.data.length || 0;
+    } else {
+        classesCount.textContent = '0';
+    }
+    
+    // Get teachers count
+    const teachersResult = await API.get('/dos/teachers');
+    if (teachersResult.success && teachersResult.data.data) {
+        teachersCount.textContent = teachersResult.data.data.length || 0;
+    } else {
+        teachersCount.textContent = '0';
+    }
+    
+    // Calculate average performance from published marks
+    const marksResult = await API.get('/dos/marks');
+    if (marksResult.success && marksResult.data.data) {
+        const publishedMarks = marksResult.data.data.filter(mark => mark.published === true);
+        if (publishedMarks.length > 0) {
+            const totalMarks = publishedMarks.reduce((sum, mark) => sum + mark.marks, 0);
+            const average = (totalMarks / publishedMarks.length).toFixed(1);
+            avgPerformance.textContent = `${average}%`;
+        } else {
+            avgPerformance.textContent = 'N/A';
+        }
+    } else {
+        avgPerformance.textContent = 'N/A';
+    }
 }
 
 // Dean of Discipline Dashboard
@@ -1707,10 +1756,10 @@ window.showRegisterStudentModal = async function() {
     const locationsResult = await API.get('/locations/all');
     
     const modal = document.createElement('div');
-    modal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 overflow-y-auto';
+    modal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 overflow-y-auto';
     modal.innerHTML = `
-        <div class="bg-white rounded-lg p-8 max-w-3xl w-full mx-4 my-8">
-            <h2 class="text-2xl font-bold mb-6 text-blue-600">Register New Student</h2>
+        <div class="bg-white rounded-lg p-8 max-w-3xl w-full my-8 max-h-[90vh] overflow-y-auto">
+            <h2 class="text-2xl font-bold mb-6 text-blue-600 sticky top-0 bg-white pb-4 border-b">Register New Student</h2>
             <form id="register-student-form" class="space-y-6">
                 <!-- Personal Information -->
                 <div class="border-b pb-4">
