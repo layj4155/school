@@ -6,6 +6,35 @@ const Announcement = require('../models/Announcement');
 const EmployeeOfYear = require('../models/EmployeeOfYear');
 const PageContent = require('../models/PageContent');
 
+exports.uploadFile = async (req, res) => {
+    try {
+        if (!req.file) {
+            return res.status(400).json({
+                success: false,
+                error: 'No file uploaded'
+            });
+        }
+
+        const fileUrl = `/uploads/${req.file.filename}`;
+        
+        res.status(200).json({
+            success: true,
+            data: {
+                url: fileUrl,
+                filename: req.file.filename,
+                originalName: req.file.originalname,
+                mimetype: req.file.mimetype,
+                size: req.file.size
+            }
+        });
+    } catch (error) {
+        res.status(400).json({
+            success: false,
+            error: error.message
+        });
+    }
+};
+
 // Get all users for management
 exports.getAllUsers = async (req, res) => {
     try {

@@ -89,11 +89,13 @@ const API = {
             return { success: true, data: response.data };
         } catch (error) {
             console.error(`API Error (POST ${endpoint}):`, error);
+            console.error('Error response:', error.response?.data);
             const errorData = error.response?.data;
             const errorMessage = errorData?.msg || errorData?.error || errorData?.message || error.message || 'Request failed';
             return { 
                 success: false, 
                 message: errorMessage,
+                data: errorData,
                 status: error.response?.status
             };
         } finally {
@@ -133,6 +135,37 @@ const API = {
             console.error(`API Error (DELETE ${endpoint}):`, error);
             const errorData = error.response?.data;
             const errorMessage = errorData?.msg || errorData?.error || errorData?.message || error.message || 'Request failed';
+            return { 
+                success: false, 
+                message: errorMessage,
+                status: error.response?.status
+            };
+        } finally {
+            hideLoading();
+        }
+    },
+
+    async uploadFile(file) {
+        try {
+            showLoading();
+            const formData = new FormData();
+            formData.append('file', file);
+            
+            const token = localStorage.getItem('token');
+            const headers = {};
+            if (token) {
+                headers['Authorization'] = `Bearer ${token}`;
+            }
+            
+            const response = await axios.post(`${API_URL}/it/upload`, formData, {
+                headers: headers
+            });
+            
+            return { success: true, data: response.data };
+        } catch (error) {
+            console.error('API Error (File Upload):', error);
+            const errorData = error.response?.data;
+            const errorMessage = errorData?.msg || errorData?.error || errorData?.message || error.message || 'File upload failed';
             return { 
                 success: false, 
                 message: errorMessage,
@@ -3741,31 +3774,29 @@ window.showCreateTrainerModal = async function() {
             department: formData.get('level') === 'O-Level' ? 'O-Level' : (formData.get('trade') === 'SOD' ? 'Software Development' : 'Accounting')
         };
         
-        // Handle photo upload
+        // Handle photo upload to backend
         const photoFile = formData.get('photo');
         if (photoFile && photoFile.size > 0) {
-            const reader = new FileReader();
-            reader.onload = async (e) => {
-                data.photo = e.target.result;
-                const result = await API.post('/trainers', data);
-                if (result.success) {
-                    showNotification('Trainer added successfully!', 'success');
-                    modal.remove();
-                    renderTrainers();
-                } else {
-                    showNotification('Failed to add trainer: ' + result.message, 'error');
-                }
-            };
-            reader.readAsDataURL(photoFile);
-        } else {
-            const result = await API.post('/trainers', data);
-            if (result.success) {
-                showNotification('Trainer added successfully!', 'success');
-                modal.remove();
-                renderTrainers();
+            const uploadResult = await API.uploadFile(photoFile);
+            if (uploadResult.success) {
+                data.photo = API_URL.replace('/api', '') + uploadResult.data.data.url;
             } else {
-                showNotification('Failed to add trainer: ' + result.message, 'error');
+                showNotification('Failed to upload photo: ' + uploadResult.message, 'error');
+                return;
             }
+        }
+        
+        console.log('Trainer data being sent:', data);
+        const result = await API.post('/trainers', data);
+        console.log('Trainer creation result:', result);
+        
+        if (result.success) {
+            showNotification('Trainer added successfully!', 'success');
+            modal.remove();
+            renderTrainers();
+        } else {
+            const errorMsg = result.data?.error || result.message || 'Unknown error';
+            showNotification('Failed to add trainer: ' + errorMsg, 'error');
         }
     });
 };
@@ -5980,25 +6011,24 @@ window.showCreateNewsModal = async function() {
             const imageFile = formData.get('image');
             const documentFile = formData.get('document');
             
-            // Handle image
+            // Handle image upload to backend
             if (imageFile && imageFile.size > 0) {
-                data.image = await new Promise((resolve, reject) => {
-                    const reader = new FileReader();
-                    reader.onload = (e) => resolve(e.target.result);
-                    reader.onerror = reject;
-                    reader.readAsDataURL(imageFile);
-                });
+                const uploadResult = await API.uploadFile(imageFile);
+                if (uploadResult.success) {
+                    data.image = API_URL.replace('/api', '') + uploadResult.data.data.url;
+                } else {
+                    throw new Error('Failed to upload image: ' + uploadResult.message);
+                }
             }
             
-            // Handle document
+            // Handle document upload to backend
             if (documentFile && documentFile.size > 0) {
-                const docData = await new Promise((resolve, reject) => {
-                    const reader = new FileReader();
-                    reader.onload = (e) => resolve(e.target.result);
-                    reader.onerror = reject;
-                    reader.readAsDataURL(documentFile);
-                });
-                data.documents = [docData];
+                const uploadResult = await API.uploadFile(documentFile);
+                if (uploadResult.success) {
+                    data.documents = [API_URL.replace('/api', '') + uploadResult.data.data.url];
+                } else {
+                    throw new Error('Failed to upload document: ' + uploadResult.message);
+                }
             }
             
             // Submit data
@@ -6155,26 +6185,29 @@ window.showCreateAnnouncementModal = async function() {
         const documentFiles = formData.getAll('documents');
         
         const uploadFiles = async () => {
-            // Handle image
+            // Handle image upload to backend
             if (imageFile && imageFile.size > 0) {
-                const reader = new FileReader();
-                data.image = await new Promise((resolve) => {
-                    reader.onload = (e) => resolve(e.target.result);
-                    reader.readAsDataURL(imageFile);
-                });
+                const uploadResult = await API.uploadFile(imageFile);
+                if (uploadResult.success) {
+                    data.image = API_URL.replace('/api', '') + uploadResult.data.data.url;
+                } else {
+                    showNotification('Failed to upload image: ' + uploadResult.message, 'error');
+                    return;
+                }
             }
             
-            // Handle documents
+            // Handle documents upload to backend
             if (documentFiles.length > 0) {
                 data.documents = [];
                 for (const file of documentFiles) {
                     if (file.size > 0) {
-                        const reader = new FileReader();
-                        const docData = await new Promise((resolve) => {
-                            reader.onload = (e) => resolve(e.target.result);
-                            reader.readAsDataURL(file);
-                        });
-                        data.documents.push(docData);
+                        const uploadResult = await API.uploadFile(file);
+                        if (uploadResult.success) {
+                            data.documents.push(API_URL.replace('/api', '') + uploadResult.data.data.url);
+                        } else {
+                            showNotification('Failed to upload document: ' + uploadResult.message, 'error');
+                            return;
+                        }
                     }
                 }
             }
@@ -6405,15 +6438,15 @@ window.showCreateEmployeeYearModal = async function() {
                 published: formData.get('published') === 'on'
             };
             
-            // Handle photo upload
+            // Handle photo upload to backend
             const photoFile = formData.get('photo');
             if (photoFile && photoFile.size > 0) {
-                data.photo = await new Promise((resolve, reject) => {
-                    const reader = new FileReader();
-                    reader.onload = (e) => resolve(e.target.result);
-                    reader.onerror = reject;
-                    reader.readAsDataURL(photoFile);
-                });
+                const uploadResult = await API.uploadFile(photoFile);
+                if (uploadResult.success) {
+                    data.photo = API_URL.replace('/api', '') + uploadResult.data.data.url;
+                } else {
+                    throw new Error('Failed to upload photo: ' + uploadResult.message);
+                }
             }
             
             const result = await API.post('/it/employee-of-year', data);
@@ -6595,42 +6628,38 @@ window.showCreatePageContentModal = async function() {
                 published: formData.get('published') === 'on'
             };
             
-            // Handle multiple images
+            // Handle multiple images upload to backend
             const imageFiles = formData.getAll('images');
             if (imageFiles.length > 0 && imageFiles.some(f => f.size > 0)) {
                 data.images = [];
                 const validFiles = imageFiles.filter(f => f.size > 0);
                 
-                // Process all images in parallel
-                const imagePromises = validFiles.map(file => {
-                    return new Promise((resolve, reject) => {
-                        const reader = new FileReader();
-                        reader.onload = (e) => resolve(e.target.result);
-                        reader.onerror = reject;
-                        reader.readAsDataURL(file);
-                    });
-                });
-                
-                data.images = await Promise.all(imagePromises);
+                // Upload all images
+                for (const file of validFiles) {
+                    const uploadResult = await API.uploadFile(file);
+                    if (uploadResult.success) {
+                        data.images.push(API_URL.replace('/api', '') + uploadResult.data.data.url);
+                    } else {
+                        throw new Error('Failed to upload image: ' + uploadResult.message);
+                    }
+                }
             }
             
-            // Handle multiple documents
+            // Handle multiple documents upload to backend
             const documentFiles = formData.getAll('documents');
             if (documentFiles.length > 0 && documentFiles.some(f => f.size > 0)) {
                 data.documents = [];
                 const validDocs = documentFiles.filter(f => f.size > 0);
                 
-                // Process all documents in parallel
-                const docPromises = validDocs.map(file => {
-                    return new Promise((resolve, reject) => {
-                        const reader = new FileReader();
-                        reader.onload = (e) => resolve(e.target.result);
-                        reader.onerror = reject;
-                        reader.readAsDataURL(file);
-                    });
-                });
-                
-                data.documents = await Promise.all(docPromises);
+                // Upload all documents
+                for (const file of validDocs) {
+                    const uploadResult = await API.uploadFile(file);
+                    if (uploadResult.success) {
+                        data.documents.push(API_URL.replace('/api', '') + uploadResult.data.data.url);
+                    } else {
+                        throw new Error('Failed to upload document: ' + uploadResult.message);
+                    }
+                }
             }
             
             const result = await API.post('/it/page-content', data);

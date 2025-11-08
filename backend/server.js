@@ -1,6 +1,7 @@
 const express = require('express');
 const dotenv = require('dotenv');
 const cors = require('cors');
+const path = require('path');
 const connectDB = require('./config/db');
 const errorHandler = require('./middleware/error');
 
@@ -36,6 +37,9 @@ app.use(express.json());
 
 // Enable CORS
 app.use(cors());
+
+// Serve static files from uploads directory
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // Mount routers
 app.use('/api/auth', auth);

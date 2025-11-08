@@ -56,6 +56,25 @@ router.get('/:id', async (req, res) => {
 // @access  Private (IT, SM, DOS)
 router.post('/', protect, authorize('IT', 'SM', 'DOS'), async (req, res) => {
     try {
+        // Check for existing teacher with same ID or email
+        const existingById = await Teacher.findOne({ teacherId: req.body.teacherId });
+        if (existingById) {
+            return res.status(400).json({
+                success: false,
+                msg: 'Failed to create teacher',
+                error: `Teacher ID ${req.body.teacherId} already exists`
+            });
+        }
+        
+        const existingByEmail = await Teacher.findOne({ email: req.body.email });
+        if (existingByEmail) {
+            return res.status(400).json({
+                success: false,
+                msg: 'Failed to create teacher',
+                error: `Email ${req.body.email} already exists`
+            });
+        }
+        
         const teacher = await Teacher.create(req.body);
         
         res.status(201).json({
@@ -63,6 +82,7 @@ router.post('/', protect, authorize('IT', 'SM', 'DOS'), async (req, res) => {
             data: teacher
         });
     } catch (error) {
+        console.error('Error creating teacher:', error);
         res.status(400).json({
             success: false,
             msg: 'Failed to create teacher',

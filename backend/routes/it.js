@@ -1,7 +1,9 @@
 const express = require('express');
 const router = express.Router();
 const { protect, authorize } = require('../middleware/auth');
+const upload = require('../middleware/upload');
 const {
+    uploadFile,
     getAllUsers,
     getUser,
     updateUser,
@@ -19,6 +21,9 @@ const {
     updatePageContent,
     deletePageContent
 } = require('../controllers/itController');
+
+// File upload route
+router.post('/upload', protect, authorize('IT', 'SM', 'DOS', 'DOD', 'Teacher', 'Patron', 'Matron'), upload.single('file'), uploadFile);
 
 // User management routes
 router.get('/users', protect, authorize('IT', 'SM'), getAllUsers);
