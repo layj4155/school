@@ -18,7 +18,8 @@ const {
     getStudent,
     updateStudent,
     deleteStudent,
-    getStudentsByClass
+    getStudentsByClass,
+    getNextStudentID
 } = require('../controllers/dosStudentController');
 
 const {
@@ -56,6 +57,7 @@ router.put('/classes/:id/assign-student', assignStudentToClass);
 
 router.post('/students', registerStudent);
 router.get('/students', getAllStudents);
+router.get('/students/next-id/:classId', getNextStudentID);
 router.get('/students/:id', getStudent);
 router.put('/students/:id', updateStudent);
 router.delete('/students/:id', deleteStudent);

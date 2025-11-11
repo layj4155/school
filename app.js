@@ -1950,12 +1950,16 @@ window.showRegisterStudentModal = async function() {
                         </div>
                         <div>
                             <label class="block text-gray-700 font-bold mb-2">Class *</label>
-                            <select name="classId" required class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            <select name="classId" required id="class-select" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" onchange="previewStudentID(this.value)">
                                 <option value="">Select Class</option>
                                 ${classesResult.success ? classesResult.data.data.map(cls => 
-                                    `<option value="${cls._id}">${cls.classID} - ${cls.name}</option>`
+                                    `<option value="${cls._id}" data-level="${cls.level}" data-trade="${cls.trade}">${cls.classID} - ${cls.name}</option>`
                                 ).join('') : ''}
                             </select>
+                        </div>
+                        <div>
+                            <label class="block text-gray-700 font-bold mb-2">Student ID (Auto-generated)</label>
+                            <input type="text" id="student-id-preview" readonly class="w-full px-4 py-2 border rounded-lg bg-gray-100 cursor-not-allowed" placeholder="Select class to preview ID">
                         </div>
                     </div>
                 </div>
@@ -2045,6 +2049,24 @@ window.showRegisterStudentModal = async function() {
         if (province && window.locationsData[province]) {
             const districts = window.locationsData[province].districts;
             districtSelect.innerHTML += districts.map(d => `<option value="${d}">${d}</option>`).join('');
+        }
+    };
+
+    window.previewStudentID = async function(classId) {
+        const previewField = document.getElementById('student-id-preview');
+        
+        if (!classId) {
+            previewField.value = '';
+            return;
+        }
+        
+        previewField.value = 'Loading...';
+        
+        const result = await API.get(`/dos/students/next-id/${classId}`);
+        if (result.success) {
+            previewField.value = result.data.data.nextStudentID;
+        } else {
+            previewField.value = 'Error loading ID';
         }
     };
 
